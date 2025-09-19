@@ -1,10 +1,11 @@
 import { Tabs } from "expo-router";
 import React from "react";
 
-import { HapticTab } from "@/components/haptic-tab";
-import { IconSymbol } from "@/components/ui/icon-symbol";
 import { usePallet } from "@/hooks/use-pallet";
 import { useTheme } from "@/hooks/use-theme";
+
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { StyleSheet, TouchableOpacity } from "react-native";
 
 export default function TabLayout() {
   const pallet = usePallet();
@@ -16,42 +17,15 @@ export default function TabLayout() {
         tabBarActiveTintColor: pallet.shade1,
         headerShown: false,
         tabBarStyle: {
-          height: 90,
+          height: 100,
           shadowColor: "#000",
           shadowOffset: { width: 0, height: -2 },
           shadowOpacity: 0.08,
           shadowRadius: 8,
           elevation: 8,
+          paddingTop: 6,
         },
-        tabBarButton: (props) => {
-          if (
-            props.accessibilityLabel &&
-            props.accessibilityLabel.toLowerCase().includes("add")
-          ) {
-            return (
-              <HapticTab
-                {...props}
-                style={{
-                  top: -25,
-                  backgroundColor: "#FFD25F",
-                  borderRadius: 40,
-                  width: 56,
-                  height: 56,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  shadowColor: "#000",
-                  shadowOffset: { width: 0, height: 2 },
-                  shadowOpacity: 0.15,
-                  shadowRadius: 8,
-                  elevation: 8,
-                }}
-              >
-                <IconSymbol name="plus" size={32} color="#fff" />
-              </HapticTab>
-            );
-          }
-          return <HapticTab {...props} />;
-        },
+
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: "500",
@@ -64,7 +38,7 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="house.fill" color={color} />
+            <Ionicons size={28} color={color} name="home" />
           ),
           tabBarLabel: "Home",
         }}
@@ -74,7 +48,7 @@ export default function TabLayout() {
         options={{
           title: "Calendar",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={24} name="calendar" color={color} />
+            <Ionicons size={28} color={color} name="calendar" />
           ),
           tabBarLabel: "Calendar",
         }}
@@ -83,8 +57,17 @@ export default function TabLayout() {
         name="add"
         options={{
           title: "Add",
-          tabBarIcon: () => null,
+          tabBarIcon: () => null, // icon will be rendered inside the button
           tabBarLabel: "",
+          tabBarButton: (props) => (
+            <TouchableOpacity
+              {...props}
+              style={styles.addButton}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="add-circle" size={60} color={pallet.shade2} />
+            </TouchableOpacity>
+          ),
         }}
       />
       <Tabs.Screen
@@ -92,7 +75,7 @@ export default function TabLayout() {
         options={{
           title: "Report",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="chart" color={color} />
+            <Ionicons size={26} color={color} name="bar-chart" />
           ),
           tabBarLabel: "Report",
         }}
@@ -102,7 +85,7 @@ export default function TabLayout() {
         options={{
           title: "Settings",
           tabBarIcon: ({ color }) => (
-            <IconSymbol size={28} name="gear" color={color} />
+            <Ionicons size={28} color={color} name="cog" />
           ),
           tabBarLabel: "Settings",
         }}
@@ -110,3 +93,23 @@ export default function TabLayout() {
     </Tabs>
   );
 }
+const styles = StyleSheet.create({
+  addButton: {
+    position: "absolute",
+    bottom: 18, // adjust upward if you want more floating effect
+    left: "50%",
+    transform: [{ translateX: -30 }], // half of Icon size to center
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#fff", // or transparent if preferred
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 999, // ensures on top
+    shadowColor: "#000",
+    shadowOpacity: 0.18,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 8,
+    elevation: 8,
+  },
+});

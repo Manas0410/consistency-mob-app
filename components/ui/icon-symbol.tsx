@@ -20,7 +20,7 @@ const MAPPING = {
   "chevron.right": "chevron-right",
   calendar: "calendar-today",
   plus: "add",
-  chart: "settings",
+  chart: "insert-chart",
   gear: "settings",
 } as IconMapping;
 
