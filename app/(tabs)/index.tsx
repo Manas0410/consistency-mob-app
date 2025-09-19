@@ -1,5 +1,4 @@
 import { useTheme } from "@/hooks/use-theme";
-import { Flame } from "lucide-react";
 import { StyleSheet, View } from "react-native";
 import { PieChart } from "react-native-chart-kit";
 
@@ -57,9 +56,6 @@ export default function HomeScreen() {
   const theme = useTheme();
   return (
     <View style={{ flex: 1 }}>
-      <Flame color="#ffa200" />
-
-      {/* <View style={{ height: 20, backgroundColor: theme?.themeBackground }} /> */}
       <PieChart
         data={data}
         width={screenWidth}
