@@ -3,7 +3,13 @@ import { useGetCurrentDateTime } from "@/hooks/use-get-current-date-time";
 import { useGetLastThirtyDays } from "@/hooks/use-get-last-thirty-days";
 import { usePallet } from "@/hooks/use-pallet";
 import { useState } from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 
 const DateSelector = () => {
   const { day, date, month, year, time } = useGetCurrentDateTime();
@@ -15,41 +21,43 @@ const DateSelector = () => {
   const [selectedDay, setSelectedDay] = useState<number | null>(date);
 
   return (
-    <View style={styles.container}>
-      {prevThirtyDays.map(({ day, dayNo }) => {
-        const isSelected = selectedDay === Number(dayNo);
-        const dayName = shortDaysMapper[day as keyof typeof shortDaysMapper];
+    <ScrollView horizontal={true} showsHorizontalScrollIndicator={false}>
+      <View style={styles.container}>
+        {prevThirtyDays.map(({ day, dayNo }) => {
+          const isSelected = selectedDay === Number(dayNo);
+          const dayName = shortDaysMapper[day as keyof typeof shortDaysMapper];
 
-        return (
-          <TouchableOpacity
-            key={dayNo}
-            onPress={() => setSelectedDay(Number(dayNo))}
-            style={[
-              styles.dayBox,
-              isSelected && {
-                paddingVertical: 8,
-                paddingHorizontal: 16,
-                borderWidth: 2,
-                borderColor: pallet.shade3,
-                backgroundColor: pallet.shade4,
-              },
-            ]}
-          >
-            <Text style={[styles.dayName, { color: pallet.shade2 }]}>
-              {dayNo}
-            </Text>
-            <Text
+          return (
+            <TouchableOpacity
+              key={dayNo}
+              onPress={() => setSelectedDay(Number(dayNo))}
               style={[
-                styles.dayNumber,
-                { color: isSelected ? pallet.shade2 : pallet.shade1 },
+                styles.dayBox,
+                isSelected && {
+                  paddingVertical: 8,
+                  paddingHorizontal: 16,
+                  borderWidth: 2,
+                  borderColor: pallet.shade3,
+                  backgroundColor: pallet.shade4,
+                },
               ]}
             >
-              {dayName}
-            </Text>
-          </TouchableOpacity>
-        );
-      })}
-    </View>
+              <Text style={[styles.dayName, { color: pallet.shade2 }]}>
+                {dayNo}
+              </Text>
+              <Text
+                style={[
+                  styles.dayNumber,
+                  { color: isSelected ? pallet.shade2 : pallet.shade1 },
+                ]}
+              >
+                {dayName}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </ScrollView>
   );
 };
 
