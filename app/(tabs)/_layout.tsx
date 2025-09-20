@@ -60,6 +60,7 @@ export default function TabLayout() {
           tabBarIcon: () => null, // icon will be rendered inside the button
           tabBarLabel: "",
           tabBarButton: (props) => (
+            // @ts-ignore
             <TouchableOpacity
               {...props}
               style={styles.addButton}
