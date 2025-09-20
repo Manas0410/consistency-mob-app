@@ -1,0 +1,72 @@
+export const tasklist = {
+  "21september2025": [
+    {
+      id: 1,
+      title: "Meeting with team",
+      subtitle: "Discuss project milestones",
+      startTime: "10:00 AM",
+      endTime: "11:00 AM",
+      done: false,
+    },
+    {
+      id: 2,
+      title: "Doctor's appointment",
+      subtitle: "Annual check-up",
+      startTime: "2:00 PM",
+      endTime: "3:00 PM",
+      done: false,
+    },
+    {
+      id: 3,
+      title: "Grocery shopping",
+      subtitle: "",
+      startTime: "5:00 PM",
+      endTime: "6:00 PM",
+      done: true,
+    },
+    {
+      id: 4,
+      title: "Gym workout",
+      subtitle: "Buy fruits and vegetables",
+      startTime: "6:30 PM",
+      endTime: "7:30 PM",
+      done: false,
+    },
+  ],
+  "22september2025": [
+    {
+      id: 1,
+      title: "Project deadline",
+      subtitle: "Buy fruits and vegetables",
+      startTime: "11:59 PM",
+      endTime: "11:59 PM",
+      done: false,
+    },
+    {
+      id: 2,
+      title: "Lunch with Sarah",
+      subtitle: "Buy fruits and vegetables",
+      startTime: "1:00 PM",
+      endTime: "2:00 PM",
+      done: false,
+    },
+  ],
+  "23september2025": [
+    {
+      id: 1,
+      title: "Yoga class",
+      subtitle: "Buy fruits and vegetables",
+      startTime: "8:00 AM",
+      endTime: "9:00 AM",
+      done: true,
+    },
+    {
+      id: 2,
+      title: "Team brainstorming session",
+      subtitle: "Buy fruits and vegetables",
+      startTime: "3:00 PM",
+      endTime: "4:00 PM",
+      done: false,
+    },
+  ],
+};

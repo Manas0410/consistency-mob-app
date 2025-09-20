@@ -1,0 +1,16 @@
+export const commitsData = [
+  { date: "2025-09-20", count: 2 },
+  { date: "2025-09-19", count: 2 },
+  { date: "2025-09-18", count: 2 },
+  { date: "2025-09-17", count: 2 },
+  { date: "2017-01-04", count: 2 },
+  { date: "2017-01-05", count: 2 },
+  { date: "2017-01-06", count: 2 },
+  { date: "2017-01-30", count: 2 },
+  { date: "2017-01-31", count: 2 },
+  { date: "2017-03-01", count: 2 },
+  { date: "2017-04-02", count: 2 },
+  { date: "2017-03-05", count: 2 },
+  { date: "2017-02-30", count: 2 },
+  { date: "2017-03-30", count: 2 },
+];
