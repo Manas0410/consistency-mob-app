@@ -1,7 +1,8 @@
 import StreakChart from "@/components/chart-kit/streak-graph";
 import { commitsData } from "@/dummy/dummyChart";
 import { useTheme } from "@/hooks/use-theme";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
   const theme = useTheme();

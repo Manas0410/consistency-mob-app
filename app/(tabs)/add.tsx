@@ -1,10 +1,11 @@
-import { Text, View } from "react-native";
+import AddForm from "@/pages/add/add-form";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const AddScreen = () => {
   return (
-    <View>
-      <Text>Add Screen</Text>
-    </View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <AddForm />
+    </SafeAreaView>
   );
 };
 
