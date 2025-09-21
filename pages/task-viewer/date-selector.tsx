@@ -1,7 +1,9 @@
 import { shortDaysMapper } from "@/constants/date-constants";
+import { Colors } from "@/constants/theme";
 import { useGetCurrentDateTime } from "@/hooks/use-get-current-date-time";
 import { useGetLastThirtyDays } from "@/hooks/use-get-last-thirty-days";
 import { usePallet } from "@/hooks/use-pallet";
+import { useTheme } from "@/hooks/use-theme";
 import { useState } from "react";
 import {
   ScrollView,
@@ -14,6 +16,8 @@ import {
 const DateSelector = () => {
   const { day, date, month, year, time } = useGetCurrentDateTime();
   const pallet = usePallet();
+  const theme = useTheme();
+  const colorSet = theme ? Colors[theme] : Colors.light;
 
   const prevThirtyDays = useGetLastThirtyDays();
 
@@ -42,13 +46,13 @@ const DateSelector = () => {
                 },
               ]}
             >
-              <Text style={[styles.dayName, { color: pallet.shade2 }]}>
+              <Text style={[styles.dayName, { color: colorSet.text }]}>
                 {dayNo}
               </Text>
               <Text
                 style={[
                   styles.dayNumber,
-                  { color: isSelected ? pallet.shade2 : pallet.shade1 },
+                  { color: isSelected ? colorSet.tint : colorSet.icon },
                 ]}
               >
                 {dayName}
