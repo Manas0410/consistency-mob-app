@@ -26,6 +26,8 @@ export default function TaskDrawer(props: TaskDrawerProps) {
   const theme = useTheme();
   const colorSet = theme ? Colors[theme] : Colors.light;
   const [date, setDate] = useState(new Date());
+
+  console.log(date, "selected date");
   const [showMonthYearPicker, setShowMonthYearPicker] = useState(false);
   const months = [
     "Jan",

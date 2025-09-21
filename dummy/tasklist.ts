@@ -1,5 +1,5 @@
 export const tasklist = {
-  "21september2025": [
+  "21-september-2025": [
     {
       id: 1,
       title: "Meeting with team",
@@ -33,7 +33,7 @@ export const tasklist = {
       done: false,
     },
   ],
-  "22september2025": [
+  "22-september-2025": [
     {
       id: 1,
       title: "Project deadline",
@@ -51,7 +51,7 @@ export const tasklist = {
       done: false,
     },
   ],
-  "23september2025": [
+  "23-september-2025": [
     {
       id: 1,
       title: "Yoga class",

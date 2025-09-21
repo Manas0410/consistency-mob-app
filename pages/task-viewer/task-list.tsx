@@ -1,7 +1,7 @@
 import { tasklist } from "@/dummy/tasklist";
 import { usePallet } from "@/hooks/use-pallet";
 
-let selectedDay = "21september2025";
+let selectedDay = "21-september-2025";
 
 import { StyleSheet, Text, View } from "react-native";
 
