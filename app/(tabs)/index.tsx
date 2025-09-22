@@ -1,5 +1,6 @@
 import StreakChart from "@/components/chart-kit/streak-graph";
 import StreakCard from "@/components/ui/streak-card";
+import TaskProgressCard from "@/components/ui/task-progress-card";
 import { commitsData } from "@/dummy/dummyChart";
 import { useTheme } from "@/hooks/use-theme";
 import { StyleSheet, View } from "react-native";
@@ -12,6 +13,20 @@ export default function HomeScreen() {
       <View style={{ flex: 1 }}>
         <StreakChart commitsData={commitsData} />
         <StreakCard streak={50} />
+        <TaskProgressCard
+          percentage={75}
+          tasks={[
+            { name: "Task 1", done: true },
+            { name: "Task 2", done: false },
+            { name: "Task 3", done: true },
+          ]}
+          onTaskToggle={(index) => {
+            console.log("Toggle task at index:", index);
+          }}
+          onSeeDetail={() => {
+            console.log("See detailed view");
+          }}
+        />
       </View>
     </SafeAreaView>
   );
