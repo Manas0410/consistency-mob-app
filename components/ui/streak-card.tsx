@@ -1,3 +1,4 @@
+import { usePallet } from "@/hooks/use-pallet";
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 
@@ -6,22 +7,26 @@ interface StreakCardProps {
 }
 
 export default function StreakCard({ streak }: StreakCardProps) {
+  const pallet = usePallet();
   return (
-    <View style={styles.card}>
-      <View style={styles.textContainer}>
-        <Text style={styles.title}>Day Streak!</Text>
-        <Text style={styles.subtitle}>
-          You're on fire! Keep the momentum going.
-        </Text>
-      </View>
-      <View style={styles.streakIconContainer}>
-        <Image
-          source={require("@/assets/images/flame.png")}
-          style={styles.streakImage}
-          resizeMode="contain"
-        />
-        <View style={styles.streakNumberOverlay}>
-          <Text style={styles.streakNumber}>{streak}</Text>
+    <View>
+      <View style={styles.card}>
+        <View style={styles.textContainer}>
+          <Text style={styles.title}>Day Streak!</Text>
+          <Text style={styles.subtitle}>
+            you've maintained a {streak}-days of{" "}
+            <Text style={{ fontWeight: "bold" }}>task completion</Text> streak!
+          </Text>
+        </View>
+        <View style={styles.streakIconContainer}>
+          <Image
+            source={require("@/assets/images/flame.png")}
+            style={styles.streakImage}
+            resizeMode="contain"
+          />
+          <View style={styles.streakNumberOverlay}>
+            <Text style={styles.streakNumber}>{streak}</Text>
+          </View>
         </View>
       </View>
     </View>
