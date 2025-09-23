@@ -31,7 +31,8 @@ export const Colors = {
 
 export const Pallets = {
   blue: {
-    shade1: "#175385",
+    // shade1: "#175385",
+    shade1: "#177AD5",
     shade2: "#0eafff",
     shade3: "#77d2ff",
     shade4: "#d8f1fc",

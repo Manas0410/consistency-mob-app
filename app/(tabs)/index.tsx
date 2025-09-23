@@ -1,6 +1,7 @@
 import HabitCard from "@/components/ui/HabitCard";
 import StreakCard from "@/components/ui/streak-card";
 import TaskProgressCard from "@/components/ui/task-progress-card";
+import WeekTaskCompletionCard from "@/components/ui/WeekTaskCompletionCard";
 import { Colors } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -53,6 +54,7 @@ export default function HomeScreen() {
               console.log("See detailed view");
             }}
           />
+          <WeekTaskCompletionCard />
           <HabitCard onManage={() => {}} />
         </View>
       </ScrollView>
