@@ -1,7 +1,6 @@
 import { Colors } from "@/constants/theme";
 import { usePallet } from "@/hooks/use-pallet";
 import { useTheme } from "@/hooks/use-theme";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PieChart } from "react-native-gifted-charts";
@@ -53,31 +52,13 @@ export default function TaskProgressCard({
         </View>
       </View>
       <View style={styles.rightBox}>
-        <Text style={[styles.statusTitle, { color: colors.text }]}>
-          Today's task :
-        </Text>
-        {tasks.map((task, idx) => (
-          <View key={idx} style={styles.taskRow}>
-            <Text style={[styles.taskName, { color: colors.textSecondary }]}>
-              {task.name}
-            </Text>
-            <TouchableOpacity
-              onPress={() => onTaskToggle && onTaskToggle(idx)}
-              style={[styles.checkbox, { borderColor: colors.text }]}
-            >
-              {task.done ? (
-                <Ionicons name="checkbox" size={22} color={colors.text} />
-              ) : (
-                <Ionicons
-                  name="square-outline"
-                  size={22}
-                  color={colors.background}
-                  style={{ borderWidth: 1, borderColor: colors.text }}
-                />
-              )}
-            </TouchableOpacity>
-          </View>
-        ))}
+        <View>
+          <Text style={[styles.statusTitle, { color: colors.text }]}>
+            Today's task :
+          </Text>
+          <Text>Tasks Completed : 10</Text>
+          <Text>Tasks Pending : 5</Text>
+        </View>
         <TouchableOpacity onPress={onSeeDetail} style={styles.detailBtn}>
           <Text style={[styles.detailText, { color: colors.tint }]}>
             See detailed view
@@ -127,8 +108,11 @@ const styles = StyleSheet.create({
   },
   rightBox: {
     flex: 1,
-    paddingLeft: 12,
-    justifyContent: "center",
+    paddingLeft: 0,
+    justifyContent: "space-between",
+    flexDirection: "column",
+    height: 160,
+    paddingTop: 10,
   },
   statusTitle: {
     fontSize: 18,
@@ -160,3 +144,31 @@ const styles = StyleSheet.create({
     textDecorationLine: "underline",
   },
 });
+
+{
+  /* <Text style={[styles.statusTitle, { color: colors.text }]}>
+          Today's task :
+        </Text>
+        {tasks.map((task, idx) => (
+          <View key={idx} style={styles.taskRow}>
+            <Text style={[styles.taskName, { color: colors.textSecondary }]}>
+              {task.name}
+            </Text>
+            <TouchableOpacity
+              onPress={() => onTaskToggle && onTaskToggle(idx)}
+              style={[styles.checkbox, { borderColor: colors.text }]}
+            >
+              {task.done ? (
+                <Ionicons name="checkbox" size={22} color={colors.text} />
+              ) : (
+                <Ionicons
+                  name="square-outline"
+                  size={22}
+                  color={colors.background}
+                  style={{ borderWidth: 1, borderColor: colors.text }}
+                />
+              )}
+            </TouchableOpacity>
+          </View>
+        ))} */
+}

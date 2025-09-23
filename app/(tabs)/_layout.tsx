@@ -15,21 +15,38 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: pallet.shade1,
+        tabBarInactiveTintColor: "#222",
         headerShown: false,
         tabBarStyle: {
-          height: 100,
+          position: "absolute",
+          left: 16,
+          right: 16,
+          bottom: 16,
+          height: 72,
+          borderRadius: 32,
+          backgroundColor: "#f1ededff",
+          borderWidth: 1.5,
+          borderColor: "#eee",
           shadowColor: "#000",
-          shadowOffset: { width: 0, height: -2 },
+          shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.08,
-          shadowRadius: 8,
+          shadowRadius: 12,
           elevation: 8,
+          paddingHorizontal: 12,
+          paddingBottom: 0,
+          marginHorizontal: 20,
           paddingTop: 6,
         },
-
         tabBarLabelStyle: {
           fontSize: 12,
-          fontWeight: "500",
-          marginBottom: 8,
+          fontWeight: "700",
+          marginTop: 2,
+        },
+        tabBarItemStyle: {
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          marginHorizontal: 2,
         },
       }}
     >
@@ -38,7 +55,7 @@ export default function TabLayout() {
         options={{
           title: "Home",
           tabBarIcon: ({ color }) => (
-            <Ionicons size={28} color={color} name="home" />
+            <Ionicons size={24} color={color} name="home" />
           ),
           tabBarLabel: "Home",
         }}
@@ -48,37 +65,9 @@ export default function TabLayout() {
         options={{
           title: "Calendar",
           tabBarIcon: ({ color }) => (
-            <Ionicons size={28} color={color} name="calendar" />
+            <Ionicons size={22} color={color} name="calendar" />
           ),
           tabBarLabel: "Tasks",
-        }}
-      />
-      <Tabs.Screen
-        name="add"
-        options={{
-          title: "Add",
-          tabBarIcon: () => null, // icon will be rendered inside the button
-          tabBarLabel: "",
-          tabBarButton: (props) => (
-            // @ts-ignore
-            <TouchableOpacity
-              {...props}
-              style={styles.addButton}
-              activeOpacity={0.7}
-            >
-              <Ionicons name="add-circle" size={60} color={pallet.shade2} />
-            </TouchableOpacity>
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="report"
-        options={{
-          title: "Report",
-          tabBarIcon: ({ color }) => (
-            <Ionicons size={26} color={color} name="bar-chart" />
-          ),
-          tabBarLabel: "Report",
         }}
       />
       <Tabs.Screen
@@ -86,31 +75,50 @@ export default function TabLayout() {
         options={{
           title: "Settings",
           tabBarIcon: ({ color }) => (
-            <Ionicons size={28} color={color} name="cog" />
+            <Ionicons size={24} color={color} name="cog" />
           ),
           tabBarLabel: "Settings",
+        }}
+      />
+      <Tabs.Screen
+        name="add"
+        options={{
+          title: "Add",
+          tabBarIcon: () => null,
+          tabBarLabel: "",
+          tabBarButton: (props) => (
+            // @ts-ignore
+            <TouchableOpacity
+              {...props}
+              style={styles.addButtonCustom}
+              activeOpacity={0.8}
+            >
+              <Ionicons name="add" size={68} color="#fff" />
+            </TouchableOpacity>
+          ),
         }}
       />
     </Tabs>
   );
 }
 const styles = StyleSheet.create({
-  addButton: {
+  addButtonCustom: {
     position: "absolute",
-    bottom: 18, // adjust upward if you want more floating effect
-    left: "50%",
-    transform: [{ translateX: -30 }], // half of Icon size to center
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: "#fff", // or transparent if preferred
+    right: -6,
+    bottom: 18,
+    width: 85,
+    height: 85,
+    borderRadius: "50%",
+    backgroundColor: "#0eafff",
     justifyContent: "center",
     alignItems: "center",
-    zIndex: 999, // ensures on top
+    zIndex: 999,
     shadowColor: "#000",
     shadowOpacity: 0.18,
     shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
+    shadowRadius: 12,
     elevation: 8,
+    borderWidth: 2,
+    borderColor: "#fff",
   },
 });

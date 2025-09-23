@@ -35,7 +35,7 @@ export default function HomeScreen() {
         Believe you can and you're halfway there.
       </Text>
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 0 }}
+        contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
       >
         <View style={{ flex: 1 }}>
