@@ -1,3 +1,4 @@
+import HabbitCompletionCard from "@/components/ui/HabbitCompletionCard";
 import HabitCard from "@/components/ui/HabitCard";
 import StreakCard from "@/components/ui/streak-card";
 import TaskProgressCard from "@/components/ui/task-progress-card";
@@ -55,6 +56,7 @@ export default function HomeScreen() {
             }}
           />
           <WeekTaskCompletionCard />
+          <HabbitCompletionCard />
           <HabitCard onManage={() => {}} />
         </View>
       </ScrollView>
