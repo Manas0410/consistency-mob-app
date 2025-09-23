@@ -1,9 +1,10 @@
+import HabitCard from "@/components/ui/HabitCard";
 import StreakCard from "@/components/ui/streak-card";
 import TaskProgressCard from "@/components/ui/task-progress-card";
 import { Colors } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
@@ -11,7 +12,7 @@ export default function HomeScreen() {
   const colors = theme === "dark" ? Colors.dark : Colors.light;
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
       <View style={styles.Headingcnt}>
         <Ionicons
           name="logo-octocat"
@@ -31,24 +32,30 @@ export default function HomeScreen() {
       <Text style={{ color: colors.textSecondary }}>
         Believe you can and you're halfway there.
       </Text>
-      <View style={{ flex: 1 }}>
-        {/* <StreakChart commitsData={commitsData} /> */}
-        <StreakCard streak={50} />
-        <TaskProgressCard
-          percentage={75}
-          tasks={[
-            { name: "Task 1", done: true },
-            { name: "Task 2", done: false },
-            { name: "Task 3", done: true },
-          ]}
-          onTaskToggle={(index) => {
-            console.log("Toggle task at index:", index);
-          }}
-          onSeeDetail={() => {
-            console.log("See detailed view");
-          }}
-        />
-      </View>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 0 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View style={{ flex: 1 }}>
+          {/* <StreakChart commitsData={commitsData} /> */}
+          <StreakCard streak={50} />
+          <TaskProgressCard
+            percentage={75}
+            tasks={[
+              { name: "Task 1", done: true },
+              { name: "Task 2", done: false },
+              { name: "Task 3", done: true },
+            ]}
+            onTaskToggle={(index) => {
+              console.log("Toggle task at index:", index);
+            }}
+            onSeeDetail={() => {
+              console.log("See detailed view");
+            }}
+          />
+          <HabitCard onManage={() => {}} />
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }

@@ -50,7 +50,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <Ionicons size={28} color={color} name="calendar" />
           ),
-          tabBarLabel: "Calendar",
+          tabBarLabel: "Tasks",
         }}
       />
       <Tabs.Screen
