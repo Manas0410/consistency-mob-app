@@ -12,6 +12,7 @@ import {
 } from "react-native";
 
 const options = [
+  "Once",
   "Everyday",
   "Every Sunday",
   "Every Monday",
@@ -54,7 +55,7 @@ export default function SingleSelectDropdown({
         onPress={() => setVisible(true)}
       >
         <Text style={[styles.selectedText, { color: colors.text }]}>
-          {value || "Select"}
+          {value || "Once"}
         </Text>
         <Ionicons name="chevron-down" size={20} color={colors.icon} />
       </TouchableOpacity>

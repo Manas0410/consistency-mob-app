@@ -1,10 +1,10 @@
+import SingleSelectDropdown from "@/components/ui/SingleSelectDropdown";
 import TimePicker from "@/components/ui/time-picker";
 import { usePallet } from "@/hooks/use-pallet";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React, { useState } from "react";
 import {
   StyleSheet,
-  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -32,6 +32,7 @@ export default function AddForm() {
   });
   const [duration, setDuration] = useState("15m");
   const [notes, setNotes] = useState("");
+  const [frequency, setFrequency] = useState("Everyday");
 
   return (
     <View style={styles.container}>
@@ -46,29 +47,17 @@ export default function AddForm() {
           value={title}
           onChangeText={setTitle}
         />
-        <TouchableOpacity style={styles.statusDot}>
-          <Ionicons name="ellipse" size={20} color={pallet.shade2} />
-        </TouchableOpacity>
       </View>
-
-      {/* Planned/Inbox Row */}
-      <View style={styles.row}>
-        <TouchableOpacity
-          style={[styles.tab, planned && { backgroundColor: pallet.shade4 }]}
-          onPress={() => setPlanned(true)}
-        >
-          <Ionicons name="calendar" size={18} color={pallet.shade2} />
-          <Text style={[styles.tabText, { color: pallet.shade2 }]}>
-            Planned
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.tab, !planned && { backgroundColor: pallet.shade4 }]}
-          onPress={() => setPlanned(false)}
-        >
-          <Ionicons name="mail" size={18} color={pallet.shade1} />
-          <Text style={[styles.tabText, { color: pallet.shade1 }]}>Inbox</Text>
-        </TouchableOpacity>
+      {/* Notes Row */}
+      <View style={styles.notesRow}>
+        <Ionicons name="reorder-three" size={20} color={pallet.shade1} />
+        <TextInput
+          style={styles.notesInput}
+          placeholder="Add notes, meeting links or phone numbers..."
+          value={notes}
+          onChangeText={setNotes}
+          multiline
+        />
       </View>
 
       {/* Date Row */}
@@ -76,11 +65,10 @@ export default function AddForm() {
         <Ionicons name="calendar" size={20} color={pallet.shade2} />
         <TextInput style={styles.dateInput} placeholder="09/21/2025" />
         <Ionicons name="calendar" size={20} color={pallet.shade2} />
-        <View style={styles.allDayRow}>
-          <Switch value={allDay} onValueChange={setAllDay} />
-          <Text style={styles.allDayText}>All-Day</Text>
-        </View>
       </View>
+
+      {/* Frequency */}
+      <SingleSelectDropdown value="Once" onChange={setFrequency} />
 
       {/* Time Row */}
       <View style={styles.row}>
@@ -113,41 +101,6 @@ export default function AddForm() {
           </TouchableOpacity>
         ))}
       </View>
-
-      {/* Repeat Row */}
-      <View style={styles.row}>
-        <Ionicons name="repeat" size={20} color={pallet.shade2} />
-        <TextInput style={styles.repeatInput} placeholder="Once" />
-      </View>
-
-      {/* Add Subtask Row */}
-      <TouchableOpacity style={styles.addSubtaskRow}>
-        <Ionicons
-          name="checkmark-circle-outline"
-          size={20}
-          color={pallet.shade2}
-        />
-        <Text style={[styles.addSubtaskText, { color: pallet.shade2 }]}>
-          + Add Subtask
-        </Text>
-      </TouchableOpacity>
-
-      {/* Notes Row */}
-      <View style={styles.notesRow}>
-        <Ionicons name="reorder-three" size={20} color={pallet.shade1} />
-        <TextInput
-          style={styles.notesInput}
-          placeholder="Add notes, meeting links or phone numbers..."
-          value={notes}
-          onChangeText={setNotes}
-          multiline
-        />
-      </View>
-
-      {/* Create Task Button */}
-      <TouchableOpacity style={styles.createBtn}>
-        <Text style={styles.createBtnText}>Create Task</Text>
-      </TouchableOpacity>
     </View>
   );
 }
