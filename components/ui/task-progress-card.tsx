@@ -6,7 +6,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PieChart } from "react-native-gifted-charts";
 
 const pieData = [
-  { value: 70, color: "#59AC77" },
+  { value: 70, color: "#177AD5" },
   { value: 30, color: "lightgray" },
 ];
 
@@ -74,7 +74,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderRadius: 18,
     padding: 18,
-    margin: 12,
     borderWidth: 2,
     alignItems: "center",
     borderColor: "#e0e0e0",

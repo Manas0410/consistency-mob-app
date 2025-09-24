@@ -14,7 +14,7 @@ export default function HomeScreen() {
   const colors = theme === "dark" ? Colors.dark : Colors.light;
 
   return (
-    <SafeAreaView edges={["top"]} style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       <View style={styles.Headingcnt}>
         <Ionicons
           name="logo-octocat"
@@ -31,15 +31,14 @@ export default function HomeScreen() {
           Assista AI
         </Text>
       </View>
-      <Text style={{ color: colors.textSecondary }}>
+      <Text style={{ color: colors.textSecondary, marginLeft: 10 }}>
         Believe you can and you're halfway there.
       </Text>
       <ScrollView
         contentContainerStyle={{ paddingBottom: 100 }}
         showsVerticalScrollIndicator={false}
       >
-        <View style={{ flex: 1 }}>
-          {/* <StreakChart commitsData={commitsData} /> */}
+        <View style={{ flex: 1, display: "flex", gap: 12, padding: 10 }}>
           <StreakCard streak={50} />
           <TaskProgressCard
             percentage={75}
@@ -77,5 +76,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 8,
     gap: 8,
+    marginLeft: 10,
   },
 });

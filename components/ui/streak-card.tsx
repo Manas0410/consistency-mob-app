@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
     elevation: 4,
     borderWidth: 2,
     borderColor: "#e0e0e0",
-    margin: 8,
     // Gradient border effect
     borderStyle: "solid",
   },
