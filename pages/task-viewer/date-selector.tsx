@@ -71,13 +71,13 @@ const DateSelector = () => {
             return (
               <TouchableOpacity
                 key={d.toISOString()}
-                onPress={() => setSelectedDate(new Date(d))}
+                onPress={() => {
+                  setSelectedDate(new Date(d));
+                  setWeekOffset(0);
+                }}
                 style={[
                   styles.dayBox,
                   isSelected && {
-                    paddingVertical: 8,
-                    paddingHorizontal: 10,
-                    borderWidth: 2,
                     borderColor: pallet.shade3,
                     backgroundColor: pallet.shade4,
                   },
@@ -131,6 +131,10 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   dayBox: {
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderWidth: 2,
+    borderColor: "transparent",
     borderRadius: 16,
     minWidth: 56,
     alignItems: "center",
