@@ -1,4 +1,5 @@
 import { Colors } from "@/constants/theme";
+import { useGetCurrentDateTime } from "@/hooks/use-get-current-date-time";
 // import { useGetLastThirtyDays } from "@/hooks/use-get-last-thirty-days";
 import { usePallet } from "@/hooks/use-pallet";
 import { useTheme } from "@/hooks/use-theme";
@@ -18,6 +19,7 @@ const DateSelector = () => {
   const pallet = usePallet();
   const theme = useTheme();
   const colorSet = theme ? Colors[theme] : Colors.light;
+  const { date, day, month } = useGetCurrentDateTime();
 
   // Use YYYY-MM-DD format string, directly construct Date
   const [selectedDate, setSelectedDate] = useState<Date>(
@@ -74,7 +76,7 @@ const DateSelector = () => {
                   styles.dayBox,
                   isSelected && {
                     paddingVertical: 8,
-                    paddingHorizontal: 16,
+                    paddingHorizontal: 10,
                     borderWidth: 2,
                     borderColor: pallet.shade3,
                     backgroundColor: pallet.shade4,
@@ -117,16 +119,15 @@ const styles = StyleSheet.create({
   weekRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 24,
     justifyContent: "center",
   },
   container: {
     flexDirection: "row",
-    gap: 32,
+    gap: 10,
     alignItems: "center",
   },
   arrowBtn: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 8,
     paddingVertical: 8,
   },
   dayBox: {
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
   },
   dayNumber: {
     fontWeight: "700",
-    fontSize: 18,
+    fontSize: 12,
   },
   iconRow: {
     flexDirection: "row",
