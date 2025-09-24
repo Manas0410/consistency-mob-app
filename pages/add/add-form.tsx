@@ -1,3 +1,4 @@
+import TimePicker from "@/components/ui/time-picker";
 import { usePallet } from "@/hooks/use-pallet";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React, { useState } from "react";
@@ -10,6 +11,8 @@ import {
   View,
 } from "react-native";
 
+type TimeValue = { hour: number; minute: number; period: "AM" | "PM" };
+
 const durations = ["1m", "15m", "30m", "45m", "1hr", "..."];
 
 export default function AddForm() {
@@ -17,8 +20,16 @@ export default function AddForm() {
   const [title, setTitle] = useState("");
   const [planned, setPlanned] = useState(true);
   const [allDay, setAllDay] = useState(false);
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
+  const [startTime, setStartTime] = useState<TimeValue>({
+    hour: 5,
+    minute: 30,
+    period: "PM",
+  });
+  const [endTime, setEndTime] = useState<TimeValue>({
+    hour: 5,
+    minute: 45,
+    period: "PM",
+  });
   const [duration, setDuration] = useState("15m");
   const [notes, setNotes] = useState("");
 
@@ -74,19 +85,9 @@ export default function AddForm() {
       {/* Time Row */}
       <View style={styles.row}>
         <Ionicons name="time" size={20} color={pallet.shade2} />
-        <TextInput
-          style={styles.timeInput}
-          placeholder="05:30 PM"
-          value={startTime}
-          onChangeText={setStartTime}
-        />
+        <TimePicker value={startTime} onChange={setStartTime} />
         <Ionicons name="arrow-forward" size={20} color={pallet.shade2} />
-        <TextInput
-          style={styles.timeInput}
-          placeholder="05:45 PM"
-          value={endTime}
-          onChangeText={setEndTime}
-        />
+        <TimePicker value={endTime} onChange={setEndTime} />
         <Ionicons name="globe" size={20} color={pallet.shade2} />
       </View>
 

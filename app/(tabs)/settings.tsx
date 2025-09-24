@@ -125,7 +125,7 @@ export default function SettingsScreen() {
               value={remindersEnabled}
               onValueChange={setRemindersEnabled}
               trackColor={{ false: "#ccc", true: pallet.shade2 }}
-              thumbColor={remindersEnabled ? pallet.shade2 : "#f4f3f4"}
+              thumbColor={"#f4f3f4"}
             />
           </View>
         </View>
