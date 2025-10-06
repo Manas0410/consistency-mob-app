@@ -1,4 +1,4 @@
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import React from "react";
 
 import { usePallet } from "@/hooks/use-pallet";
@@ -6,10 +6,17 @@ import { useTheme } from "@/hooks/use-theme";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, TouchableOpacity } from "react-native";
+import { useAuth } from "@clerk/clerk-expo";
 
 export default function TabLayout() {
   const pallet = usePallet();
   const theme = useTheme();
+
+   const { isSignedIn } = useAuth()
+  
+    if (!isSignedIn) {
+      return <Redirect href={'/sign-in'} />
+    }
 
   return (
     <Tabs

@@ -1,3 +1,4 @@
+import { SignOutButton } from "@/components/SignOutButton";
 import HabbitCompletionCard from "@/components/ui/HabbitCompletionCard";
 import HabitCard from "@/components/ui/HabitCard";
 import StreakCard from "@/components/ui/streak-card";
@@ -5,7 +6,9 @@ import TaskProgressCard from "@/components/ui/task-progress-card";
 import WeekTaskCompletionCard from "@/components/ui/WeekTaskCompletionCard";
 import { Colors } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
+import { SignedIn, SignedOut, useUser } from '@clerk/clerk-expo';
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { Link } from 'expo-router';
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -13,8 +16,23 @@ export default function HomeScreen() {
   const theme = useTheme();
   const colors = theme === "dark" ? Colors.dark : Colors.light;
 
+  const { user } = useUser()
   return (
     <SafeAreaView style={{ flex: 1 }}>
+       <View>
+      <SignedIn>
+        <Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
+        <SignOutButton />
+      </SignedIn>
+      <SignedOut>
+        <Link href="/(auth)/sign-in">
+          <Text>Sign in</Text>
+        </Link>
+        <Link href="/(auth)/sign-up">
+          <Text>Sign up</Text>
+        </Link>
+      </SignedOut>
+    </View>
       <View style={styles.Headingcnt}>
         <Ionicons
           name="logo-octocat"
