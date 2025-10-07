@@ -1,5 +1,5 @@
 import TaskDrawer from "@/components/ui/task-drawer";
-import AddForm from "@/pages/add/add-form";
+import AddForm from "@/pages/add/task-form";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -8,11 +8,11 @@ const AddScreen = () => {
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <AddForm />
-      <TaskDrawer
+      {/* <TaskDrawer
         visible={drawerVisible}
         onClose={() => setDrawerVisible(false)}
         onDone={() => setDrawerVisible(false)}
-      />
+      /> */}
     </SafeAreaView>
   );
 };

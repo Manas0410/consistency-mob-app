@@ -1,3 +1,4 @@
+import { DatePicker } from "@/components/ui/date-picker";
 import SingleSelectDropdown from "@/components/ui/SingleSelectDropdown";
 import TimePicker from "@/components/ui/time-picker";
 import { usePallet } from "@/hooks/use-pallet";
@@ -13,9 +14,9 @@ import {
 
 type TimeValue = { hour: number; minute: number; period: "AM" | "PM" };
 
-const durations = ["1m", "15m", "30m", "45m", "1hr", "..."];
+const durations = ["15m", "30m", "45m", "1hr", "..."];
 
-export default function AddForm() {
+export default function TaForm() {
   const pallet = usePallet();
   const [title, setTitle] = useState("");
   const [planned, setPlanned] = useState(true);
@@ -33,6 +34,7 @@ export default function AddForm() {
   const [duration, setDuration] = useState("15m");
   const [notes, setNotes] = useState("");
   const [frequency, setFrequency] = useState("Everyday");
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
 
   return (
     <View style={styles.container}>
@@ -62,9 +64,12 @@ export default function AddForm() {
 
       {/* Date Row */}
       <View style={styles.row}>
-        <Ionicons name="calendar" size={20} color={pallet.shade2} />
-        <TextInput style={styles.dateInput} placeholder="09/21/2025" />
-        <Ionicons name="calendar" size={20} color={pallet.shade2} />
+        <DatePicker
+          label="Select Date"
+          value={selectedDate}
+          onChange={setSelectedDate}
+          placeholder="Choose a date"
+        />
       </View>
 
       {/* Frequency */}
