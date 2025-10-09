@@ -1,20 +1,38 @@
+import { ComboboxMultiple } from "@/components/ui/combobox-multiple";
 import { DatePicker } from "@/components/ui/date-picker";
-import SingleSelectDropdown from "@/components/ui/SingleSelectDropdown";
-import TimePicker from "@/components/ui/time-picker";
+import DurationInput from "@/components/ui/duration-input";
+import { Input } from "@/components/ui/input";
+import PriorityBadge from "@/components/ui/priority-badge";
 import { usePallet } from "@/hooks/use-pallet";
-import Ionicons from "@expo/vector-icons/Ionicons";
+import { LayoutList, ScrollText } from "lucide-react-native";
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { StyleSheet, View } from "react-native";
 
 type TimeValue = { hour: number; minute: number; period: "AM" | "PM" };
 
+type TaskData = {
+  taskName: string;
+  taskDescription: string;
+  taskDate: Date;
+  startTime: TimeValue;
+  duration: number;
+  priority: "Low" | "Medium" | "High";
+  frequency: number[];
+};
+
 const durations = ["15m", "30m", "45m", "1hr", "..."];
+
+const options = [
+  { label: "Once", value: 0 },
+  { label: "Every Sunday", value: 1 },
+  { label: "Every Monday", value: 2 },
+  { label: "Every Tuesday", value: 3 },
+  { label: "Every Wednesday", value: 4 },
+  { label: "Every Thursday", value: 5 },
+  { label: "Every Friday", value: 6 },
+  { label: "Every Saturday", value: 7 },
+  { label: "Everyday", value: 8 },
+];
 
 export default function TaForm() {
   const pallet = usePallet();
@@ -34,78 +52,34 @@ export default function TaForm() {
   const [duration, setDuration] = useState("15m");
   const [notes, setNotes] = useState("");
   const [frequency, setFrequency] = useState("Everyday");
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [dateTime, setDateTime] = useState<Date | undefined>();
+
+  console.log(dateTime, "selectedDate");
 
   return (
     <View style={styles.container}>
       {/* Title Row */}
-      <View style={styles.row}>
-        <View style={[styles.iconCircle, { backgroundColor: pallet.shade4 }]}>
-          <Ionicons name="calendar" size={28} color={pallet.shade2} />
-        </View>
-        <TextInput
-          style={styles.titleInput}
-          placeholder="Task Title"
-          value={title}
-          onChangeText={setTitle}
-        />
-      </View>
-      {/* Notes Row */}
-      <View style={styles.notesRow}>
-        <Ionicons name="reorder-three" size={20} color={pallet.shade1} />
-        <TextInput
-          style={styles.notesInput}
-          placeholder="Add notes, meeting links or phone numbers..."
-          value={notes}
-          onChangeText={setNotes}
-          multiline
-        />
-      </View>
-
+      <Input label="Task" placeholder="Enter task name" icon={LayoutList} />
+      <Input label="Sub Title" placeholder="Sub title" icon={ScrollText} />
+      <DurationInput />
       {/* Date Row */}
       <View style={styles.row}>
         <DatePicker
-          label="Select Date"
-          value={selectedDate}
-          onChange={setSelectedDate}
-          placeholder="Choose a date"
+          label="Date & Time"
+          mode="datetime"
+          value={dateTime}
+          onChange={setDateTime}
+          placeholder="Select date and time"
+          timeFormat="12"
         />
       </View>
 
       {/* Frequency */}
-      <SingleSelectDropdown value="Once" onChange={setFrequency} />
+      {/* @ts-ignore */}
+      <ComboboxMultiple options={options} />
+      <PriorityBadge />
 
       {/* Time Row */}
-      <View style={styles.row}>
-        <Ionicons name="time" size={20} color={pallet.shade2} />
-        <TimePicker value={startTime} onChange={setStartTime} />
-        <Ionicons name="arrow-forward" size={20} color={pallet.shade2} />
-        <TimePicker value={endTime} onChange={setEndTime} />
-        <Ionicons name="globe" size={20} color={pallet.shade2} />
-      </View>
-
-      {/* Duration Row */}
-      <View style={styles.row}>
-        {durations.map((d) => (
-          <TouchableOpacity
-            key={d}
-            style={[
-              styles.durationBtn,
-              duration === d && { backgroundColor: pallet.shade4 },
-            ]}
-            onPress={() => setDuration(d)}
-          >
-            <Text
-              style={[
-                styles.durationText,
-                { color: duration === d ? pallet.shade2 : pallet.shade1 },
-              ]}
-            >
-              {d}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
     </View>
   );
 }
