@@ -4,9 +4,9 @@ import React from "react";
 import { usePallet } from "@/hooks/use-pallet";
 import { useTheme } from "@/hooks/use-theme";
 
+import { useAuth } from "@clerk/clerk-expo";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import { useAuth } from "@clerk/clerk-expo";
 
 export default function TabLayout() {
   const pallet = usePallet();
@@ -67,6 +67,16 @@ export default function TabLayout() {
           tabBarLabel: "Home",
         }}
       />
+       <Tabs.Screen
+        name="team"
+        options={{
+          title: "Team",
+          tabBarIcon: ({ color }) => (
+            <Ionicons size={22} color={color} name="airplane" />
+          ),
+          tabBarLabel: "Team",
+        }}
+      />
       <Tabs.Screen
         name="calendar"
         options={{
@@ -77,6 +87,8 @@ export default function TabLayout() {
           tabBarLabel: "Tasks",
         }}
       />
+
+      
       <Tabs.Screen
         name="settings"
         options={{

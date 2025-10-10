@@ -20,7 +20,7 @@ export function CardWithImage({ title,
       <View style={{ borderRadius: 26, overflow: 'hidden', marginBottom: 16 }}>
         <Image
           source={{ uri: imageUrl }}
-          style={{ width: '100%', height: 300 }}
+          style={{ width: '100%', height: 150 }}
           resizeMode='cover'
         />
       </View>
