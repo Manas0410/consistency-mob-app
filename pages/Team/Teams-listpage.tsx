@@ -34,10 +34,11 @@ const dummyTeams = [
 
 // ...dummyTeams as before
 
-const TeamsListing: React.FC = () => {
+const TeamsListing = ({open}:{open:()=>void}) => {
   const router = useRouter();
 
   const onAddTeam = () => {
+    open()
     // Handle add team
     console.log("Add new team");
   };
