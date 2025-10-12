@@ -6,17 +6,22 @@ import { useTheme } from "@/hooks/use-theme";
 
 import { useAuth } from "@clerk/clerk-expo";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { StyleSheet, TouchableOpacity } from "react-native";
+import { StyleSheet } from "react-native";
 
 export default function TabLayout() {
   const pallet = usePallet();
   const theme = useTheme();
 
-   const { isSignedIn } = useAuth()
-  
-    if (!isSignedIn) {
-      // return <Redirect href={'/sign-in'} />
-    }
+
+  const { isSignedIn, isLoaded } = useAuth();
+
+  if (!isLoaded) {
+    return null; // or loading spinner
+  }
+
+  if (!isSignedIn) {
+    return <Redirect href="/sign-in" />; // Redirect to sign-in screen
+  }
 
   return (
     <Tabs
@@ -67,7 +72,7 @@ export default function TabLayout() {
           tabBarLabel: "Home",
         }}
       />
-       <Tabs.Screen
+      <Tabs.Screen
         name="team"
         options={{
           title: "Team",
@@ -88,7 +93,7 @@ export default function TabLayout() {
         }}
       />
 
-      
+
       <Tabs.Screen
         name="settings"
         options={{
@@ -103,18 +108,10 @@ export default function TabLayout() {
         name="add"
         options={{
           title: "Add",
-          tabBarIcon: () => null,
-          tabBarLabel: "",
-          tabBarButton: (props) => (
-            // @ts-ignore
-            <TouchableOpacity
-              {...props}
-              style={styles.addButtonCustom}
-              activeOpacity={0.8}
-            >
-              <Ionicons name="add" size={68} color="#fff" />
-            </TouchableOpacity>
+          tabBarIcon: () => (
+            <Ionicons name="add" size={68} color="#fff" style={styles.addButtonCustom} />
           ),
+          tabBarLabel: "",
         }}
       />
     </Tabs>

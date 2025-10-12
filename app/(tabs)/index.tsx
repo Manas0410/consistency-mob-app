@@ -17,11 +17,12 @@ export default function HomeScreen() {
   const colors = theme === "dark" ? Colors.dark : Colors.light;
 
   const { user } = useUser()
+  console.log(user)
   return (
     <SafeAreaView style={{ flex: 1 }}>
        <View>
       <SignedIn>
-        <Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
+        <Text>Hello {user?.username}</Text>
         <SignOutButton />
       </SignedIn>
       <SignedOut>

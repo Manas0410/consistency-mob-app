@@ -1,7 +1,7 @@
-import * as React from 'react'
-import { Text, TextInput, Button, View, StyleSheet, Alert } from 'react-native'
 import { useSignUp } from '@clerk/clerk-expo'
 import { Link, useRouter } from 'expo-router'
+import * as React from 'react'
+import { Button, StyleSheet, Text, TextInput, View } from 'react-native'
 
 export default function Page() {
   const { isLoaded, signUp, setActive } = useSignUp()
@@ -9,6 +9,7 @@ export default function Page() {
 
   const [emailAddress, setEmailAddress] = React.useState('')
   const [password, setPassword] = React.useState('')
+  const [username, setUsername] = React.useState('') // NEW FIELD
   const [pendingVerification, setPendingVerification] = React.useState(false)
   const [code, setCode] = React.useState('')
   const [loading, setLoading] = React.useState(false)
@@ -19,9 +20,13 @@ export default function Page() {
     setErrorMsg('')
     if (!isLoaded) return
 
+    if (!username.trim()) {
+      setErrorMsg('Username is required.')
+      return
+    }
     setLoading(true)
     try {
-      await signUp.create({ emailAddress, password })
+      await signUp.create({ emailAddress, password, username }) // ADD USERNAME HERE
       await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
       setPendingVerification(true)
     } catch (err) {
@@ -87,6 +92,14 @@ export default function Page() {
       <TextInput
         style={styles.input}
         autoCapitalize="none"
+        value={username}
+        placeholder="Enter username"
+        placeholderTextColor="#888"
+        onChangeText={setUsername}
+      />
+      <TextInput
+        style={styles.input}
+        autoCapitalize="none"
         value={emailAddress}
         placeholder="Enter email"
         placeholderTextColor="#888"
@@ -111,7 +124,7 @@ export default function Page() {
   )
 }
 
-// Styles for the component
+// Styles remain unchanged
 const styles = StyleSheet.create({
   container: {
     padding: 20,
@@ -152,5 +165,4 @@ const styles = StyleSheet.create({
     marginLeft: 4,
     fontWeight: '500',
   },
-})
-
+});
