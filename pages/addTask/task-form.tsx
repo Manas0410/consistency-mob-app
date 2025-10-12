@@ -1,26 +1,12 @@
 import { ComboboxMultiple } from "@/components/ui/combobox-multiple";
 import { DatePicker } from "@/components/ui/date-picker";
-import DurationInput from "@/components/ui/duration-input";
 import { Input } from "@/components/ui/input";
 import PriorityBadge from "@/components/ui/priority-badge";
-import { usePallet } from "@/hooks/use-pallet";
-import { LayoutList, ScrollText } from "lucide-react-native";
+import { Text } from "@/components/ui/text";
+import { Clock, LayoutList, ScrollText } from "lucide-react-native";
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 
-type TimeValue = { hour: number; minute: number; period: "AM" | "PM" };
-
-type TaskData = {
-  taskName: string;
-  taskDescription: string;
-  taskDate: Date;
-  startTime: TimeValue;
-  duration: number;
-  priority: "Low" | "Medium" | "High";
-  frequency: number[];
-};
-
-const durations = ["15m", "30m", "45m", "1hr", "..."];
 
 const options = [
   { label: "Once", value: 0 },
@@ -35,33 +21,18 @@ const options = [
 ];
 
 export default function TaForm() {
-  const pallet = usePallet();
-  const [title, setTitle] = useState("");
-  const [planned, setPlanned] = useState(true);
-  const [allDay, setAllDay] = useState(false);
-  const [startTime, setStartTime] = useState<TimeValue>({
-    hour: 5,
-    minute: 30,
-    period: "PM",
-  });
-  const [endTime, setEndTime] = useState<TimeValue>({
-    hour: 5,
-    minute: 45,
-    period: "PM",
-  });
-  const [duration, setDuration] = useState("15m");
-  const [notes, setNotes] = useState("");
-  const [frequency, setFrequency] = useState("Everyday");
   const [dateTime, setDateTime] = useState<Date | undefined>();
-
-  console.log(dateTime, "selectedDate");
 
   return (
     <View style={styles.container}>
       {/* Title Row */}
       <Input label="Task" placeholder="Enter task name" icon={LayoutList} />
       <Input label="Sub Title" placeholder="Sub title" icon={ScrollText} />
-      <DurationInput />
+      <Text variant="caption">Duration</Text>
+      <View style={styles.row}>
+        <Input label="Hours" placeholder="" icon={Clock} />
+        <Input label="Minutes" placeholder="" icon={Clock} />
+      </View>
       {/* Date Row */}
       <View style={styles.row}>
         <DatePicker
@@ -77,6 +48,7 @@ export default function TaForm() {
       {/* Frequency */}
       {/* @ts-ignore */}
       <ComboboxMultiple options={options} />
+      <Text variant="caption">Priority</Text>
       <PriorityBadge />
 
       {/* Time Row */}
@@ -94,11 +66,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.04,
     shadowRadius: 8,
     elevation: 2,
+    gap: 12,
   },
   row: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 12,
   },
   iconCircle: {
     width: 40,
