@@ -11,11 +11,16 @@ import {
 } from "@/components/ui/combobox";
 import React, { useState } from "react";
 
-export function ComboboxMultiple({ options }: { options: OptionType[] }) {
-  const [values, setValues] = useState<OptionType[]>([]);
+export function ComboboxMultiple({ options, value = [], onChange }: { options: OptionType[]; value?: any[]; onChange?: (val: any[]) => void }) {
+  const [values, setValues] = useState<any[]>(value);
+
+  const handleValuesChange = (vals: any[]) => {
+    setValues(vals);
+    if (onChange) onChange(vals);
+  };
 
   return (
-    <Combobox multiple values={values} onValuesChange={setValues}>
+    <Combobox multiple values={values} onValuesChange={handleValuesChange}>
       <ComboboxTrigger>
         <ComboboxValue placeholder="Frequency" />
       </ComboboxTrigger>

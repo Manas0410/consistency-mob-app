@@ -3,10 +3,10 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import PriorityBadge from "@/components/ui/priority-badge";
 import { Text } from "@/components/ui/text";
+import { TaskData } from "@/constants/types";
 import { Clock, LayoutList, ScrollText } from "lucide-react-native";
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
-
 
 const options = [
   { label: "Once", value: 0 },
@@ -21,37 +21,83 @@ const options = [
 ];
 
 export default function TaForm() {
-  const [dateTime, setDateTime] = useState<Date | undefined>();
+  const [task, setTask] = useState<TaskData>({
+    taskName: "",
+    taskDescription: "",
+    TaskStartDateTime: new Date(),
+    duration: { hours: 0, minutes: 0 },
+    priority: 0,
+    frequency: [],
+  });
+
+  const handleChange = (field: keyof TaskData, value: any) => {
+    setTask((prev) => ({ ...prev, [field]: value }));
+  };
 
   return (
     <View style={styles.container}>
-      {/* Title Row */}
-      <Input label="Task" placeholder="Enter task name" icon={LayoutList} />
-      <Input label="Sub Title" placeholder="Sub title" icon={ScrollText} />
+      <Input
+        label="Task"
+        placeholder="Enter task name"
+        icon={LayoutList}
+        value={task.taskName}
+        onChangeText={(text) => handleChange("taskName", text)}
+      />
+      <Input
+        label="Sub Title"
+        placeholder="Sub title"
+        icon={ScrollText}
+        value={task.taskDescription}
+        onChangeText={(text) => handleChange("taskDescription", text)}
+      />
       <Text variant="caption">Duration</Text>
       <View style={styles.row}>
-        <Input label="Hours" placeholder="" icon={Clock} />
-        <Input label="Minutes" placeholder="" icon={Clock} />
+        <Input
+          label="Hours"
+          placeholder=""
+          icon={Clock}
+          keyboardType="numeric"
+          value={String(task.duration.hours)}
+          onChangeText={(text) => handleChange("duration", { ...task.duration, hours: Number(text) })}
+        />
+        <Input
+          label="Minutes"
+          placeholder=""
+          icon={Clock}
+          keyboardType="numeric"
+          value={String(task.duration.minutes)}
+          onChangeText={(text) => handleChange("duration", { ...task.duration, minutes: Number(text) })}
+        />
       </View>
-      {/* Date Row */}
       <View style={styles.row}>
         <DatePicker
           label="Date & Time"
           mode="datetime"
-          value={dateTime}
-          onChange={setDateTime}
+          value={task.TaskStartDateTime}
+          onChange={(date) => handleChange("TaskStartDateTime", date)}
           placeholder="Select date and time"
           timeFormat="12"
         />
       </View>
-
-      {/* Frequency */}
-      {/* @ts-ignore */}
-      <ComboboxMultiple options={options} />
+      <ComboboxMultiple
+        value={task.frequency}
+        // @ts-ignore
+        options={options}
+        onChange={(val) => handleChange("frequency", val)}
+      />
       <Text variant="caption">Priority</Text>
-      <PriorityBadge />
-
-      {/* Time Row */}
+      <PriorityBadge
+        value={task.priority}
+        onChange={(val) => handleChange("priority", val)}
+      />
+      <View style={styles.createBtn}>
+        <Text
+          style={styles.createBtnText}
+          onPress={() => console.log(task)}
+        >
+          Submit
+        </Text>
+      </View>
     </View>
   );
 }

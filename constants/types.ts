@@ -3,6 +3,6 @@ export type TaskData = {
   taskDescription: string;
   TaskStartDateTime: Date;
   duration: {hours: number; minutes: number};
-  priority: "Low" | "Medium" | "High";
+  priority: 0 | 1 | 2;
   frequency: number[];
 };

@@ -3,8 +3,13 @@ import { View } from "react-native";
 import { Badge } from "./badge";
 import { Checkbox } from "./checkbox";
 
-const PriorityBadge = () => {
-  const [priority, setPriority] = useState<0 | 1 | 2>(2); // 0=Low,1=Medium,2=High
+const PriorityBadge = ({ value, onChange }: { value: 0 | 1 | 2; onChange?: (val: 0 | 1 | 2) => void }) => {
+  const [priority, setPriority] = useState<0 | 1 | 2>(value); // 0=Low,1=Medium,2=High
+
+  const handleChange = (val: 0 | 1 | 2) => {
+    setPriority(val);
+    if (onChange) onChange(val);
+  };
 
   return (
     <View>
@@ -20,7 +25,7 @@ const PriorityBadge = () => {
           Low
           <Checkbox
             checked={priority === 0}
-            onCheckedChange={() => setPriority(0)}
+            onCheckedChange={() => handleChange(0)}
           />
         </Badge>
 
@@ -35,7 +40,7 @@ const PriorityBadge = () => {
           Medium
           <Checkbox
             checked={priority === 1}
-            onCheckedChange={() => setPriority(1)}
+            onCheckedChange={() => handleChange(1)}
           />
         </Badge>
 
@@ -50,7 +55,7 @@ const PriorityBadge = () => {
           High
           <Checkbox
             checked={priority === 2}
-            onCheckedChange={() => setPriority(2)}
+            onCheckedChange={() => handleChange(2)}
           />
         </Badge>
       </View>
