@@ -1,5 +1,4 @@
 import { Colors } from "@/constants/theme";
-import { useGetCurrentDateTime } from "@/hooks/use-get-current-date-time";
 // import { useGetLastThirtyDays } from "@/hooks/use-get-last-thirty-days";
 import { usePallet } from "@/hooks/use-pallet";
 import { useTheme } from "@/hooks/use-theme";
@@ -13,21 +12,13 @@ import {
   View,
 } from "react-native";
 
-const initialSelectedDateStr = "2025-09-21";
-
-const DateSelector = () => {
+const DateSelector = ({ selectedDate, setSelectedDate }: { selectedDate: Date, setSelectedDate: (arg: Date) => void }) => {
   const pallet = usePallet();
   const theme = useTheme();
   const colorSet = theme ? Colors[theme] : Colors.light;
-  const { date, day, month } = useGetCurrentDateTime();
 
-  // Use YYYY-MM-DD format string, directly construct Date
-  const [selectedDate, setSelectedDate] = useState<Date>(
-    new Date(initialSelectedDateStr)
-  );
   const [weekOffset, setWeekOffset] = useState(0);
 
-  // Helper to get week dates
   function getWeekDates(refDate: Date) {
     const week: { date: Date; dayName: string }[] = [];
     const dayOfWeek = refDate.getDay(); // 0 (Sun) - 6 (Sat)
@@ -44,10 +35,14 @@ const DateSelector = () => {
     return week;
   }
 
-  // Calculate week dates for offset
   const refDate = new Date(selectedDate);
   refDate.setDate(selectedDate.getDate() + weekOffset * 7);
   const weekDates = getWeekDates(refDate);
+
+  function toISODateOnly(date: Date) {
+    // Converts Date to YYYY-MM-DD string
+    return date.toISOString().split('T')[0];
+  }
 
   return (
     <View style={styles.weekRow}>
@@ -55,12 +50,9 @@ const DateSelector = () => {
         onPress={() => setWeekOffset(weekOffset - 1)}
         style={styles.arrowBtn}
       >
-        <Ionicons
-          size={28}
-          color={pallet.shade1}
-          name={"chevron-back-circle"}
-        />
+        <Ionicons size={28} color={pallet.shade1} name={"chevron-back-circle"} />
       </TouchableOpacity>
+
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={styles.container}>
           {weekDates.map(({ date: d, dayName }) => {
@@ -72,7 +64,9 @@ const DateSelector = () => {
               <TouchableOpacity
                 key={d.toISOString()}
                 onPress={() => {
-                  setSelectedDate(new Date(d));
+                  // Set selected date with only YYYY-MM-DD (reset time part)
+                  const isoDateString = toISODateOnly(d);
+                  setSelectedDate(new Date(isoDateString));
                   setWeekOffset(0);
                 }}
                 style={[
@@ -99,20 +93,16 @@ const DateSelector = () => {
           })}
         </View>
       </ScrollView>
+
       <TouchableOpacity
         onPress={() => setWeekOffset(weekOffset + 1)}
         style={styles.arrowBtn}
       >
-        <Ionicons
-          size={28}
-          color={pallet.shade1}
-          name={"chevron-forward-circle"}
-        />
+        <Ionicons size={28} color={pallet.shade1} name={"chevron-forward-circle"} />
       </TouchableOpacity>
     </View>
   );
 };
-
 export default DateSelector;
 
 const styles = StyleSheet.create({

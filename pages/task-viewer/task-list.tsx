@@ -1,13 +1,34 @@
 import { tasklist } from "@/dummy/tasklist";
 import { usePallet } from "@/hooks/use-pallet";
+import { useEffect, useState } from "react";
 
 let selectedDay = "21-september-2025";
 
 import { StyleSheet, Text, View } from "react-native";
+import { getTasksByDate } from "./API/getTasks";
 
-const TaskList = () => {
+const TaskList = ({ selectedDate }: { selectedDate: Date}) => {
   const pallet = usePallet();
   const taskListData = tasklist[selectedDay as keyof typeof tasklist] || [];
+  // const [taskListData,setTaskListData] = useState<any[]>([])
+  const [loading, setLoading] = useState(false);
+
+  const loadTasks  = async() => {
+    try{
+      setLoading(true)
+      const res = await getTasksByDate(selectedDate);
+      if(res.success){
+        // setTaskListData(res.data)
+      }
+    }catch(error){
+
+    }finally{
+      setLoading(false);
+    }
+  }
+  useEffect(()=>{
+    loadTasks()
+  },[ selectedDate])
 
   return (
     <View style={styles.container}>
