@@ -92,47 +92,7 @@ export default function Page() {
         onChangeText={setEmailAddress}
       />
 
-      {isOtpMode ? (
-        <>
-          {isOtpSent ? (
-            <>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter OTP code"
-                placeholderTextColor="#888"
-                keyboardType="number-pad"
-                value={otpCode}
-                onChangeText={setOtpCode}
-              />
-              {errorMsg ? <Text style={styles.error}>{errorMsg}</Text> : null}
-              <Button
-                title={loading ? 'Verifying...' : 'Verify OTP'}
-                onPress={onVerifyOtpPress}
-                disabled={loading}
-              />
-            </>
-          ) : (
-            <>
-              {errorMsg ? <Text style={styles.error}>{errorMsg}</Text> : null}
-              <Button
-                title={loading ? 'Sending OTP...' : 'Send OTP'}
-                onPress={onSendOtpPress}
-                disabled={loading || !emailAddress}
-              />
-            </>
-          )}
-
-          <View style={styles.switchContainer}>
-            <Text>Or sign in with password</Text>
-            <Button title="Use Password" onPress={() => {
-              setIsOtpMode(false)
-              setIsOtpSent(false)
-              setErrorMsg('')
-              setOtpCode('')
-            }} />
-          </View>
-        </>
-      ) : (
+     
         <>
           <TextInput
             style={styles.input}
@@ -148,16 +108,9 @@ export default function Page() {
             onPress={onSignInPasswordPress}
             disabled={loading || !emailAddress || !password}
           />
-          <View style={styles.switchContainer}>
-            <Text>Or sign in with OTP</Text>
-            <Button title="Use OTP" onPress={() => {
-              setIsOtpMode(true)
-              setErrorMsg('')
-              setPassword('')
-            }} />
-          </View>
+         
         </>
-      )}
+      
 
       <View style={styles.footer}>
         <Text>Don't have an account?</Text>

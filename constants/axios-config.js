@@ -7,7 +7,7 @@ export function setUserId(id) {
   userId = id;
 }
 
-const api = axios.create({
+const apicall = axios.create({
   baseURL,
   timeout: 15000,
   headers: {
@@ -15,7 +15,7 @@ const api = axios.create({
   },
 });
 
-api.interceptors.request.use(
+apicall.interceptors.request.use(
   config => {
     if (userId) {
       config.headers['user-id'] = userId;
@@ -25,12 +25,4 @@ api.interceptors.request.use(
   error => Promise.reject(error)
 );
 
-// export default api;
-
-//  const { user } = useUser();
-
-//   React.useEffect(() => {
-//     if (user?.id) {
-//       setUserId(user.id);
-//     }
-//   }, [user]);
+export default apicall;

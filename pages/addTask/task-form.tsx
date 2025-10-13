@@ -1,12 +1,14 @@
+import { Button } from "@/components/ui/button";
 import { ComboboxMultiple } from "@/components/ui/combobox-multiple";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import PriorityBadge from "@/components/ui/priority-badge";
 import { Text } from "@/components/ui/text";
 import { TaskData } from "@/constants/types";
-import { Clock, LayoutList, ScrollText } from "lucide-react-native";
+import { Clock, LayoutList, Plus, ScrollText } from "lucide-react-native";
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
+import { addTask } from "./API/addTask";
 
 const options = [
   { label: "Once", value: 0 },
@@ -21,6 +23,7 @@ const options = [
 ];
 
 export default function TaForm() {
+  const [successMessage, setSuccessMessage] = useState('');
   const [task, setTask] = useState<TaskData>({
     taskName: "",
     taskDescription: "",
@@ -33,6 +36,19 @@ export default function TaForm() {
   const handleChange = (field: keyof TaskData, value: any) => {
     setTask((prev) => ({ ...prev, [field]: value }));
   };
+
+  const [loading, setLoading] = useState(false);
+
+  const onSubmit = async () => {
+    try {
+      setLoading(true);
+      await addTask(task);
+      setSuccessMessage('Task added successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) { } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <View style={styles.container}>
@@ -90,15 +106,15 @@ export default function TaForm() {
         value={task.priority}
         onChange={(val) => handleChange("priority", val)}
       />
-      <View style={styles.createBtn}>
-        <Text
-          style={styles.createBtnText}
-          onPress={() => console.log(task)}
-        >
-          Submit
+
+      <Button icon={Plus} loading={loading} variant="default" onPress={onSubmit}>Submit</Button>
+      {successMessage !== '' && (
+        <Text style={{ color: 'green', marginTop: 10, textAlign: 'center' }}>
+          {successMessage}
         </Text>
-      </View>
+      )}
     </View>
+
   );
 }
 

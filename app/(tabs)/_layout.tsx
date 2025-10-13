@@ -4,7 +4,8 @@ import React from "react";
 import { usePallet } from "@/hooks/use-pallet";
 import { useTheme } from "@/hooks/use-theme";
 
-import { useAuth } from "@clerk/clerk-expo";
+import { setUserId } from "@/constants/axios-config";
+import { useAuth, useUser } from "@clerk/clerk-expo";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { StyleSheet } from "react-native";
 
@@ -22,6 +23,9 @@ export default function TabLayout() {
   if (!isSignedIn) {
     return <Redirect href="/sign-in" />; // Redirect to sign-in screen
   }
+  const user = useUser();
+  setUserId(user.user?.id || "");
+  console.log("User ID set to:", user.user?.id);
 
   return (
     <Tabs
