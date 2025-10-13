@@ -7,6 +7,7 @@ import { useTheme } from "@/hooks/use-theme";
 import { setUserId } from "@/constants/axios-config";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { Brain } from "lucide-react-native";
 import { StyleSheet } from "react-native";
 
 export default function TabLayout() {
@@ -86,6 +87,19 @@ export default function TabLayout() {
           tabBarLabel: "Team",
         }}
       />
+      
+
+       <Tabs.Screen
+        name="ai-chat"
+        options={{
+          title: "AI Chat",
+          tabBarIcon: ({ color }) => (
+             <Brain size={22} color={color} />
+          ),
+          tabBarLabel: "AI Chat",
+        }}
+      />
+
       <Tabs.Screen
         name="calendar"
         options={{

@@ -7,7 +7,7 @@ const ChatPage = () => {
   return (
     <Tabs defaultValue="motivation" style={{ width: 400 }}>
       <TabsList>
-        <TabsTrigger value="motivation">Buddy</TabsTrigger>
+        <TabsTrigger value="motivation">Motivation</TabsTrigger>
         <TabsTrigger value="planning">Planning</TabsTrigger>
       </TabsList>
 
@@ -23,3 +23,5 @@ const ChatPage = () => {
     </Tabs>
   );
 };
+
+export default ChatPage;
