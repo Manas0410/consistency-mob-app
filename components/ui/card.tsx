@@ -1,8 +1,8 @@
-import { Text } from '@/components/ui/text';
-import { View } from '@/components/ui/view';
-import { useColor } from '@/hooks/useColor';
-import { BORDER_RADIUS } from '@/theme/globals';
-import { TextStyle, ViewStyle } from 'react-native';
+import { Text } from "@/components/ui/text";
+import { View } from "@/components/ui/view";
+import { useColor } from "@/hooks/useColor";
+import { BORDER_RADIUS } from "@/theme/globals";
+import { TextStyle, ViewStyle } from "react-native";
 
 interface CardProps {
   children: React.ReactNode;
@@ -10,15 +10,15 @@ interface CardProps {
 }
 
 export function Card({ children, style }: CardProps) {
-  const cardColor = useColor('card');
-  const foregroundColor = useColor('foreground');
+  const cardColor = useColor({}, "card");
+  const foregroundColor = useColor({}, "foreground");
 
   return (
     <View
       style={[
         {
-          width: '100%',
-          backgroundColor: cardColor,
+          width: "100%",
+          backgroundColor: "#ffff",
           borderRadius: BORDER_RADIUS,
           padding: 18,
           shadowColor: foregroundColor,
@@ -52,7 +52,7 @@ interface CardTitleProps {
 export function CardTitle({ children, style }: CardTitleProps) {
   return (
     <Text
-      variant='title'
+      variant="title"
       style={[
         {
           marginBottom: 4,
@@ -72,7 +72,7 @@ interface CardDescriptionProps {
 
 export function CardDescription({ children, style }: CardDescriptionProps) {
   return (
-    <Text variant='caption' style={[style]}>
+    <Text variant="caption" style={[style]}>
       {children}
     </Text>
   );
@@ -98,7 +98,7 @@ export function CardFooter({ children, style }: CardFooterProps) {
       style={[
         {
           marginTop: 16,
-          flexDirection: 'row',
+          flexDirection: "row",
           gap: 8,
         },
         style,
