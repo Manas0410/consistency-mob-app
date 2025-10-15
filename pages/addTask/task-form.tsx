@@ -23,7 +23,7 @@ const options = [
 ];
 
 export default function TaForm() {
-  const [successMessage, setSuccessMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState("");
   const [task, setTask] = useState<TaskData>({
     taskName: "",
     taskDescription: "",
@@ -43,12 +43,13 @@ export default function TaForm() {
     try {
       setLoading(true);
       await addTask(task);
-      setSuccessMessage('Task added successfully!');
-      setTimeout(() => setSuccessMessage(''), 3000);
-    } catch (err) { } finally {
+      setSuccessMessage("Task added successfully!");
+      setTimeout(() => setSuccessMessage(""), 3000);
+    } catch (err) {
+    } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
     <View style={styles.container}>
@@ -74,7 +75,9 @@ export default function TaForm() {
           icon={Clock}
           keyboardType="numeric"
           value={String(task.duration.hours)}
-          onChangeText={(text) => handleChange("duration", { ...task.duration, hours: Number(text) })}
+          onChangeText={(text) =>
+            handleChange("duration", { ...task.duration, hours: Number(text) })
+          }
         />
         <Input
           label="Minutes"
@@ -82,7 +85,12 @@ export default function TaForm() {
           icon={Clock}
           keyboardType="numeric"
           value={String(task.duration.minutes)}
-          onChangeText={(text) => handleChange("duration", { ...task.duration, minutes: Number(text) })}
+          onChangeText={(text) =>
+            handleChange("duration", {
+              ...task.duration,
+              minutes: Number(text),
+            })
+          }
         />
       </View>
       <View style={styles.row}>
@@ -107,14 +115,20 @@ export default function TaForm() {
         onChange={(val) => handleChange("priority", val)}
       />
 
-      <Button icon={Plus} loading={loading} variant="default" onPress={onSubmit}>Submit</Button>
-      {successMessage !== '' && (
-        <Text style={{ color: 'green', marginTop: 10, textAlign: 'center' }}>
+      <Button
+        icon={Plus}
+        loading={loading}
+        variant="default"
+        onPress={onSubmit}
+      >
+        Submit
+      </Button>
+      {successMessage !== "" && (
+        <Text style={{ color: "green", marginTop: 10, textAlign: "center" }}>
           {successMessage}
         </Text>
       )}
     </View>
-
   );
 }
 

@@ -1,6 +1,6 @@
-import { useColor } from '@/hooks/useColor';
-import { BORDER_RADIUS, CORNERS, FONT_SIZE, HEIGHT } from '@/theme/globals';
-import { ChevronDown } from 'lucide-react-native';
+import { useColor } from "@/hooks/useColor";
+import { BORDER_RADIUS, CORNERS, FONT_SIZE, HEIGHT } from "@/theme/globals";
+import { ChevronDown } from "lucide-react-native";
 import React, {
   Children,
   cloneElement,
@@ -11,7 +11,7 @@ import React, {
   useEffect,
   useRef,
   useState,
-} from 'react';
+} from "react";
 import {
   Dimensions,
   Modal,
@@ -24,7 +24,7 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
-} from 'react-native';
+} from "react-native";
 
 // --- 1. DEFINE A SHARED OPTION TYPE ---
 export interface OptionType {
@@ -34,9 +34,9 @@ export interface OptionType {
 
 // Helper to extract a simple string label from children
 const getLabelFromChildren = (children: ReactNode): string => {
-  let label = '';
+  let label = "";
   React.Children.forEach(children, (child) => {
-    if (typeof child === 'string' || typeof child === 'number') {
+    if (typeof child === "string" || typeof child === "number") {
       label += child;
     }
   });
@@ -67,7 +67,7 @@ const ComboboxContext = createContext<ComboboxContextType | undefined>(
 const useCombobox = () => {
   const context = useContext(ComboboxContext);
   if (!context) {
-    throw new Error('Combobox components must be used within a Combobox');
+    throw new Error("Combobox components must be used within a Combobox");
   }
   return context;
 };
@@ -92,7 +92,7 @@ export function Combobox({
   onValuesChange,
 }: ComboboxProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [filteredItemsCount, setFilteredItemsCount] = useState(0);
   const [triggerLayout, setTriggerLayout] = useState({
     x: 0,
@@ -154,9 +154,9 @@ export function ComboboxTrigger({
 }: ComboboxTriggerProps) {
   const { setIsOpen, setTriggerLayout, disabled, isOpen } = useCombobox();
   const triggerRef = useRef<React.ComponentRef<typeof TouchableOpacity>>(null);
-  const cardColor = useColor('card');
-  const destructiveColor = useColor('destructive');
-  const mutedColor = useColor('textMuted');
+  const cardColor = useColor({}, "card");
+  const destructiveColor = useColor({}, "destructive");
+  const mutedColor = useColor({}, "textMuted");
 
   const measureTrigger = () => {
     if (triggerRef.current) {
@@ -195,7 +195,7 @@ export function ComboboxTrigger({
         strokeWidth={2}
         style={[
           styles.chevron,
-          { transform: [{ rotate: isOpen ? '180deg' : '0deg' }] },
+          { transform: [{ rotate: isOpen ? "180deg" : "0deg" }] },
         ]}
       />
     </TouchableOpacity>
@@ -208,12 +208,12 @@ interface ComboboxValueProps {
 }
 
 export function ComboboxValue({
-  placeholder = 'Select...',
+  placeholder = "Select...",
   style,
 }: ComboboxValueProps) {
   const { value, values, multiple } = useCombobox();
-  const textColor = useColor('text');
-  const mutedColor = useColor('textMuted');
+  const textColor = useColor({}, "text");
+  const mutedColor = useColor({}, "textMuted");
 
   const hasValue = multiple ? values.length > 0 : !!value;
 
@@ -251,15 +251,15 @@ export function ComboboxContent({
   maxHeight = 400,
 }: ComboboxContentProps) {
   const { isOpen, setIsOpen, setSearchQuery, triggerLayout } = useCombobox();
-  const cardColor = useColor('card');
-  const borderColor = useColor('border');
+  const cardColor = useColor({}, "card");
+  const borderColor = useColor({}, "border");
 
   const handleClose = () => {
     setIsOpen(false);
-    setSearchQuery('');
+    setSearchQuery("");
   };
 
-  const screenHeight = Dimensions.get('window').height;
+  const screenHeight = Dimensions.get("window").height;
   const availableHeight =
     screenHeight - triggerLayout.y - triggerLayout.height - 100;
   const dropdownHeight = Math.min(maxHeight, availableHeight);
@@ -272,7 +272,7 @@ export function ComboboxContent({
     <Modal
       visible={isOpen}
       transparent
-      animationType='fade'
+      animationType="fade"
       onRequestClose={handleClose}
     >
       <Pressable style={styles.overlay} onPress={handleClose}>
@@ -303,14 +303,14 @@ interface ComboboxInputProps {
 }
 
 export function ComboboxInput({
-  placeholder = 'Search...',
+  placeholder = "Search...",
   style,
   autoFocus = true,
 }: ComboboxInputProps) {
   const { searchQuery, setSearchQuery } = useCombobox();
-  const textColor = useColor('text');
-  const mutedColor = useColor('textMuted');
-  const borderColor = useColor('border');
+  const textColor = useColor({}, "text");
+  const mutedColor = useColor({}, "textMuted");
+  const borderColor = useColor({}, "border");
 
   return (
     <View
@@ -346,7 +346,7 @@ export function ComboboxList({ children, style }: ComboboxListProps) {
     if (isValidElement(child) && child.type === ComboboxItem) {
       const props = child.props as any;
       const label = getLabelFromChildren(props.children);
-      const searchText = props.searchValue || label || props.value || '';
+      const searchText = props.searchValue || label || props.value || "";
       return searchText.toLowerCase().includes(searchQuery.toLowerCase());
     }
 
@@ -359,7 +359,7 @@ export function ComboboxList({ children, style }: ComboboxListProps) {
           const itemProps = groupChild.props as any;
           const label = getLabelFromChildren(itemProps.children);
           const searchText =
-            itemProps.searchValue || label || itemProps.value || '';
+            itemProps.searchValue || label || itemProps.value || "";
           return searchText.toLowerCase().includes(searchQuery.toLowerCase());
         }
         return false;
@@ -394,7 +394,7 @@ export function ComboboxList({ children, style }: ComboboxListProps) {
     <ScrollView
       style={[styles.optionsList, style]}
       showsVerticalScrollIndicator={false}
-      keyboardShouldPersistTaps='handled'
+      keyboardShouldPersistTaps="handled"
     >
       {filteredChildren}
     </ScrollView>
@@ -408,13 +408,13 @@ interface ComboboxEmptyProps {
 
 export function ComboboxEmpty({ children, style }: ComboboxEmptyProps) {
   const { searchQuery, filteredItemsCount } = useCombobox();
-  const mutedColor = useColor('textMuted');
+  const mutedColor = useColor({}, "textMuted");
 
   if (filteredItemsCount > 0) return null;
 
   return (
     <View style={[styles.emptyContainer, style]}>
-      {typeof children === 'string' ? (
+      {typeof children === "string" ? (
         <Text style={[styles.emptyText, { color: mutedColor }]}>
           {children}
         </Text>
@@ -432,7 +432,7 @@ interface ComboboxGroupProps {
 
 export function ComboboxGroup({ children, heading }: ComboboxGroupProps) {
   const { searchQuery } = useCombobox();
-  const mutedColor = useColor('textMuted');
+  const mutedColor = useColor({}, "textMuted");
 
   const filteredChildren = Children.toArray(children).filter((child) => {
     if (!searchQuery) return true;
@@ -440,7 +440,7 @@ export function ComboboxGroup({ children, heading }: ComboboxGroupProps) {
     if (isValidElement(child) && child.type === ComboboxItem) {
       const props = child.props as any;
       const label = getLabelFromChildren(props.children);
-      const searchText = props.searchValue || label || props.value || '';
+      const searchText = props.searchValue || label || props.value || "";
       return searchText.toLowerCase().includes(searchQuery.toLowerCase());
     }
     return true;
@@ -483,8 +483,8 @@ export function ComboboxItem({
     values: selectedValues,
     value: selectedValue,
   } = useCombobox();
-  const textColor = useColor('text');
-  const primaryColor = useColor('primary');
+  const textColor = useColor({}, "text");
+  const primaryColor = useColor({}, "primary");
 
   const isSelected = multiple
     ? selectedValues.some((v) => v.value === itemValue)
@@ -509,7 +509,7 @@ export function ComboboxItem({
       style={[
         styles.option,
         {
-          backgroundColor: isSelected ? `${primaryColor}15` : 'transparent',
+          backgroundColor: isSelected ? `${primaryColor}15` : "transparent",
           opacity: disabled ? 0.5 : 1,
         },
         style,
@@ -518,13 +518,13 @@ export function ComboboxItem({
       disabled={disabled}
       activeOpacity={0.7}
     >
-      {typeof children === 'string' ? (
+      {typeof children === "string" ? (
         <Text
           style={[
             styles.optionText,
             {
               color: textColor,
-              fontWeight: isSelected ? '600' : '400',
+              fontWeight: isSelected ? "600" : "400",
             },
           ]}
         >
@@ -545,17 +545,17 @@ export function ComboboxItem({
 const styles = StyleSheet.create({
   trigger: {
     height: HEIGHT,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     paddingHorizontal: 16,
     borderRadius: CORNERS,
     borderWidth: 1,
   },
   triggerContent: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   valueText: {
     fontSize: FONT_SIZE,
@@ -566,13 +566,13 @@ const styles = StyleSheet.create({
   },
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+    backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
   dropdown: {
-    position: 'absolute',
+    position: "absolute",
     borderRadius: BORDER_RADIUS,
     borderWidth: 1,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -596,23 +596,23 @@ const styles = StyleSheet.create({
   },
   emptyContainer: {
     padding: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   emptyText: {
     fontSize: FONT_SIZE,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   groupHeading: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: "600",
     paddingHorizontal: 16,
     paddingVertical: 8,
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   option: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 16,
     paddingVertical: 12,
     minHeight: 44,
