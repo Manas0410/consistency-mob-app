@@ -2,17 +2,23 @@ import { useBottomSheet } from "@/components/ui/bottom-sheet";
 import { View } from "@/components/ui/view";
 import { AddTeam } from "@/pages/Team/components/create-team";
 import TeamsListing from "@/pages/Team/Teams-listpage";
+import { useState } from "react";
 
 const Team = () => {
-    // return <TeamDashboard/>
-    const { isVisible, open, close } = useBottomSheet();
-    
-    return (
-        <View style={{ flex: 1 }}>
-            <TeamsListing open={open} />
-            <AddTeam isVisible={isVisible} close={close} />
-        </View>
-    )
-}
+  // return <TeamDashboard/>
+  const { isVisible, open, close } = useBottomSheet();
+  const [rerender, toggleRerender] = useState<boolean>(false);
 
-export default Team
+  return (
+    <View style={{ flex: 1 }}>
+      <TeamsListing open={open} rerender={rerender} />
+      <AddTeam
+        isVisible={isVisible}
+        close={close}
+        toggleRerender={toggleRerender}
+      />
+    </View>
+  );
+};
+
+export default Team;

@@ -11,9 +11,11 @@ import { createTeam } from "../API/api-calls";
 export function AddTeam({
   isVisible,
   close,
+  toggleRerender,
 }: {
   isVisible: boolean;
   close: () => void;
+  toggleRerender: (a: boolean) => void;
 }) {
   const [loading, setLoading] = React.useState(false);
   const [teamName, setTeamName] = React.useState("");
@@ -28,6 +30,7 @@ export function AddTeam({
       if (res.success) {
         success("Team Created", "Team created successfully");
         setTeamName("");
+        toggleRerender((p: boolean) => !p);
         close();
       } else {
         error("Error", "Failed to create team");

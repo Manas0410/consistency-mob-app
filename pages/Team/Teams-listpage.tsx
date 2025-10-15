@@ -16,7 +16,13 @@ import { getAllTeams } from "./API/api-calls";
 
 // ...dummyTeams as before
 
-const TeamsListing = ({ open }: { open: () => void }) => {
+const TeamsListing = ({
+  open,
+  rerender,
+}: {
+  open: () => void;
+  rerender: boolean;
+}) => {
   const router = useRouter();
 
   const onAddTeam = () => {
@@ -47,7 +53,7 @@ const TeamsListing = ({ open }: { open: () => void }) => {
 
   useEffect(() => {
     fetchTeams();
-  }, []);
+  }, [rerender]);
 
   const pallet = usePallet();
   return (
@@ -98,7 +104,7 @@ const TeamsListing = ({ open }: { open: () => void }) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#f7f8fa" },
+  safeArea: { flex: 1, backgroundColor: "#f7f8fa", paddingBottom: 50 },
 
   header: {
     height: 56,
