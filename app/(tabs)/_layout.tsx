@@ -36,6 +36,7 @@ export default function TabLayout() {
         tabBarInactiveTintColor: "#222",
         headerShown: false,
         tabBarStyle: {
+          display: "none",
           position: "absolute",
           left: 16,
           right: 16,

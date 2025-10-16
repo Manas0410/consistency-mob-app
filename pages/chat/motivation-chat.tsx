@@ -94,7 +94,7 @@ export default function MotivationChatPage() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10, height: 300 },
+  container: { flex: 1, padding: 10 },
   messageBox: {
     borderRadius: 10,
     padding: 10,
