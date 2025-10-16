@@ -1,16 +1,12 @@
+import BackHeader from "@/components/ui/back-header";
+import { Icon } from "@/components/ui/icon";
 import { Spinner } from "@/components/ui/spinner";
 import { TeamCard } from "@/components/ui/team-card";
 import { usePallet } from "@/hooks/use-pallet";
-import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
+import { PackagePlus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
-import {
-  FlatList,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getAllTeams } from "./API/api-calls";
 
@@ -58,19 +54,11 @@ const TeamsListing = ({
   const pallet = usePallet();
   return (
     <SafeAreaView style={styles.safeArea}>
-      {/* Top bar */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => router.back()}
-          style={styles.iconButton}
-        >
-          <Ionicons name="arrow-back" size={28} color="#333" />
-        </TouchableOpacity>
-        <Text style={styles.title}>Teams</Text>
+      <BackHeader title="Teams">
         <TouchableOpacity onPress={onAddTeam} style={styles.iconButton}>
-          <Ionicons name="add" size={30} color="#333" />
+          <Icon name={PackagePlus} color="#333" size={30} />
         </TouchableOpacity>
-      </View>
+      </BackHeader>
 
       {loading ? (
         <View
@@ -81,7 +69,7 @@ const TeamsListing = ({
             alignItems: "center",
           }}
         >
-          <Spinner variant="bars" size="default" color={pallet.shade1} />{" "}
+          <Spinner variant="bars" size="default" color={pallet.shade1} />
         </View>
       ) : (
         <FlatList

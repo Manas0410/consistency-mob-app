@@ -1,10 +1,20 @@
-import React, { useEffect, useState } from 'react';
-import { Button, FlatList, StyleSheet, Text, TextInput, View } from 'react-native';
-import { getMotivationChatHistory, handleMotivationChat } from './APi/api-calls'; // Adjust import path
+import React, { useEffect, useState } from "react";
+import {
+  Button,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import {
+  getMotivationChatHistory,
+  handleMotivationChat,
+} from "./APi/api-calls"; // Adjust import path
 
 export default function MotivationChatPage() {
   const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Load last 20 chats on mount
@@ -29,15 +39,19 @@ export default function MotivationChatPage() {
     const res = await handleMotivationChat({ message: input });
     if (res.success) {
       // Add user message and AI message into chat
-      setMessages(prev => [
+      setMessages((prev) => [
         ...prev,
         { id: `user-${Date.now()}`, message: input, fromUser: true },
-        { id: `ai-${Date.now()}`, message: res.data.aiResponse, fromUser: false }
+        {
+          id: `ai-${Date.now()}`,
+          message: res.data.aiResponse,
+          fromUser: false,
+        },
       ]);
-      setInput('');
+      setInput("");
     } else {
       // Handle error, you may show feedback here
-      alert('Failed to send message');
+      alert("Failed to send message");
     }
 
     setLoading(false);
@@ -47,9 +61,14 @@ export default function MotivationChatPage() {
     <View style={styles.container}>
       <FlatList
         data={messages}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <View style={[styles.messageBox, item.fromUser ? styles.userMessage : styles.aiMessage]}>
+          <View
+            style={[
+              styles.messageBox,
+              item.fromUser ? styles.userMessage : styles.aiMessage,
+            ]}
+          >
             <Text style={styles.messageText}>{item.message}</Text>
           </View>
         )}
@@ -64,27 +83,36 @@ export default function MotivationChatPage() {
           placeholder="Type your message"
           editable={!loading}
         />
-        <Button title={loading ? 'Sending...' : 'Send'} onPress={sendMessage} disabled={loading} />
+        <Button
+          title={loading ? "Sending..." : "Send"}
+          onPress={sendMessage}
+          disabled={loading}
+        />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 10, backgroundColor: '#fff' },
-  messageBox: { borderRadius: 10, padding: 10, marginVertical: 4, maxWidth: '80%' },
-  userMessage: { backgroundColor: '#DCF8C6', alignSelf: 'flex-end' },
-  aiMessage: { backgroundColor: '#E2E2E2', alignSelf: 'flex-start' },
+  container: { flex: 1, padding: 10, height: 300 },
+  messageBox: {
+    borderRadius: 10,
+    padding: 10,
+    marginVertical: 4,
+    maxWidth: "80%",
+  },
+  userMessage: { backgroundColor: "#DCF8C6", alignSelf: "flex-end" },
+  aiMessage: { backgroundColor: "#E2E2E2", alignSelf: "flex-start" },
   messageText: { fontSize: 16 },
-  inputRow: { flexDirection: 'row', alignItems: 'center', marginTop: 10 },
+  inputRow: { flexDirection: "row", alignItems: "center", marginTop: 10 },
   input: {
     flex: 1,
-    borderColor: '#CCC',
+    borderColor: "#CCC",
     borderWidth: 1,
     borderRadius: 25,
     paddingHorizontal: 15,
     fontSize: 16,
     height: 40,
-    marginRight: 10
-  }
+    marginRight: 10,
+  },
 });

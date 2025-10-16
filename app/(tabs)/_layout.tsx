@@ -14,6 +14,8 @@ export default function TabLayout() {
   const pallet = usePallet();
   const theme = useTheme();
 
+  const user = useUser();
+  setUserId(user.user?.id || "");
 
   const { isSignedIn, isLoaded } = useAuth();
 
@@ -24,8 +26,7 @@ export default function TabLayout() {
   if (!isSignedIn) {
     return <Redirect href="/sign-in" />; // Redirect to sign-in screen
   }
-  const user = useUser();
-  setUserId(user.user?.id || "");
+
   console.log("User ID set to:", user.user?.id);
 
   return (
@@ -87,15 +88,12 @@ export default function TabLayout() {
           tabBarLabel: "Team",
         }}
       />
-      
 
-       <Tabs.Screen
+      <Tabs.Screen
         name="ai-chat"
         options={{
           title: "AI Chat",
-          tabBarIcon: ({ color }) => (
-             <Brain size={22} color={color} />
-          ),
+          tabBarIcon: ({ color }) => <Brain size={22} color={color} />,
           tabBarLabel: "AI Chat",
         }}
       />
@@ -110,7 +108,6 @@ export default function TabLayout() {
           tabBarLabel: "Tasks",
         }}
       />
-
 
       <Tabs.Screen
         name="settings"
@@ -127,7 +124,12 @@ export default function TabLayout() {
         options={{
           title: "Add",
           tabBarIcon: () => (
-            <Ionicons name="add" size={68} color="#fff" style={styles.addButtonCustom} />
+            <Ionicons
+              name="add"
+              size={68}
+              color="#fff"
+              style={styles.addButtonCustom}
+            />
           ),
           tabBarLabel: "",
         }}
