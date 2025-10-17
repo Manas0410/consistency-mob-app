@@ -1,11 +1,13 @@
 import { Icon } from "@/components/ui/icon";
 import { ScrollView } from "@/components/ui/scroll-view";
+import { Spinner } from "@/components/ui/spinner";
 import { usePallet } from "@/hooks/use-pallet";
 import { addHours, differenceInMinutes, format, parseISO } from "date-fns";
 import { ClockPlus, FileText, Flag } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { getTasksByDate } from "./API/getTasks";
+import StatusChangeCheckbox from "./components/status-change-checkbox";
 
 const MIN_GAP_MINUTES = 120;
 
@@ -78,6 +80,21 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
     if (i < sortedTasks.length) {
       timeline.push({ ...sortedTasks[i], isGap: false });
     }
+  }
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          height: "70%",
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Spinner variant="bars" size="default" color={pallet.shade1} />
+      </View>
+    );
   }
 
   return (
@@ -190,19 +207,7 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
               </View>
               {/* Status check pill */}
               <View style={styles.statusCol}>
-                <View
-                  style={[
-                    styles.statusCircle,
-                    {
-                      borderColor: item.isDone ? pallet.shade3 : pallet.shade1,
-                      backgroundColor: item.isDone
-                        ? pallet.shade3
-                        : "transparent",
-                    },
-                  ]}
-                >
-                  {item.isDone && <Text style={styles.checkText}>✓</Text>}
-                </View>
+                <StatusChangeCheckbox isChecked={item.isDone} />
               </View>
             </View>
           )
@@ -287,19 +292,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  statusCircle: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    borderWidth: 2,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  checkText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
+
   gapBlock: {
     alignItems: "flex-start",
     marginVertical: 16,

@@ -1,9 +1,9 @@
-import { Text } from '@/components/ui/text';
-import { useColor } from '@/hooks/useColor';
-import { BORDER_RADIUS, CORNERS, FONT_SIZE } from '@/theme/globals';
-import { Loader2 } from 'lucide-react-native';
-import React, { useEffect, useMemo } from 'react';
-import { ActivityIndicator, StyleSheet, View, ViewStyle } from 'react-native';
+import { Text } from "@/components/ui/text";
+import { useColor } from "@/hooks/useColor";
+import { BORDER_RADIUS, CORNERS, FONT_SIZE } from "@/theme/globals";
+import { Loader2 } from "lucide-react-native";
+import React, { useEffect, useMemo } from "react";
+import { ActivityIndicator, StyleSheet, View, ViewStyle } from "react-native";
 import Animated, {
   Easing,
   SharedValue,
@@ -13,11 +13,11 @@ import Animated, {
   withRepeat,
   withSequence,
   withTiming,
-} from 'react-native-reanimated';
+} from "react-native-reanimated";
 
 // Types
-type SpinnerSize = 'default' | 'sm' | 'lg' | 'icon';
-export type SpinnerVariant = 'default' | 'cirlce' | 'dots' | 'pulse' | 'bars';
+type SpinnerSize = "default" | "sm" | "lg" | "icon";
+export type SpinnerVariant = "default" | "circle" | "dots" | "pulse" | "bars";
 
 interface SpinnerProps {
   size?: SpinnerSize;
@@ -27,7 +27,7 @@ interface SpinnerProps {
   style?: ViewStyle;
   color?: string;
   thickness?: number; // Note: thickness is not used in the original component logic
-  speed?: 'slow' | 'normal' | 'fast';
+  speed?: "slow" | "normal" | "fast";
 }
 
 interface LoadingOverlayProps extends SpinnerProps {
@@ -111,13 +111,13 @@ const AnimatedBar = React.memo(
 
 // Main Spinner Component
 export function Spinner({
-  size = 'default',
-  variant = 'default',
+  size = "default",
+  variant = "default",
   label,
   showLabel = false,
   style,
   color,
-  speed = 'normal',
+  speed = "normal",
 }: SpinnerProps) {
   // Reanimated shared values
   const rotate = useSharedValue(0);
@@ -146,8 +146,8 @@ export function Spinner({
   // --- END FIX ---
 
   // Theme colors
-  const primaryColor = useColor('text');
-  const textColor = useColor('text');
+  const primaryColor = useColor({}, "text");
+  const textColor = useColor({}, "text");
 
   const config = sizeConfig[size];
   const spinnerColor = color || primaryColor;
@@ -155,7 +155,7 @@ export function Spinner({
 
   // Rotation animation
   useEffect(() => {
-    if (variant === 'cirlce') {
+    if (variant === "circle") {
       rotate.value = withRepeat(
         withTiming(360, { duration: animationDuration, easing: Easing.linear }),
         -1
@@ -167,7 +167,7 @@ export function Spinner({
 
   // Pulse animation
   useEffect(() => {
-    if (variant === 'pulse') {
+    if (variant === "pulse") {
       pulse.value = withRepeat(
         withSequence(
           withTiming(1.3, { duration: animationDuration / 2 }),
@@ -183,7 +183,7 @@ export function Spinner({
 
   // Dots animation
   useEffect(() => {
-    if (variant === 'dots') {
+    if (variant === "dots") {
       dotsAnims.forEach((anim, index) => {
         anim.value = withRepeat(
           withSequence(
@@ -203,7 +203,7 @@ export function Spinner({
 
   // Bars animation
   useEffect(() => {
-    if (variant === 'bars') {
+    if (variant === "bars") {
       barsAnims.forEach((anim, index) => {
         anim.value = withRepeat(
           withSequence(
@@ -232,7 +232,7 @@ export function Spinner({
 
   const renderSpinner = () => {
     switch (variant) {
-      case 'default':
+      case "default":
         return (
           <ActivityIndicator
             size={config.size}
@@ -241,7 +241,7 @@ export function Spinner({
           />
         );
 
-      case 'cirlce':
+      case "circle":
         return (
           <Animated.View
             style={[
@@ -254,7 +254,7 @@ export function Spinner({
           </Animated.View>
         );
 
-      case 'pulse':
+      case "pulse":
         return (
           <Animated.View
             style={[
@@ -269,7 +269,7 @@ export function Spinner({
           />
         );
 
-      case 'dots':
+      case "dots":
         return (
           <View style={[styles.dotsContainer, { gap: config.size / 4 }]}>
             {dotsAnims.map((anim, index) => (
@@ -284,7 +284,7 @@ export function Spinner({
           </View>
         );
 
-      case 'bars':
+      case "bars":
         return (
           <View style={[styles.barsContainer, { gap: config.size / 6 }]}>
             {barsAnims.map((anim, index) => (
@@ -305,8 +305,8 @@ export function Spinner({
   };
 
   const containerStyle: ViewStyle = {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     gap: config.gap,
   };
 
@@ -323,7 +323,7 @@ export function Spinner({
             },
           ]}
         >
-          {label || 'Loading...'}
+          {label || "Loading..."}
         </Text>
       )}
     </View>
@@ -339,8 +339,8 @@ export function LoadingOverlay({
   ...spinnerProps
 }: LoadingOverlayProps) {
   const opacity = useSharedValue(0);
-  const backgroundColor = useColor('background');
-  const cardColor = useColor('card');
+  const backgroundColor = useColor({}, "background");
+  const cardColor = useColor({}, "card");
 
   useEffect(() => {
     opacity.value = withTiming(visible ? 1 : 0, {
@@ -351,23 +351,23 @@ export function LoadingOverlay({
   const animatedOverlayStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,
     // Conditionally render to avoid interaction issues
-    display: opacity.value === 0 ? 'none' : 'flex',
+    display: opacity.value === 0 ? "none" : "flex",
   }));
 
   const defaultBackdropColor =
     backdropColor ||
     `${backgroundColor}${Math.round(backdropOpacity * 255)
       .toString(16)
-      .padStart(2, '0')}`;
+      .padStart(2, "0")}`;
 
   return (
     <Animated.View
       style={[
         styles.overlay,
-        { backgroundColor: backdrop ? defaultBackdropColor : 'transparent' },
+        { backgroundColor: backdrop ? defaultBackdropColor : "transparent" },
         animatedOverlayStyle,
       ]}
-      pointerEvents={visible ? 'auto' : 'none'}
+      pointerEvents={visible ? "auto" : "none"}
     >
       <View style={[styles.overlayContent, { backgroundColor: cardColor }]}>
         <Spinner {...spinnerProps} />
@@ -378,10 +378,10 @@ export function LoadingOverlay({
 
 // Inline Loader Component (for buttons, etc.)
 export function InlineLoader({
-  size = 'sm',
-  variant = 'default',
+  size = "sm",
+  variant = "default",
   color,
-}: Omit<SpinnerProps, 'label' | 'showLabel'>) {
+}: Omit<SpinnerProps, "label" | "showLabel">) {
   return (
     <Spinner
       size={size}
@@ -394,11 +394,11 @@ export function InlineLoader({
 
 // Button Spinner Component - optimized for button usage
 export function ButtonSpinner({
-  size = 'sm',
-  variant = 'default',
+  size = "sm",
+  variant = "default",
   color,
-}: Omit<SpinnerProps, 'label' | 'showLabel'>) {
-  const primaryForegroundColor = useColor('primaryForeground');
+}: Omit<SpinnerProps, "label" | "showLabel">) {
+  const primaryForegroundColor = useColor({}, "primaryForeground");
 
   return (
     <Spinner
@@ -412,39 +412,39 @@ export function ButtonSpinner({
 
 const styles = StyleSheet.create({
   spinner: {
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   customSpinner: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   pulseSpinner: {
     borderRadius: 999,
   },
   dotsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   dot: {
     borderRadius: 999,
   },
   barsContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   bar: {
     borderRadius: CORNERS,
   },
   label: {
-    textAlign: 'center',
-    fontWeight: '500',
+    textAlign: "center",
+    fontWeight: "500",
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     zIndex: 9999,
   },
   overlayContent: {
