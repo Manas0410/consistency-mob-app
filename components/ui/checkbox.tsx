@@ -14,6 +14,7 @@ interface CheckboxProps {
   labelStyle?: TextStyle;
   onCheckedChange: (checked: boolean) => void;
   styles?: React.CSSProperties;
+  isRectangle?: boolean;
 }
 
 export function Checkbox({
@@ -24,6 +25,7 @@ export function Checkbox({
   labelStyle,
   onCheckedChange,
   styles,
+  isRectangle = false,
 }: CheckboxProps) {
   const primary = useColor({}, "primary");
   const primaryForegroundColor = useColor({}, "primaryForeground");
@@ -45,7 +47,7 @@ export function Checkbox({
         style={{
           width: BORDER_RADIUS,
           height: BORDER_RADIUS,
-          borderRadius: BORDER_RADIUS,
+          borderRadius: isRectangle ? 8 : BORDER_RADIUS,
           borderWidth: 1.5,
           borderColor: checked ? styles?.borderColor ?? primary : borderColor,
           backgroundColor: checked

@@ -10,7 +10,7 @@ export function setUserId(id) {
 
 const apicall = axios.create({
   baseURL,
-  timeout: 15000,
+  timeout: 1500000,
   headers: {
     "Content-Type": "application/json",
   },

@@ -1,136 +1,216 @@
-// @ts-nocheck
+// // @ts-nocheck
 
-import React, { useEffect, useState } from 'react';
-import { FlatList, ScrollView, StyleSheet, Text, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { AvoidKeyboard } from "@/components/ui/avoid-keyboard";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Icon } from "@/components/ui/icon";
+import { Input } from "@/components/ui/input";
+import { ScrollView } from "@/components/ui/scroll-view";
+import { Spinner } from "@/components/ui/spinner";
+import { Text } from "@/components/ui/text";
+import { View } from "@/components/ui/view";
+import { useColor } from "@/hooks/useColor";
+import { Lightbulb, Plus, SendHorizonal, X } from "lucide-react-native";
+import { useState } from "react";
+import { Pressable } from "react-native";
+import { createTaskPlan } from "./APi/api-calls";
+import { PlanTaskCard } from "./components/plan-task-card";
 
-const dummyPlannerData = {
-  userId: 'user123',
-  message: 'I want to improve my fitness this week.',
-  planTasks: [
-    {
-      title: 'Morning Jog',
-      subTitle: 'Jog for 30 minutes around park',
-      taskDate: '02-10-2025',
-      startTime: '06:00',
-      endTime: '06:30',
-      isDone: false,
-      isHabbit: false
-    },
-    {
-      title: 'Evening Yoga',
-      subTitle: 'Relaxing yoga session for stress relief',
-      taskDate: '02-10-2025',
-      startTime: '18:00',
-      endTime: '18:45',
-      isDone: false,
-      isHabbit: true
-    },
-    // Add more tasks...
-  ],
-  createdAt: new Date('2025-10-01T09:00:00Z')
-};
+const sampplePrompts = [
+  "Plan a weekly workout routine for a beginner.",
+  "I want to travel to New York City Next Week for 5 days. Create an itinerary.",
+  " I have a assignment of creating an landing page with 5 sections in 3 days and i can only spend 2 hours daily. Create a plan for me.",
+];
 
-const TaskCard = ({ task }) => (
-  <View style={styles.taskCard}>
-    <Text style={styles.taskTitle}>{task.title}</Text>
-    <Text style={styles.taskSubtitle}>{task.subTitle}</Text>
-    <View style={styles.taskTimeRow}>
-      <Text style={styles.taskTime}>{task.taskDate}</Text>
-      <Text style={styles.taskTime}>
-        {task.startTime} - {task.endTime}
-      </Text>
-    </View>
-    <Text style={{color: task.isDone ? 'green' : 'red'}}>
-      {task.isDone ? 'Completed' : 'Pending'}
-    </Text>
-    <Text style={styles.habitLabel}>
-      {task.isHabbit ? 'Habit' : ''}
-    </Text>
-  </View>
-);
+const PlanningChat = () => {
+  const [message, setMessage] = useState();
+  const [summary, setSummary] = useState();
+  const [plan, setPlan] = useState([]);
+  const [inputText, setInputText] = useState("");
+  const [fetchingResponse, setFetchingResponse] = useState(false);
+  const [showSamplePrompts, setShowSamplePrompts] = useState(true);
 
-const PlannningChat = () => {
-  const [plannerData, setPlannerData] = useState(null);
+  const card = useColor({}, "card");
+  const blue = useColor({}, "blue");
 
-  useEffect(() => {
-    // In real scenario fetch this data from API
-    setPlannerData(dummyPlannerData);
-  }, []);
+  const sendMessage = async () => {
+    if (inputText.trim()) {
+      try {
+        setInputText("");
+        setMessage(inputText.trim());
+        setFetchingResponse(true);
+        const res = await createTaskPlan({ taskDescription: inputText.trim() });
+        if (res.success) {
+          setSummary(res.data.summary ?? "");
+          setPlan(res.data.planTasks ?? []);
+        }
+      } catch (error) {
+        console.error("Error sending message:", error);
+      } finally {
+        setFetchingResponse(false);
+      }
+      setInputText("");
+    }
+  };
 
-  if (!plannerData) return null;
-
-  return (
-    <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.messageContainer}>
-          <Text style={styles.userMessage}>{plannerData.message}</Text>
+  const RenderMessage = ({ text, isMessage }: any) => (
+    <View>
+      <View
+        style={{
+          marginBottom: 12,
+          alignItems: isMessage ? "flex-end" : "flex-start",
+        }}
+      >
+        <View
+          style={{
+            maxWidth: "80%",
+            padding: 12,
+            borderRadius: 16,
+            backgroundColor: isMessage ? "#F2F2F7" : blue,
+          }}
+        >
+          <Text
+            style={{
+              color: isMessage ? "#000" : "white",
+              fontSize: 16,
+            }}
+          >
+            {text}
+          </Text>
+          {/* <Text
+          style={{
+            color: isMessage ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.7)",
+            fontSize: 12,
+            marginTop: 4,
+          }}
+        >
+          {format(parseISO(item.createdAt), "d MMMM hh:mmaaa")}
+        </Text> */}
         </View>
-        <FlatList
-          data={plannerData.planTasks}
-          keyExtractor={(item, index) => index.toString()}
-          renderItem={({ item }) => <TaskCard task={item} />}
-          contentContainerStyle={{ paddingBottom: 16 }}
-          scrollEnabled={false} // So ScrollView manages scrolling
-        />
+      </View>
+    </View>
+  );
+  return (
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      {/* Message List */}
+      <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
+        {message && <RenderMessage text={message} isMessage={true} />}
+        {fetchingResponse ? (
+          <View
+            style={{
+              alignItems: "center",
+              marginTop: 20,
+              flexDirection: "row",
+              gap: 8,
+              justifyContent: "center",
+            }}
+          >
+            <Spinner variant="pulse" color={blue} />
+            <Text style={{ color: blue }}>Generating plan ...</Text>
+          </View>
+        ) : (
+          <>
+            {summary && <RenderMessage text={summary} isMessage={false} />}
+            {plan.map((task, index) => (
+              <View
+                key={`${task.taskName}-${index}`}
+                style={{
+                  flexDirection: "row",
+                  alignItems: "flex-start",
+                  gap: 8,
+                  marginBottom: 8,
+                }}
+              >
+                <View style={{ marginTop: 10 }}>
+                  <Checkbox
+                    isRectangle
+                    checked={false}
+                    onCheckedChange={() => {}}
+                    styles={{}}
+                  />
+                </View>
+                <PlanTaskCard task={task} open={index === 0} />
+              </View>
+            ))}
+          </>
+        )}
+        {plan.length > 0 && (
+          <Button icon={Plus} variant="secondary">
+            Add tasks to calendar
+          </Button>
+        )}
       </ScrollView>
-    </SafeAreaView>
+
+      {/* Sample Prompts */}
+      {showSamplePrompts && (
+        <View
+          style={{
+            paddingVertical: 12,
+            paddingHorizontal: 16,
+          }}
+        >
+          <Icon
+            onPress={() => {
+              setShowSamplePrompts(false);
+            }}
+            name={X}
+            size={25}
+            style={{ marginLeft: "auto" }}
+          />
+          {sampplePrompts.map((prompt, index) => (
+            <Pressable
+              // variant="ghost"
+              key={index}
+              onPress={() => setInputText(prompt)}
+              style={{
+                padding: 12,
+                borderBottomWidth: 1,
+                borderBottomColor: "#eee",
+                flexDirection: "row",
+                gap: 8,
+              }}
+            >
+              <Icon name={Lightbulb} size={16} color="#000" />
+              <Text style={{ color: "#000", fontSize: 13 }}>{prompt}</Text>
+            </Pressable>
+          ))}
+        </View>
+      )}
+
+      {/* Input Area */}
+
+      <View
+        style={{
+          flexDirection: "row",
+          padding: 16,
+          gap: 12,
+          backgroundColor: card,
+        }}
+      >
+        <View style={{ flex: 1 }}>
+          <Input
+            value={inputText}
+            onChangeText={setInputText}
+            placeholder="Type a message..."
+            variant="outline"
+            onSubmitEditing={sendMessage}
+            returnKeyType="send"
+            disabled={fetchingResponse}
+          />
+        </View>
+        <Button
+          onPress={sendMessage || fetchingResponse}
+          variant={inputText.trim() ? "success" : "outline"}
+          size="icon"
+        >
+          <SendHorizonal size={20} color="white" />
+        </Button>
+      </View>
+
+      {/* Keyboard avoidance with extra space for better UX */}
+      <AvoidKeyboard />
+    </View>
   );
 };
 
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f9f9f9' },
-  scrollContent: { padding: 16 },
-
-  messageContainer: {
-    marginBottom: 20,
-    alignSelf: 'flex-start',
-    backgroundColor: '#e1f5fe',
-    padding: 12,
-    borderRadius: 16,
-    maxWidth: '80%',
-  },
-  userMessage: {
-    fontSize: 16,
-    color: '#374151',
-  },
-
-  taskCard: {
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 12,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  taskTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-    color: '#111827',
-  },
-  taskSubtitle: {
-    fontSize: 14,
-    marginBottom: 8,
-    color: '#6b7280',
-  },
-  taskTimeRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 6,
-  },
-  taskTime: {
-    fontSize: 12,
-    color: '#9ca3af',
-  },
-  habitLabel: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#10b981',
-    marginTop: 4,
-  },
-});
-
-export default PlannningChat;
+export default PlanningChat;
