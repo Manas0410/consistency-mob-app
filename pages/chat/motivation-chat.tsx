@@ -1,121 +1,4 @@
-// import React, { useEffect, useState } from "react";
-// import {
-//   Button,
-//   FlatList,
-//   StyleSheet,
-//   Text,
-//   TextInput,
-//   View,
-// } from "react-native";
-// import {
-//   getMotivationChatHistory,
-//   handleMotivationChat,
-// } from "./APi/api-calls"; // Adjust import path
-
-// export default function MotivationChatPage() {
-//   const [messages, setMessages] = useState([]);
-//   const [input, setInput] = useState("");
-//   const [loading, setLoading] = useState(false);
-
-//   // Load last 20 chats on mount
-//   useEffect(() => {
-//     const fetchChats = async () => {
-//       setLoading(true);
-//       const res = await getMotivationChatHistory({ pageNo: 1, pageSize: 20 });
-//       if (res.success) {
-//         setMessages(res.data.chats.reverse()); // Show oldest first
-//       }
-//       setLoading(false);
-//     };
-//     fetchChats();
-//   }, []);
-
-//   // Send user message, get AI response, save both to chat and display
-//   const sendMessage = async () => {
-//     if (!input.trim()) return;
-
-//     setLoading(true);
-
-//     const res = await handleMotivationChat({ message: input });
-//     if (res.success) {
-//       // Add user message and AI message into chat
-//       setMessages((prev) => [
-//         ...prev,
-//         { id: `user-${Date.now()}`, message: input, fromUser: true },
-//         {
-//           id: `ai-${Date.now()}`,
-//           message: res.data.aiResponse,
-//           fromUser: false,
-//         },
-//       ]);
-//       setInput("");
-//     } else {
-//       // Handle error, you may show feedback here
-//       alert("Failed to send message");
-//     }
-
-//     setLoading(false);
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <FlatList
-//         data={messages}
-//         keyExtractor={(item) => item.id}
-//         renderItem={({ item }) => (
-//           <View
-//             style={[
-//               styles.messageBox,
-//               item.fromUser ? styles.userMessage : styles.aiMessage,
-//             ]}
-//           >
-//             <Text style={styles.messageText}>{item.message}</Text>
-//           </View>
-//         )}
-//         inverted // Latest messages at bottom
-//       />
-
-//       <View style={styles.inputRow}>
-//         <TextInput
-//           value={input}
-//           onChangeText={setInput}
-//           style={styles.input}
-//           placeholder="Type your message"
-//           editable={!loading}
-//         />
-//         <Button
-//           title={loading ? "Sending..." : "Send"}
-//           onPress={sendMessage}
-//           disabled={loading}
-//         />
-//       </View>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, padding: 10 },
-//   messageBox: {
-//     borderRadius: 10,
-//     padding: 10,
-//     marginVertical: 4,
-//     maxWidth: "80%",
-//   },
-//   userMessage: { backgroundColor: "#DCF8C6", alignSelf: "flex-end" },
-//   aiMessage: { backgroundColor: "#E2E2E2", alignSelf: "flex-start" },
-//   messageText: { fontSize: 16 },
-//   inputRow: { flexDirection: "row", alignItems: "center", marginTop: 10 },
-//   input: {
-//     flex: 1,
-//     borderColor: "#CCC",
-//     borderWidth: 1,
-//     borderRadius: 25,
-//     paddingHorizontal: 15,
-//     fontSize: 16,
-//     height: 40,
-//     marginRight: 10,
-//   },
-// });
+// @ts-nocheck
 
 import { AvoidKeyboard } from "@/components/ui/avoid-keyboard";
 import { Button } from "@/components/ui/button";
@@ -125,6 +8,7 @@ import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
 import { usePallet } from "@/hooks/use-pallet";
 import { useColor } from "@/hooks/useColor";
+import { format, parseISO } from "date-fns";
 import { SendHorizonal } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { FlatList } from "react-native";
@@ -155,7 +39,7 @@ export function MotivationChatPage() {
       setLoading(true);
       const res = await getMotivationChatHistory({ pageNo: 1, pageSize: 10 });
       if (res.success) {
-        setMessages(res); // Show oldest first
+        setMessages(res.data); // Show oldest first
       }
     } catch (error) {
       console.error("Error fetching chat history:", error);
@@ -171,13 +55,34 @@ export function MotivationChatPage() {
   const sendMessage = async () => {
     if (inputText.trim()) {
       try {
+        setInputText("");
+        setMessages((prevMessages) => [
+          {
+            _id: Math.random().toString(36).substring(7), // Temporary ID
+            message: inputText.trim(),
+            isUser: true,
+            createdAt: new Date().toISOString(),
+          },
+          ...prevMessages,
+        ]);
         setSendingMessage(true);
         const res = await handleMotivationChat({ message: inputText.trim() });
+        if (res.success) {
+          setSendingMessage(false);
+          setMessages((prevMessages) => [
+            {
+              _id: Math.random().toString(36).substring(7), // Temporary ID
+              message: res.data,
+              isUser: false,
+              createdAt: new Date().toISOString(),
+            },
+            ...prevMessages,
+          ]);
+        }
       } catch (error) {
         console.error("Error sending message:", error);
       } finally {
         setSendingMessage(false);
-        setInputText("");
       }
     }
   };
@@ -195,12 +100,12 @@ export function MotivationChatPage() {
             maxWidth: "80%",
             padding: 12,
             borderRadius: 16,
-            backgroundColor: item.isUser ? blue : "#F2F2F7",
+            backgroundColor: item.isUser ? "#F2F2F7" : blue,
           }}
         >
           <Text
             style={{
-              color: item.isUser ? "white" : "#000",
+              color: item.isUser ? "#000" : "white",
               fontSize: 16,
             }}
           >
@@ -208,15 +113,12 @@ export function MotivationChatPage() {
           </Text>
           <Text
             style={{
-              color: item.isUser ? "rgba(255,255,255,0.7)" : "rgba(0,0,0,0.5)",
+              color: item.isUser ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.7)",
               fontSize: 12,
               marginTop: 4,
             }}
           >
-            {item.timestamp.toLocaleTimeString([], {
-              hour: "2-digit",
-              minute: "2-digit",
-            })}
+            {format(parseISO(item.createdAt), "d MMMM hh:mmaaa")}
           </Text>
         </View>
       </View>
@@ -224,7 +126,7 @@ export function MotivationChatPage() {
   );
 
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
       {/* Header */}
       {/* Messages */}
       {loading ? (
@@ -240,6 +142,7 @@ export function MotivationChatPage() {
         </View>
       ) : (
         <FlatList
+          inverted
           data={messages}
           renderItem={renderMessage}
           keyExtractor={(item) => item._id}
@@ -247,6 +150,21 @@ export function MotivationChatPage() {
           contentContainerStyle={{ padding: 16 }}
           showsVerticalScrollIndicator={false}
         />
+      )}
+
+      {sendingMessage && (
+        <View
+          style={{
+            backgroundColor: blue,
+            width: 70,
+            paddingVertical: 20,
+            borderRadius: 35,
+            marginLeft: 20,
+            marginBottom: 10,
+          }}
+        >
+          <Spinner variant="dots" size="default" color={"#fff"} />
+        </View>
       )}
 
       {/* Input Area */}
