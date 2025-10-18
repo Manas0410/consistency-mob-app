@@ -23,8 +23,8 @@ const sampplePrompts = [
 ];
 
 const PlanningChat = () => {
-  const [message, setMessage] = useState();
-  const [summary, setSummary] = useState();
+  const [message, setMessage] = useState("");
+  const [summary, setSummary] = useState("");
   const [plan, setPlan] = useState([]);
   const [inputText, setInputText] = useState("");
   const [fetchingResponse, setFetchingResponse] = useState(false);
@@ -142,7 +142,7 @@ const PlanningChat = () => {
       </ScrollView>
 
       {/* Sample Prompts */}
-      {showSamplePrompts && (
+      {showSamplePrompts && !message && (
         <View
           style={{
             paddingVertical: 12,
