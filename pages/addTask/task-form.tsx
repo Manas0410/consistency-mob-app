@@ -1,7 +1,8 @@
+import { BottomSheet, useBottomSheet } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
-import { ComboboxMultiple } from "@/components/ui/combobox-multiple";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
+import { Picker } from "@/components/ui/picker";
 import PriorityBadge from "@/components/ui/priority-badge";
 import { Text } from "@/components/ui/text";
 import { TaskData } from "@/constants/types";
@@ -51,84 +52,95 @@ export default function TaForm() {
     }
   };
 
+  const { isVisible, open, close } = useBottomSheet();
   return (
-    <View style={styles.container}>
-      <Input
-        label="Task"
-        placeholder="Enter task name"
-        icon={LayoutList}
-        value={task.taskName}
-        onChangeText={(text) => handleChange("taskName", text)}
-      />
-      <Input
-        label="Sub Title"
-        placeholder="Sub title"
-        icon={ScrollText}
-        value={task.taskDescription}
-        onChangeText={(text) => handleChange("taskDescription", text)}
-      />
-      <Text variant="caption">Duration</Text>
-      <View style={styles.row}>
+    <BottomSheet
+      style={{ backgroundColor: "#fff" }}
+      isVisible={true}
+      onClose={close}
+      snapPoints={[0.5, 0.9, 0.5]}
+    >
+      <View style={styles.container}>
         <Input
-          label="Hours"
-          placeholder=""
-          icon={Clock}
-          keyboardType="numeric"
-          value={String(task.duration.hours)}
-          onChangeText={(text) =>
-            handleChange("duration", { ...task.duration, hours: Number(text) })
-          }
+          label="Task"
+          placeholder="Enter task name"
+          icon={LayoutList}
+          value={task.taskName}
+          onChangeText={(text) => handleChange("taskName", text)}
         />
         <Input
-          label="Minutes"
-          placeholder=""
-          icon={Clock}
-          keyboardType="numeric"
-          value={String(task.duration.minutes)}
-          onChangeText={(text) =>
-            handleChange("duration", {
-              ...task.duration,
-              minutes: Number(text),
-            })
-          }
+          label="Sub Title"
+          placeholder="Sub title"
+          icon={ScrollText}
+          value={task.taskDescription}
+          onChangeText={(text) => handleChange("taskDescription", text)}
         />
-      </View>
-      <View style={styles.row}>
-        <DatePicker
-          label="Date & Time"
-          mode="datetime"
-          value={task.TaskStartDateTime}
-          onChange={(date) => handleChange("TaskStartDateTime", date)}
-          placeholder="Select date and time"
-          timeFormat="12"
+        <Text variant="caption">Duration</Text>
+        <View style={styles.row}>
+          <Input
+            label="Hours"
+            placeholder=""
+            icon={Clock}
+            keyboardType="numeric"
+            value={String(task.duration.hours)}
+            onChangeText={(text) =>
+              handleChange("duration", {
+                ...task.duration,
+                hours: Number(text),
+              })
+            }
+          />
+          <Input
+            label="Minutes"
+            placeholder=""
+            icon={Clock}
+            keyboardType="numeric"
+            value={String(task.duration.minutes)}
+            onChangeText={(text) =>
+              handleChange("duration", {
+                ...task.duration,
+                minutes: Number(text),
+              })
+            }
+          />
+        </View>
+        <View style={styles.row}>
+          <DatePicker
+            label="Date & Time"
+            mode="datetime"
+            value={task.TaskStartDateTime}
+            onChange={(date) => handleChange("TaskStartDateTime", date)}
+            placeholder="Select date and time"
+            timeFormat="12"
+          />
+        </View>
+        <Picker
+          value={task.frequency}
+          // @ts-ignore
+          options={options}
+          onChange={(val) => handleChange("frequency", val)}
         />
-      </View>
-      <ComboboxMultiple
-        value={task.frequency}
-        // @ts-ignore
-        options={options}
-        onChange={(val) => handleChange("frequency", val)}
-      />
-      <Text variant="caption">Priority</Text>
-      <PriorityBadge
-        value={task.priority}
-        onChange={(val) => handleChange("priority", val)}
-      />
+        <Text variant="caption">Priority</Text>
+        <PriorityBadge
+          value={task.priority}
+          onChange={(val) => handleChange("priority", val)}
+        />
 
-      <Button
-        icon={Plus}
-        loading={loading}
-        variant="default"
-        onPress={onSubmit}
-      >
-        Submit
-      </Button>
-      {successMessage !== "" && (
-        <Text style={{ color: "green", marginTop: 10, textAlign: "center" }}>
-          {successMessage}
-        </Text>
-      )}
-    </View>
+        <Button
+          icon={Plus}
+          loading={loading}
+          variant="default"
+          onPress={onSubmit}
+        >
+          Submit
+        </Button>
+        {successMessage !== "" && (
+          <Text style={{ color: "green", marginTop: 10, textAlign: "center" }}>
+            {successMessage}
+          </Text>
+        )}
+      </View>
+    </BottomSheet>
   );
 }
 
@@ -136,8 +148,8 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#fff",
     borderRadius: 16,
-    padding: 16,
-    margin: 16,
+    // padding: 16,
+    // margin: 16,
     shadowColor: "#000",
     shadowOpacity: 0.04,
     shadowRadius: 8,

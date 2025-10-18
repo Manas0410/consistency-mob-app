@@ -135,7 +135,7 @@ const PlanningChat = () => {
           </>
         )}
         {plan.length > 0 && (
-          <Button icon={Plus} variant="secondary">
+          <Button icon={Plus} variant="secondary" style={{ marginBottom: 26 }}>
             Add tasks to calendar
           </Button>
         )}
