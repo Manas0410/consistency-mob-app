@@ -182,9 +182,11 @@ const PlanningChat = () => {
       <View
         style={{
           flexDirection: "row",
-          padding: 16,
+          paddingHorizontal: 16,
           gap: 12,
           backgroundColor: card,
+          paddingBottom: 90,
+          paddingTop: 16,
         }}
       >
         <View style={{ flex: 1 }}>

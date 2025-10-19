@@ -52,11 +52,12 @@ export default function TaForm() {
     }
   };
 
-  const { isVisible, open, close } = useBottomSheet();
+  const { close, isVisible } = useBottomSheet();
+
   return (
     <BottomSheet
       style={{ backgroundColor: "#fff" }}
-      isVisible={true}
+      isVisible={isVisible}
       onClose={close}
       snapPoints={[0.5, 0.9, 0.5]}
     >
@@ -115,10 +116,12 @@ export default function TaForm() {
           />
         </View>
         <Picker
-          value={task.frequency}
+          label="Select Frequency"
+          multiple
+          values={task.frequency}
           // @ts-ignore
           options={options}
-          onChange={(val) => handleChange("frequency", val)}
+          onValuesChange={(val) => handleChange("frequency", val)}
         />
         <Text variant="caption">Priority</Text>
         <PriorityBadge
