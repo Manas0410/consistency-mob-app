@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
 import { View } from "@/components/ui/view";
 import { usePallet } from "@/hooks/use-pallet";
+import { useRouter } from "expo-router";
 import { ClipboardList, MoveRight, Package, Users } from "lucide-react-native";
 import React from "react";
 import { Text } from "./text";
@@ -15,6 +16,7 @@ type Props = {
 
 export function TeamCard({ teamName, noOfMembers, noOfTasks }: Props) {
   const pallet = usePallet();
+  const router = useRouter();
 
   return (
     <Card
@@ -67,6 +69,7 @@ export function TeamCard({ teamName, noOfMembers, noOfTasks }: Props) {
         style={{ width: "100%", height: 40 }}
         variant="secondary"
         icon={MoveRight}
+        onPress={() => router.push(`/TeamDetails`)}
       >
         View tasks
       </Button>
