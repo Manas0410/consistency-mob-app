@@ -5,8 +5,10 @@ import { Input } from "@/components/ui/input";
 import { Picker } from "@/components/ui/picker";
 import PriorityBadge from "@/components/ui/priority-badge";
 import { Text } from "@/components/ui/text";
+import { useToast } from "@/components/ui/toast";
 import { TaskData } from "@/constants/types";
 import { usePallet } from "@/hooks/use-pallet";
+import { addMinutes } from "date-fns";
 import { LayoutList, Plus, ScrollText } from "lucide-react-native";
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
@@ -25,11 +27,10 @@ const options = [
 ];
 
 export default function TaskForm() {
-  const [successMessage, setSuccessMessage] = useState("");
   const [task, setTask] = useState<TaskData>({
     taskName: "",
     taskDescription: "",
-    TaskStartDateTime: new Date(),
+    TaskStartDateTime: addMinutes(new Date(), 15),
     duration: { hours: 0, minutes: 30 },
     priority: 0,
     frequency: [0],
@@ -43,6 +44,7 @@ export default function TaskForm() {
   };
 
   const [loading, setLoading] = useState(false);
+  const { success, error, warning, info } = useToast();
 
   const onSubmit = async () => {
     if (task.taskName.trim() === "") {
@@ -51,10 +53,23 @@ export default function TaskForm() {
     }
     try {
       setLoading(true);
-      await addTask(task);
-      setSuccessMessage("Task added successfully!");
-      setTimeout(() => setSuccessMessage(""), 3000);
+      const response = await addTask(task);
+      if (response.success) {
+        success("Task added successfully!");
+        setTask({
+          taskName: "",
+          taskDescription: "",
+          TaskStartDateTime: addMinutes(new Date(), 15),
+          duration: { hours: 0, minutes: 30 },
+          priority: 0,
+          frequency: [0],
+        });
+      } else {
+        error("Failed to add task.");
+      }
     } catch (err) {
+      console.log(err);
+      error("Failed to add task.");
     } finally {
       setLoading(false);
     }
@@ -67,7 +82,7 @@ export default function TaskForm() {
   return (
     <BottomSheet
       style={{ backgroundColor: "#fff" }}
-      isVisible={true}
+      isVisible={false}
       onClose={close}
       snapPoints={[0.55, 0.9, 0.5]}
     >

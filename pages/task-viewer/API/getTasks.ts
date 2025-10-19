@@ -76,8 +76,8 @@ export const getTasksByDate = async (date: any) => {
 
     return {
       success: true,
-      // data: response.data.tasks, // assuming your API returns { tasks: [...] }
-      data: tasks,
+      data: response.data.tasks, // assuming your API returns { tasks: [...] }
+      // data: tasks,
     };
   } catch (error) {
     console.error("Error fetching tasks:", error);
