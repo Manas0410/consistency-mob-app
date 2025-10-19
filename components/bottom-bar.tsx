@@ -4,10 +4,14 @@ import { usePathname, useRouter } from "expo-router";
 import {
   Brain,
   Calendar,
+  ChevronUp,
   Home,
+  PackagePlus,
   Plus,
   Settings,
+  UserPlus,
   Users,
+  X,
 } from "lucide-react-native";
 import React from "react";
 import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
@@ -15,9 +19,9 @@ import { useSafeAreaInsets } from "react-native-safe-area-context"; // <-- Add t
 
 const bottomBarOptions = [
   { name: "Home", icon: Home, url: "/" },
-  { name: "Team", icon: Users, url: "/team" },
-  { name: "AI Chat", icon: Brain, url: "/ai-chat" },
   { name: "Tasks", icon: Calendar, url: "/calendar" },
+  { name: "AI Chat", icon: Brain, url: "/ai-chat" },
+  { name: "Team", icon: Users, url: "/team" },
   { name: "Settings", icon: Settings, url: "/settings" },
 ];
 
@@ -27,6 +31,9 @@ const BottomBar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const pallet = usePallet();
+
+  const [isTeamsButtonExpanded, setIsTeamsButtonExpanded] =
+    React.useState(false);
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
@@ -47,14 +54,55 @@ const BottomBar = () => {
           </TouchableOpacity>
         ))}
       </View>
-      <TouchableOpacity
-        style={styles.addButton}
-        onPress={() => {
-          /* handle '+' action */
-        }}
-      >
-        <Plus color="white" size={36} />
-      </TouchableOpacity>
+      {!["/team"].includes(pathname) && (
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => {
+            /* handle '+' action */
+          }}
+        >
+          <Plus color="white" size={36} />
+        </TouchableOpacity>
+      )}
+      {["/team"].includes(pathname) && (
+        <>
+          {isTeamsButtonExpanded ? (
+            <View style={styles.buttonCnt}>
+              <TouchableOpacity
+                style={styles.BtnCntCross}
+                onPress={() => {
+                  setIsTeamsButtonExpanded(false);
+                }}
+              >
+                <X size={24} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.BtnCntBtn}
+                onPress={() => {
+                  /* handle '+' action */
+                }}
+              >
+                <PackagePlus color="white" size={36} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.BtnCntBtn}
+                onPress={() => {
+                  /* handle '+' action */
+                }}
+              >
+                <UserPlus color="white" size={34} />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View
+              style={styles.addButton}
+              onTouchEnd={() => setIsTeamsButtonExpanded(true)}
+            >
+              <ChevronUp />
+            </View>
+          )}
+        </>
+      )}
     </View>
   );
 };
@@ -78,8 +126,8 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 5,
     backgroundColor: "#fff",
-    borderTopLeftRadius: 23,
-    borderTopRightRadius: 23,
+    // borderTopLeftRadius: 23,
+    // borderTopRightRadius: 23,
   },
   bar: {
     flexDirection: "row",
@@ -110,6 +158,39 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  buttonCnt: {
+    position: "absolute",
+    right: 22,
+    bottom: BAR_HEIGHT + 48,
+    gap: 16,
+    alignItems: "center",
+  },
+  BtnCntBtn: {
+    backgroundColor: "#23A8FF",
+    width: ADD_BUTTON_SIZE,
+    height: ADD_BUTTON_SIZE,
+    borderRadius: ADD_BUTTON_SIZE / 2,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+  },
+  BtnCntCross: {
+    backgroundColor: "#c6c4c4ff",
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    justifyContent: "center",
+    alignItems: "center",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
     shadowRadius: 4,
   },
 });

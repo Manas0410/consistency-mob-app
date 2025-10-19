@@ -10,7 +10,12 @@ const Team = () => {
   const [rerender, toggleRerender] = useState<boolean>(false);
 
   return (
-    <View style={{ flex: 1 }}>
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: "#fff",
+      }}
+    >
       <TeamsListing open={open} rerender={rerender} />
       <AddTeam
         isVisible={isVisible}

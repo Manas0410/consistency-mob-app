@@ -17,7 +17,12 @@ export function TeamCard({ teamName, noOfMembers, noOfTasks }: Props) {
   const pallet = usePallet();
 
   return (
-    <Card style={{ width: "100%", paddingBottom: 10 }}>
+    <Card
+      style={{
+        width: "100%",
+        paddingBottom: 10,
+      }}
+    >
       <CardHeader>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
           <View

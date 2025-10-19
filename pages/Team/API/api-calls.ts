@@ -29,10 +29,16 @@ export interface Team {
 
 // 1. Create Team
 export const createTeam = async (
-  teamName: string
+  teamName: string,
+  userName: string,
+  mail: string
 ): Promise<{ success: boolean; data: any }> => {
   try {
-    const response = await apicall.post("/team/create-team", { teamName });
+    const response = await apicall.post("/team/create-team", {
+      teamName,
+      userName,
+      mail,
+    });
     if (response.status !== 201)
       throw new Error(`Failed to create team: ${response.statusText}`);
     return { success: true, data: response.data };

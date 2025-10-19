@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { useToast } from "@/components/ui/toast";
 import { View } from "@/components/ui/view";
+import { useUser } from "@clerk/clerk-expo";
 import { Plus, Users } from "lucide-react-native";
 import React from "react";
 import { createTeam } from "../API/api-calls";
@@ -21,12 +22,13 @@ export function AddTeam({
   const [teamName, setTeamName] = React.useState("");
 
   const { success, error, warning, info } = useToast();
+  const { user } = useUser();
 
   const handleTeamCreate = async () => {
     try {
       if (!teamName) return;
       setLoading(true);
-      let res = await createTeam(teamName);
+      let res = await createTeam(teamName, user?.username, user?.email);
       if (res.success) {
         success("Team Created", "Team created successfully");
         setTeamName("");
@@ -52,11 +54,13 @@ export function AddTeam({
         <View style={{ gap: 16 }}>
           <Text variant="title">Create new team</Text>
           <Input
+            variant="outline"
             label={"Team Name"}
             placeholder={"Enter Team Name"}
             icon={Users}
             value={teamName}
             onChangeText={setTeamName}
+            labelStyle={{ fontSize: 13 }}
           />
           <Button
             loading={loading}

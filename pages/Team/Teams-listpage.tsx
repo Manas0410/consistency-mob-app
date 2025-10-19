@@ -73,6 +73,7 @@ const TeamsListing = ({
         </View>
       ) : (
         <FlatList
+          style={{ backgroundColor: "#faf7f7ff" }}
           ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
           data={Teams}
           keyExtractor={(item) => item._id}
@@ -92,7 +93,7 @@ const TeamsListing = ({
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#f7f8fa", paddingBottom: 50 },
+  safeArea: { flex: 1, backgroundColor: "#fff", paddingBottom: 50 },
 
   header: {
     height: 56,
