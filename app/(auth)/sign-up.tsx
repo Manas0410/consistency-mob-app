@@ -1,104 +1,127 @@
-import { useSignUp } from '@clerk/clerk-expo'
-import { Link, useRouter } from 'expo-router'
-import * as React from 'react'
-import { Button, StyleSheet, Text, TextInput, View } from 'react-native'
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { InputOTP } from "@/components/ui/input-otp";
+import { useSignUp } from "@clerk/clerk-expo";
+import { Link, useRouter } from "expo-router";
+import { KeyRound, Mail, User } from "lucide-react-native";
+import * as React from "react";
+import { StyleSheet, Text, View } from "react-native";
 
 export default function Page() {
-  const { isLoaded, signUp, setActive } = useSignUp()
-  const router = useRouter()
+  const { isLoaded, signUp, setActive } = useSignUp();
+  const router = useRouter();
 
-  const [emailAddress, setEmailAddress] = React.useState('')
-  const [password, setPassword] = React.useState('')
-  const [username, setUsername] = React.useState('') // NEW FIELD
-  const [pendingVerification, setPendingVerification] = React.useState(false)
-  const [code, setCode] = React.useState('')
-  const [loading, setLoading] = React.useState(false)
-  const [errorMsg, setErrorMsg] = React.useState('')
+  const [emailAddress, setEmailAddress] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [username, setUsername] = React.useState(""); // NEW FIELD
+  const [pendingVerification, setPendingVerification] = React.useState(false);
+  const [code, setCode] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+  const [errorMsg, setErrorMsg] = React.useState("");
 
   // Handle sign-up submission
   const onSignUpPress = async () => {
-    setErrorMsg('')
-    if (!isLoaded) return
+    setErrorMsg("");
+    if (!isLoaded) return;
 
     if (!username.trim()) {
-      setErrorMsg('Username is required.')
-      return
+      setErrorMsg("Username is required.");
+      return;
     }
-    setLoading(true)
+    setLoading(true);
     try {
-      await signUp.create({ emailAddress, password, username }) // ADD USERNAME HERE
-      await signUp.prepareEmailAddressVerification({ strategy: 'email_code' })
-      setPendingVerification(true)
+      await signUp.create({ emailAddress, password, username }); // ADD USERNAME HERE
+      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
+      setPendingVerification(true);
     } catch (err) {
-      let message = 'Something went wrong. Try again.'
+      let message = "Something went wrong. Try again.";
       if (err.errors && err.errors.length) {
-        message = err.errors[0].message
+        message = err.errors[0].message;
       }
-      setErrorMsg(message)
+      setErrorMsg(message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // Handle verification code submission
   const onVerifyPress = async () => {
-    setErrorMsg('')
-    if (!isLoaded) return
+    setErrorMsg("");
+    if (!isLoaded) return;
 
-    setLoading(true)
+    setLoading(true);
     try {
-      const signUpAttempt = await signUp.attemptEmailAddressVerification({ code })
+      const signUpAttempt = await signUp.attemptEmailAddressVerification({
+        code,
+      });
 
-      if (signUpAttempt.status === 'complete') {
-        await setActive({ session: signUpAttempt.createdSessionId })
-        router.replace('/') // Navigate to home
+      if (signUpAttempt.status === "complete") {
+        await setActive({ session: signUpAttempt.createdSessionId });
+        router.replace("/"); // Navigate to home
       } else {
-        setErrorMsg('Verification incomplete, additional steps may be needed.')
+        setErrorMsg("Verification incomplete, additional steps may be needed.");
       }
     } catch (err) {
-      let message = 'Verification failed. Try again.'
+      let message = "Verification failed. Try again.";
       if (err.errors && err.errors.length) {
-        message = err.errors[0].message
+        message = err.errors[0].message;
       }
-      setErrorMsg(message)
+      setErrorMsg(message);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   // OTP Verification UI
   if (pendingVerification) {
+    const success = "#10B981";
     return (
       <View style={styles.container}>
         <Text style={styles.title}>Verify your email</Text>
-        <TextInput
-          style={styles.input}
+
+        <InputOTP
+          length={6}
           value={code}
-          placeholder="Enter verification code"
-          placeholderTextColor="#888"
           onChangeText={setCode}
-          keyboardType="number-pad"
+          slotStyle={{
+            height: 40,
+            width: 40,
+            borderColor: success,
+            backgroundColor: success + "10",
+            borderRadius: 8,
+          }}
         />
         {errorMsg ? <Text style={styles.error}>{errorMsg}</Text> : null}
-        <Button title={loading ? 'Verifying...' : 'Verify'} onPress={onVerifyPress} disabled={loading} />
+        <Button
+          variant="success"
+          onPress={onVerifyPress}
+          disabled={loading || code.length < 6}
+          loading={loading}
+        >
+          Verify
+        </Button>
       </View>
-    )
+    );
   }
 
   // Initial Sign-Up Form UI
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign Up</Text>
-      <TextInput
-        style={styles.input}
+      <Input
+        variant="outline"
+        label="Username"
+        icon={User}
         autoCapitalize="none"
         value={username}
         placeholder="Enter username"
         placeholderTextColor="#888"
         onChangeText={setUsername}
       />
-      <TextInput
-        style={styles.input}
+      <Input
+        variant="outline"
+        label="Email"
+        icon={Mail}
         autoCapitalize="none"
         value={emailAddress}
         placeholder="Enter email"
@@ -106,22 +129,32 @@ export default function Page() {
         onChangeText={setEmailAddress}
         keyboardType="email-address"
       />
-      <TextInput
-        style={styles.input}
-        value={password}
-        placeholder="Enter password"
+      <Input
+        placeholder="Enter Password"
+        variant="outline"
+        icon={KeyRound}
+        label="Password"
         placeholderTextColor="#888"
         secureTextEntry={true}
         onChangeText={setPassword}
       />
       {errorMsg ? <Text style={styles.error}>{errorMsg}</Text> : null}
-      <Button title={loading ? 'Submitting...' : 'Continue'} onPress={onSignUpPress} disabled={loading} />
+      <Button
+        onPress={onSignUpPress}
+        disabled={loading || !emailAddress || !password || !username}
+        variant="success"
+        loading={loading}
+      >
+        Continue
+      </Button>
       <View style={styles.footer}>
         <Text>Have an account?</Text>
-        <Link href="/sign-in"><Text style={styles.link}>Sign in</Text></Link>
+        <Link href="/sign-in">
+          <Text style={styles.link}>Sign in</Text>
+        </Link>
       </View>
     </View>
-  )
+  );
 }
 
 // Styles remain unchanged
@@ -129,40 +162,33 @@ const styles = StyleSheet.create({
   container: {
     padding: 20,
     flex: 1,
-    justifyContent: 'center',
-    backgroundColor: '#FAFAFA',
+    justifyContent: "center",
+    backgroundColor: "#eee",
+    gap: 10,
   },
   title: {
-    fontSize: 22,
-    fontWeight: '600',
+    fontSize: 30,
+    fontWeight: "800",
     marginBottom: 18,
-    textAlign: 'center',
-    color: '#222',
+    textAlign: "center",
+    color: "#222",
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#DDD',
-    borderRadius: 7,
-    padding: 12,
-    marginBottom: 14,
-    fontSize: 16,
-    backgroundColor: '#FFF',
-  },
+
   error: {
-    color: '#C00',
+    color: "#C00",
     marginBottom: 10,
-    textAlign: 'center',
+    textAlign: "center",
   },
   footer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 20,
     gap: 6,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   link: {
-    color: '#267BF4',
+    color: "#267BF4",
     marginLeft: 4,
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });
