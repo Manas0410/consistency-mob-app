@@ -10,9 +10,9 @@ export default function CalendarScreen() {
   const { date, day, month } = useGetCurrentDateTime();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const pallet = usePallet();
-  console.log(selectedDate , "selectedDate in calendar screen");
+  console.log(selectedDate, "selectedDate in calendar screen");
   return (
-    <SafeAreaView style={{ flex: 1, padding: 10 }}>
+    <SafeAreaView style={{ flex: 1, padding: 10, backgroundColor: "#fff" }}>
       <View>
         <Text style={{ fontSize: 34, fontWeight: "700" }}>
           {month}
@@ -22,7 +22,10 @@ export default function CalendarScreen() {
           {day}
         </Text>
       </View>
-      <DateSelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+      <DateSelector
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+      />
       <TaskList selectedDate={selectedDate} />
     </SafeAreaView>
   );

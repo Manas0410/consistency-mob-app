@@ -12,6 +12,7 @@ import { format, parseISO } from "date-fns";
 import { SendHorizonal } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { FlatList } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
   getMotivationChatHistory,
   handleMotivationChat,
@@ -28,6 +29,7 @@ export function MotivationChatPage() {
   const card = useColor({}, "card");
   const blue = useColor({}, "blue");
   const pallet = usePallet();
+  const insets = useSafeAreaInsets();
 
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -174,6 +176,7 @@ export function MotivationChatPage() {
           padding: 16,
           gap: 12,
           backgroundColor: card,
+          paddingBottom: insets.bottom,
         }}
       >
         <View style={{ flex: 1 }}>

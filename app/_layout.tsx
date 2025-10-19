@@ -1,4 +1,4 @@
-import { Stack } from "expo-router";
+import { Stack, usePathname } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
@@ -15,6 +15,7 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const theme = useTheme();
+  const pathname = usePathname();
 
   return (
     <ClerkProvider tokenCache={tokenCache}>
@@ -28,9 +29,11 @@ export default function RootLayout() {
               options={{ presentation: "modal", title: "Modal" }}
             />
           </Stack>
-          <BottomBar />
+          {!["/sign-in", "/sign-up", "/ai-chat"].includes(pathname) && (
+            <BottomBar />
+          )}
+          <StatusBar style="auto" />
         </ToastProvider>
-        <StatusBar style="auto" />
       </ThemeProvider>
     </ClerkProvider>
   );

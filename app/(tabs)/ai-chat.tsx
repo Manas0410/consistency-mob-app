@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const AIChat = () => {
   return (
-    <View style={{ flex: 1 }}>
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
         <BackHeader title={"AI - Chat"} />
         <ChatPage />

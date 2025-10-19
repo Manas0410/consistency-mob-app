@@ -13,6 +13,7 @@ import { useColor } from "@/hooks/useColor";
 import { Lightbulb, Plus, SendHorizonal, X } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { createTaskPlan } from "./APi/api-calls";
 import { PlanTaskCard } from "./components/plan-task-card";
 
@@ -32,6 +33,7 @@ const PlanningChat = () => {
 
   const card = useColor({}, "card");
   const blue = useColor({}, "blue");
+  const insets = useSafeAreaInsets();
 
   const sendMessage = async () => {
     if (inputText.trim()) {
@@ -185,7 +187,7 @@ const PlanningChat = () => {
           paddingHorizontal: 16,
           gap: 12,
           backgroundColor: card,
-          paddingBottom: 90,
+          paddingBottom: insets.bottom,
           paddingTop: 16,
         }}
       >

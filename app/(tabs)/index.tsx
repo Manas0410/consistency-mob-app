@@ -6,9 +6,9 @@ import TaskProgressCard from "@/components/ui/task-progress-card";
 import WeekTaskCompletionCard from "@/components/ui/WeekTaskCompletionCard";
 import { Colors } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
-import { SignedIn, SignedOut, useUser } from '@clerk/clerk-expo';
+import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { Link } from 'expo-router';
+import { Link } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -16,69 +16,71 @@ export default function HomeScreen() {
   const theme = useTheme();
   const colors = theme === "dark" ? Colors.dark : Colors.light;
 
-  const { user } = useUser()
-  console.log(user)
+  const { user } = useUser();
+  console.log(user);
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-       <View>
-      <SignedIn>
-        <Text>Hello {user?.username}</Text>
-        <SignOutButton />
-      </SignedIn>
-      <SignedOut>
-        <Link href="/(auth)/sign-in">
-          <Text>Sign in</Text>
-        </Link>
-        <Link href="/(auth)/sign-up">
-          <Text>Sign up</Text>
-        </Link>
-      </SignedOut>
-    </View>
-      <View style={styles.Headingcnt}>
-        <Ionicons
-          name="logo-octocat"
-          size={30}
-          color={theme === "dark" ? "white" : "black"}
-          style={{ marginBottom: -22 }}
-        />
-        <Text
-          style={[
-            styles.Heading,
-            { color: theme === "dark" ? "white" : "black" },
-          ]}
-        >
-          Assista AI
-        </Text>
-      </View>
-      <Text style={{ color: colors.textSecondary, marginLeft: 10 }}>
-        Believe you can and you're halfway there.
-      </Text>
-      <ScrollView
-        contentContainerStyle={{ paddingBottom: 100 }}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={{ flex: 1, display: "flex", gap: 12, padding: 10 }}>
-          <StreakCard streak={50} />
-          <TaskProgressCard
-            percentage={75}
-            tasks={[
-              { name: "Task 1", done: true },
-              { name: "Task 2", done: false },
-              { name: "Task 3", done: true },
-            ]}
-            onTaskToggle={(index) => {
-              console.log("Toggle task at index:", index);
-            }}
-            onSeeDetail={() => {
-              console.log("See detailed view");
-            }}
-          />
-          <WeekTaskCompletionCard />
-          <HabbitCompletionCard />
-          <HabitCard onManage={() => {}} />
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <SafeAreaView style={{ flex: 1 }}>
+        <View>
+          <SignedIn>
+            <Text>Hello {user?.username}</Text>
+            <SignOutButton />
+          </SignedIn>
+          <SignedOut>
+            <Link href="/(auth)/sign-in">
+              <Text>Sign in</Text>
+            </Link>
+            <Link href="/(auth)/sign-up">
+              <Text>Sign up</Text>
+            </Link>
+          </SignedOut>
         </View>
-      </ScrollView>
-    </SafeAreaView>
+        <View style={styles.Headingcnt}>
+          <Ionicons
+            name="logo-octocat"
+            size={30}
+            color={theme === "dark" ? "white" : "black"}
+            style={{ marginBottom: -22 }}
+          />
+          <Text
+            style={[
+              styles.Heading,
+              { color: theme === "dark" ? "white" : "black" },
+            ]}
+          >
+            Assista AI
+          </Text>
+        </View>
+        <Text style={{ color: colors.textSecondary, marginLeft: 10 }}>
+          Believe you can and you're halfway there.
+        </Text>
+        <ScrollView
+          contentContainerStyle={{ paddingBottom: 100 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={{ flex: 1, display: "flex", gap: 12, padding: 10 }}>
+            <StreakCard streak={50} />
+            <TaskProgressCard
+              percentage={75}
+              tasks={[
+                { name: "Task 1", done: true },
+                { name: "Task 2", done: false },
+                { name: "Task 3", done: true },
+              ]}
+              onTaskToggle={(index) => {
+                console.log("Toggle task at index:", index);
+              }}
+              onSeeDetail={() => {
+                console.log("See detailed view");
+              }}
+            />
+            <WeekTaskCompletionCard />
+            <HabbitCompletionCard />
+            <HabitCard onManage={() => {}} />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
 

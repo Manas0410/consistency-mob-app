@@ -1,4 +1,6 @@
+import { usePallet } from "@/hooks/use-pallet";
 import { useNavigation } from "@react-navigation/native";
+import { usePathname, useRouter } from "expo-router";
 import {
   Brain,
   Calendar,
@@ -22,6 +24,9 @@ const bottomBarOptions = [
 const BottomBar = () => {
   const navigation = useNavigation();
   const insets = useSafeAreaInsets(); // <-- Get insets
+  const router = useRouter();
+  const pathname = usePathname();
+  const pallet = usePallet();
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
@@ -30,10 +35,14 @@ const BottomBar = () => {
           <TouchableOpacity
             key={option.name}
             style={styles.iconButton}
-            onPress={() => navigation.navigate(option.url)}
+            onPress={() => router.push(option.url)}
             activeOpacity={0.7}
           >
-            <option.icon size={24} />
+            <option.icon
+              size={24}
+              color={pathname === option.url ? pallet.shade2 : undefined}
+              fill={pathname === option.url ? pallet.shade2 : "none"}
+            />
           </TouchableOpacity>
         ))}
       </View>
