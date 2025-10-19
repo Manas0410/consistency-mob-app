@@ -54,7 +54,7 @@ const BottomBar = () => {
           </TouchableOpacity>
         ))}
       </View>
-      {!["/team"].includes(pathname) && (
+      {!["/team", "/TeamDetails"].includes(pathname) && (
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => {

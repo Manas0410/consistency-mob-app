@@ -30,9 +30,9 @@ export default function RootLayout() {
               options={{ presentation: "modal", title: "Modal" }}
             />
           </Stack>
-          {!["/sign-in", "/sign-up", "/ai-chat", "/TeamDetails"].includes(
-            pathname
-          ) && <BottomBar />}
+          {!["/sign-in", "/sign-up", "/ai-chat"].includes(pathname) && (
+            <BottomBar />
+          )}
           <TaskForm />
           <StatusBar style="auto" />
         </ToastProvider>
