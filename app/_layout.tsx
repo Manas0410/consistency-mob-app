@@ -5,6 +5,7 @@ import "react-native-reanimated";
 import BottomBar from "@/components/bottom-bar";
 import { ToastProvider } from "@/components/ui/toast";
 import { useTheme } from "@/hooks/use-theme";
+import TaskForm from "@/pages/addTask/task-form";
 import { ThemeProvider } from "@/theme/theme-provider";
 import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
@@ -32,6 +33,7 @@ export default function RootLayout() {
           {!["/sign-in", "/sign-up", "/ai-chat"].includes(pathname) && (
             <BottomBar />
           )}
+          <TaskForm />
           <StatusBar style="auto" />
         </ToastProvider>
       </ThemeProvider>

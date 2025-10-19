@@ -14,6 +14,7 @@ import {
 } from "react-native";
 
 export interface InputProps extends Omit<TextInputProps, "style"> {
+  labelWidth?: number;
   label?: string;
   error?: string;
   icon?: React.ComponentType<LucideProps>;
@@ -32,6 +33,7 @@ export interface InputProps extends Omit<TextInputProps, "style"> {
 export const Input = forwardRef<TextInput, InputProps>(
   (
     {
+      labelWidth,
       label,
       error,
       icon,
@@ -222,7 +224,7 @@ export const Input = forwardRef<TextInput, InputProps>(
               {/* Left section - Icon + Label (fixed width to simulate grid column) */}
               <View
                 style={{
-                  width: label ? 120 : "auto",
+                  width: label ? labelWidth ?? 120 : "auto",
                   flexDirection: "row",
                   alignItems: "center",
                   gap: 8,

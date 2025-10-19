@@ -2,8 +2,15 @@ import { useState } from "react";
 import { View } from "react-native";
 import { Badge } from "./badge";
 import { Checkbox } from "./checkbox";
+import { Text } from "./text";
 
-const PriorityBadge = ({ value, onChange }: { value: 0 | 1 | 2; onChange?: (val: 0 | 1 | 2) => void }) => {
+const PriorityBadge = ({
+  value,
+  onChange,
+}: {
+  value: 0 | 1 | 2;
+  onChange?: (val: 0 | 1 | 2) => void;
+}) => {
   const [priority, setPriority] = useState<0 | 1 | 2>(value); // 0=Low,1=Medium,2=High
 
   const handleChange = (val: 0 | 1 | 2) => {
@@ -19,11 +26,15 @@ const PriorityBadge = ({ value, onChange }: { value: 0 | 1 | 2; onChange?: (val:
             backgroundColor: "#10b981",
             flexDirection: "row",
             alignItems: "center",
+            padding: 6,
+            gap: 8,
           }}
-          textStyle={{ color: "white", fontWeight: "600", marginRight: 6 }}
         >
-          Low
+          <Text style={{ color: "white", fontWeight: "600", marginRight: 6 }}>
+            Low
+          </Text>
           <Checkbox
+            styles={{ height: 24, width: 24 }}
             checked={priority === 0}
             onCheckedChange={() => handleChange(0)}
           />
@@ -35,9 +46,10 @@ const PriorityBadge = ({ value, onChange }: { value: 0 | 1 | 2; onChange?: (val:
             flexDirection: "row",
             alignItems: "center",
           }}
-          textStyle={{ color: "white", fontWeight: "600", marginRight: 6 }}
         >
-          Medium
+          <Text style={{ color: "white", fontWeight: "600", marginRight: 6 }}>
+            Medium
+          </Text>
           <Checkbox
             checked={priority === 1}
             onCheckedChange={() => handleChange(1)}
@@ -50,9 +62,10 @@ const PriorityBadge = ({ value, onChange }: { value: 0 | 1 | 2; onChange?: (val:
             flexDirection: "row",
             alignItems: "center",
           }}
-          textStyle={{ color: "white", fontWeight: "600", marginRight: 6 }}
         >
-          High
+          <Text style={{ color: "white", fontWeight: "600", marginRight: 6 }}>
+            High
+          </Text>
           <Checkbox
             checked={priority === 2}
             onCheckedChange={() => handleChange(2)}

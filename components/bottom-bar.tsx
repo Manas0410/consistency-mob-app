@@ -35,6 +35,7 @@ const BottomBar = () => {
           <TouchableOpacity
             key={option.name}
             style={styles.iconButton}
+            // @ts-ignore
             onPress={() => router.push(option.url)}
             activeOpacity={0.7}
           >
@@ -98,7 +99,7 @@ const styles = StyleSheet.create({
   addButton: {
     position: "absolute",
     right: 22,
-    bottom: BAR_HEIGHT + 44,
+    bottom: BAR_HEIGHT + 48,
     backgroundColor: "#23A8FF",
     width: ADD_BUTTON_SIZE,
     height: ADD_BUTTON_SIZE,

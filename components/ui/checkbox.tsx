@@ -56,7 +56,7 @@ export function Checkbox({
           alignItems: "center",
           justifyContent: "center",
           marginRight: label ? 8 : 0,
-          // ...styles,
+          ...styles,
         }}
       >
         {checked && (
