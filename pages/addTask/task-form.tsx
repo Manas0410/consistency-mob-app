@@ -1,289 +1,114 @@
-import { BottomSheet, useBottomSheet } from "@/components/ui/bottom-sheet";
-import { Button } from "@/components/ui/button";
-import { DatePicker } from "@/components/ui/date-picker";
-import { Input } from "@/components/ui/input";
-import { Picker } from "@/components/ui/picker";
-import PriorityBadge from "@/components/ui/priority-badge";
-import { Text } from "@/components/ui/text";
-import { TaskData } from "@/constants/types";
-import { Clock, LayoutList, Plus, ScrollText } from "lucide-react-native";
-import React, { useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { addTask } from "./API/addTask";
+import { usePallet } from "@/hooks/use-pallet";
+import { usePathname, useRouter } from "expo-router";
+import React from "react";
+import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+// Adjust your icon imports to this style (Lucide icons)
+import {
+  Calendar,
+  Home,
+  MessageCircle,
+  Plus,
+  Settings,
+  Users,
+} from "lucide-react-native";
 
-const options = [
-  { label: "Once", value: 0 },
-  { label: "Every Sunday", value: 1 },
-  { label: "Every Monday", value: 2 },
-  { label: "Every Tuesday", value: 3 },
-  { label: "Every Wednesday", value: 4 },
-  { label: "Every Thursday", value: 5 },
-  { label: "Every Friday", value: 6 },
-  { label: "Every Saturday", value: 7 },
-  { label: "Everyday", value: 8 },
+const bottomBarOptions = [
+  { name: "Home", icon: Home, url: "/" },
+  { name: "Team", icon: Users, url: "/team" },
+  { name: "AI Chat", icon: MessageCircle, url: "/ai-chat" },
+  { name: "Tasks", icon: Calendar, url: "/calendar" },
+  { name: "Settings", icon: Settings, url: "/settings" },
 ];
 
-export default function TaForm() {
-  const [successMessage, setSuccessMessage] = useState("");
-  const [task, setTask] = useState<TaskData>({
-    taskName: "",
-    taskDescription: "",
-    TaskStartDateTime: new Date(),
-    duration: { hours: 0, minutes: 0 },
-    priority: 0,
-    frequency: [],
-  });
+const BAR_HEIGHT = 70;
+const ADD_BUTTON_SIZE = 70;
 
-  const handleChange = (field: keyof TaskData, value: any) => {
-    setTask((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const [loading, setLoading] = useState(false);
-
-  const onSubmit = async () => {
-    try {
-      setLoading(true);
-      await addTask(task);
-      setSuccessMessage("Task added successfully!");
-      setTimeout(() => setSuccessMessage(""), 3000);
-    } catch (err) {
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const { close, isVisible } = useBottomSheet();
+const BottomBar = () => {
+  const router = useRouter();
+  const pathname = usePathname();
+  const insets = useSafeAreaInsets();
+  const pallet = usePallet();
 
   return (
-    <BottomSheet
-      style={{ backgroundColor: "#fff" }}
-      isVisible={isVisible}
-      onClose={close}
-      snapPoints={[0.5, 0.9, 0.5]}
-    >
-      <View style={styles.container}>
-        <Input
-          label="Task"
-          placeholder="Enter task name"
-          icon={LayoutList}
-          value={task.taskName}
-          onChangeText={(text) => handleChange("taskName", text)}
-        />
-        <Input
-          label="Sub Title"
-          placeholder="Sub title"
-          icon={ScrollText}
-          value={task.taskDescription}
-          onChangeText={(text) => handleChange("taskDescription", text)}
-        />
-        <Text variant="caption">Duration</Text>
-        <View style={styles.row}>
-          <Input
-            label="Hours"
-            placeholder=""
-            icon={Clock}
-            keyboardType="numeric"
-            value={String(task.duration.hours)}
-            onChangeText={(text) =>
-              handleChange("duration", {
-                ...task.duration,
-                hours: Number(text),
-              })
-            }
-          />
-          <Input
-            label="Minutes"
-            placeholder=""
-            icon={Clock}
-            keyboardType="numeric"
-            value={String(task.duration.minutes)}
-            onChangeText={(text) =>
-              handleChange("duration", {
-                ...task.duration,
-                minutes: Number(text),
-              })
-            }
-          />
-        </View>
-        <View style={styles.row}>
-          <DatePicker
-            label="Date & Time"
-            mode="datetime"
-            value={task.TaskStartDateTime}
-            onChange={(date) => handleChange("TaskStartDateTime", date)}
-            placeholder="Select date and time"
-            timeFormat="12"
-          />
-        </View>
-        <Picker
-          label="Select Frequency"
-          multiple
-          values={task.frequency}
-          // @ts-ignore
-          options={options}
-          onValuesChange={(val) => handleChange("frequency", val)}
-        />
-        <Text variant="caption">Priority</Text>
-        <PriorityBadge
-          value={task.priority}
-          onChange={(val) => handleChange("priority", val)}
-        />
-
-        <Button
-          icon={Plus}
-          loading={loading}
-          variant="default"
-          onPress={onSubmit}
-        >
-          Submit
-        </Button>
-        {successMessage !== "" && (
-          <Text style={{ color: "green", marginTop: 10, textAlign: "center" }}>
-            {successMessage}
-          </Text>
-        )}
+    <View style={[styles.container, { paddingBottom: insets.bottom }]}>
+      <View style={styles.bar}>
+        {bottomBarOptions.map((option) => {
+          const isActive = pathname === option.url;
+          // Lucide accepts "color" and "fill" props
+          return (
+            <TouchableOpacity
+              key={option.name}
+              style={styles.iconButton}
+              onPress={() => router.push(option.url)}
+              activeOpacity={0.7}
+            >
+              <option.icon
+                size={32}
+                color={isActive ? pallet.shade1 : "#A4A7B2"}
+                fill={isActive ? pallet.shade1 : "none"}
+              />
+            </TouchableOpacity>
+          );
+        })}
       </View>
-    </BottomSheet>
+      <TouchableOpacity
+        style={[
+          styles.addButton,
+          {
+            bottom: BAR_HEIGHT + 18 + insets.bottom,
+          },
+        ]}
+        onPress={() => {
+          /* handle '+' action */
+        }}
+      >
+        <Plus color="white" size={36} />
+      </TouchableOpacity>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: "center",
+    zIndex: 10,
     backgroundColor: "#fff",
-    borderRadius: 16,
-    // padding: 16,
-    // margin: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
-    gap: 12,
   },
-  row: {
+  bar: {
     flexDirection: "row",
+    borderTopLeftRadius: 23,
+    borderTopRightRadius: 23,
+    height: BAR_HEIGHT,
+    justifyContent: "space-around",
     alignItems: "center",
-  },
-  iconCircle: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 8,
-  },
-  titleInput: {
-    flex: 1,
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#222",
-    backgroundColor: "#f7f7f7",
-    borderRadius: 8,
-    padding: 8,
-    marginRight: 8,
-  },
-  statusDot: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-    borderWidth: 2,
-    borderColor: "#eee",
-  },
-  tab: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 8,
-    paddingHorizontal: 18,
-    borderRadius: 12,
-    backgroundColor: "#fff",
-    marginRight: 8,
-  },
-  tabText: {
-    fontSize: 16,
-    marginLeft: 6,
-    fontWeight: "500",
-  },
-  dateInput: {
-    flex: 1,
-    fontSize: 16,
-    backgroundColor: "#f7f7f7",
-    borderRadius: 8,
-    padding: 8,
-    marginHorizontal: 8,
-  },
-  allDayRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginLeft: 12,
-  },
-  allDayText: {
-    fontSize: 15,
-    marginLeft: 6,
-    color: "#888",
-  },
-  timeInput: {
-    flex: 1,
-    fontSize: 16,
-    backgroundColor: "#f7f7f7",
-    borderRadius: 8,
-    padding: 8,
-    marginHorizontal: 8,
-  },
-  durationBtn: {
-    paddingVertical: 8,
+    width: Dimensions.get("window").width,
     paddingHorizontal: 14,
-    borderRadius: 10,
-    backgroundColor: "#fff",
-    marginRight: 8,
   },
-  durationText: {
-    fontSize: 15,
-    fontWeight: "500",
-  },
-  repeatInput: {
+  iconButton: {
     flex: 1,
-    fontSize: 16,
-    backgroundColor: "#f7f7f7",
-    borderRadius: 8,
-    padding: 8,
-    marginLeft: 8,
-  },
-  addSubtaskRow: {
-    flexDirection: "row",
     alignItems: "center",
-    marginBottom: 12,
+    paddingVertical: 8,
   },
-  addSubtaskText: {
-    fontSize: 16,
-    marginLeft: 6,
-    fontWeight: "500",
-  },
-  notesRow: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: 12,
-  },
-  notesInput: {
-    flex: 1,
-    fontSize: 16,
-    backgroundColor: "#f7f7f7",
-    borderRadius: 8,
-    padding: 8,
-    marginLeft: 8,
-    minHeight: 60,
-  },
-  createBtn: {
-    backgroundColor: "#eee",
-    borderRadius: 10,
-    paddingVertical: 14,
+  addButton: {
+    position: "absolute",
+    right: 22,
+    backgroundColor: "#23A8FF",
+    width: ADD_BUTTON_SIZE,
+    height: ADD_BUTTON_SIZE,
+    borderRadius: ADD_BUTTON_SIZE / 2,
+    justifyContent: "center",
     alignItems: "center",
-    marginTop: 8,
-  },
-  createBtnText: {
-    fontSize: 17,
-    color: "#aaa",
-    fontWeight: "bold",
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
 });
+
+export default BottomBar;

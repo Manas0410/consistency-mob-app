@@ -1,42 +1,42 @@
 import { useNavigation } from "@react-navigation/native";
-import React from "react";
-import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
-// Lucide or Lucid icons you provide
 import {
+  Brain,
   Calendar,
   Home,
-  MessageCircle,
   Plus,
   Settings,
   Users,
 } from "lucide-react-native";
+import React from "react";
+import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context"; // <-- Add this
 
 const bottomBarOptions = [
-  { name: "Home", icon: Home, url: "HomeScreen" },
-  { name: "Team", icon: Users, url: "TeamScreen" },
-  { name: "AI Chat", icon: MessageCircle, url: "AIChatScreen" },
-  { name: "Tasks", icon: Calendar, url: "TasksScreen" },
-  { name: "Settings", icon: Settings, url: "SettingsScreen" },
+  { name: "Home", icon: Home, url: "/" },
+  { name: "Team", icon: Users, url: "/team" },
+  { name: "AI Chat", icon: Brain, url: "/ai-chat" },
+  { name: "Tasks", icon: Calendar, url: "/calendar" },
+  { name: "Settings", icon: Settings, url: "/settings" },
 ];
 
 const BottomBar = () => {
   const navigation = useNavigation();
+  const insets = useSafeAreaInsets(); // <-- Get insets
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { paddingBottom: insets.bottom }]}>
       <View style={styles.bar}>
         {bottomBarOptions.map((option) => (
           <TouchableOpacity
             key={option.name}
             style={styles.iconButton}
-            // onPress={() => navigation.navigate(option.url)}
+            onPress={() => navigation.navigate(option.url)}
             activeOpacity={0.7}
           >
-            <option.icon color="white" size={32} />
+            <option.icon size={24} />
           </TouchableOpacity>
         ))}
       </View>
-      <View style={styles.indicator} />
       <TouchableOpacity
         style={styles.addButton}
         onPress={() => {
@@ -52,7 +52,7 @@ const BottomBar = () => {
 const BAR_HEIGHT = 70;
 const INDICATOR_WIDTH = 160;
 const INDICATOR_HEIGHT = 10;
-const ADD_BUTTON_SIZE = 70;
+const ADD_BUTTON_SIZE = 60;
 
 const styles = StyleSheet.create({
   container: {
@@ -62,10 +62,17 @@ const styles = StyleSheet.create({
     bottom: 0,
     alignItems: "center",
     zIndex: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 23,
+    borderTopRightRadius: 23,
   },
   bar: {
     flexDirection: "row",
-    backgroundColor: "#151517",
     borderTopLeftRadius: 23,
     borderTopRightRadius: 23,
     height: BAR_HEIGHT,
@@ -79,19 +86,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingVertical: 8,
   },
-  indicator: {
-    position: "absolute",
-    bottom: BAR_HEIGHT - INDICATOR_HEIGHT,
-    alignSelf: "center",
-    backgroundColor: "white",
-    borderRadius: INDICATOR_HEIGHT / 2,
-    height: INDICATOR_HEIGHT,
-    width: INDICATOR_WIDTH,
-  },
   addButton: {
     position: "absolute",
     right: 22,
-    bottom: BAR_HEIGHT + 14,
+    bottom: BAR_HEIGHT + 44,
     backgroundColor: "#23A8FF",
     width: ADD_BUTTON_SIZE,
     height: ADD_BUTTON_SIZE,

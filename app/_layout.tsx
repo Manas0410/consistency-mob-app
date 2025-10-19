@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
+import BottomBar from "@/components/bottom-bar";
 import { ToastProvider } from "@/components/ui/toast";
 import { useTheme } from "@/hooks/use-theme";
 import { ThemeProvider } from "@/theme/theme-provider";
@@ -27,6 +28,7 @@ export default function RootLayout() {
               options={{ presentation: "modal", title: "Modal" }}
             />
           </Stack>
+          <BottomBar />
         </ToastProvider>
         <StatusBar style="auto" />
       </ThemeProvider>
