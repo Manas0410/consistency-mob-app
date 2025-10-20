@@ -1,4 +1,4 @@
-import { BottomSheet, useBottomSheet } from "@/components/ui/bottom-sheet";
+import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import PriorityBadge from "@/components/ui/priority-badge";
 import { Text } from "@/components/ui/text";
 import { useToast } from "@/components/ui/toast";
 import { TaskData } from "@/constants/types";
+import { useAddTaskSheet } from "@/contexts/add-task-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { addMinutes } from "date-fns";
 import { LayoutList, Plus, ScrollText } from "lucide-react-native";
@@ -75,17 +76,20 @@ export default function TaskForm() {
     }
   };
 
-  const { close, isVisible } = useBottomSheet();
+  const { close, isVisible } = useAddTaskSheet();
 
   const pallet = usePallet();
 
   return (
     <BottomSheet
       style={{ backgroundColor: "#fff" }}
-      isVisible={false}
+      isVisible={isVisible}
       onClose={close}
       snapPoints={[0.55, 0.9, 0.5]}
     >
+      <Text variant="subtitle" style={{ marginBottom: 12 }}>
+        Add Task
+      </Text>
       <View style={styles.container}>
         <Input
           label="Task"

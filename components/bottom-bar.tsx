@@ -1,3 +1,4 @@
+import { useAddTaskSheet } from "@/contexts/add-task-context";
 import { useAddTeamBottomSheet } from "@/contexts/add-team-context";
 import { useJoinTeamBottomSheet } from "@/contexts/join-team-contex";
 import { usePallet } from "@/hooks/use-pallet";
@@ -39,6 +40,7 @@ const BottomBar = () => {
 
   const { open: AddTeamOpen } = useAddTeamBottomSheet();
   const { open: JoinTeamOpen } = useJoinTeamBottomSheet();
+  const { open: AddTaskOpen } = useAddTaskSheet();
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
@@ -63,7 +65,7 @@ const BottomBar = () => {
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => {
-            /* handle '+' action */
+            AddTaskOpen();
           }}
         >
           <Plus color="white" size={36} />
