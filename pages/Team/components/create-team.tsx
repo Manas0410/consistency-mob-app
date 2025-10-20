@@ -4,18 +4,15 @@ import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { useToast } from "@/components/ui/toast";
 import { View } from "@/components/ui/view";
+import { useAddTeamBottomSheet } from "@/contexts/add-team-context";
 import { useUser } from "@clerk/clerk-expo";
 import { Plus, Users } from "lucide-react-native";
 import React from "react";
 import { createTeam } from "../API/api-calls";
 
 export function AddTeam({
-  isVisible,
-  close,
   toggleRerender,
 }: {
-  isVisible: boolean;
-  close: () => void;
   toggleRerender: (a: boolean) => void;
 }) {
   const [loading, setLoading] = React.useState(false);
@@ -23,6 +20,7 @@ export function AddTeam({
 
   const { success, error, warning, info } = useToast();
   const { user } = useUser();
+  const { close, isVisible } = useAddTeamBottomSheet();
 
   const handleTeamCreate = async () => {
     try {

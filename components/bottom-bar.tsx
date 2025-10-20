@@ -1,3 +1,4 @@
+import { useAddTeamBottomSheet } from "@/contexts/add-team-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { useNavigation } from "@react-navigation/native";
 import { usePathname, useRouter } from "expo-router";
@@ -33,7 +34,9 @@ const BottomBar = () => {
   const pallet = usePallet();
 
   const [isTeamsButtonExpanded, setIsTeamsButtonExpanded] =
-    React.useState(false);
+    React.useState(true);
+
+  const { open } = useAddTeamBottomSheet();
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
@@ -79,7 +82,7 @@ const BottomBar = () => {
               <TouchableOpacity
                 style={styles.BtnCntBtn}
                 onPress={() => {
-                  /* handle '+' action */
+                  open();
                 }}
               >
                 <PackagePlus color="white" size={36} />

@@ -1,31 +1,17 @@
 import BackHeader from "@/components/ui/back-header";
-import { Icon } from "@/components/ui/icon";
 import { Spinner } from "@/components/ui/spinner";
 import { TeamCard } from "@/components/ui/team-card";
 import { usePallet } from "@/hooks/use-pallet";
 import { useRouter } from "expo-router";
-import { PackagePlus } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
-import { FlatList, StyleSheet, TouchableOpacity, View } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { getAllTeams } from "./API/api-calls";
 
 // ...dummyTeams as before
 
-const TeamsListing = ({
-  open,
-  rerender,
-}: {
-  open: () => void;
-  rerender: boolean;
-}) => {
+const TeamsListing = ({ rerender }: { rerender: boolean }) => {
   const router = useRouter();
-
-  const onAddTeam = () => {
-    open();
-    // Handle add team
-    console.log("Add new team");
-  };
 
   const [Teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -54,11 +40,7 @@ const TeamsListing = ({
   const pallet = usePallet();
   return (
     <SafeAreaView style={styles.safeArea}>
-      <BackHeader title="Teams">
-        <TouchableOpacity onPress={onAddTeam} style={styles.iconButton}>
-          <Icon name={PackagePlus} color="#333" size={30} />
-        </TouchableOpacity>
-      </BackHeader>
+      <BackHeader title="Teams"></BackHeader>
 
       {loading ? (
         <View
