@@ -110,6 +110,16 @@ const BottomBar = () => {
           )}
         </>
       )}
+      {/* {!["/team", "/TeamDetails"].includes(pathname) && (
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => {
+            AddTaskOpen();
+          }}
+        >
+          <Plus color="white" size={36} />
+        </TouchableOpacity>
+      )} */}
     </View>
   );
 };

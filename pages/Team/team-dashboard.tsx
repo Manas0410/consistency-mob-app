@@ -1,7 +1,7 @@
 import { ParallaxScrollView } from "@/components/ui/parallax-scrollview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Image } from "expo-image";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, usePathname } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PieChart } from "react-native-gifted-charts";
@@ -31,6 +31,7 @@ function TeamDashboard() {
     console.log("Navigate to", route);
   };
   const { teamid } = useLocalSearchParams();
+  const pathName = usePathname();
 
   return (
     <ParallaxScrollView
@@ -46,7 +47,9 @@ function TeamDashboard() {
       <View style={{ gap: 16 }}>
         {/* TOP CARD with chart + stats */}
         <View style={styles.card}>
-          <Text style={styles.overviewLabel}>Task Overview {teamid}</Text>
+          <Text style={styles.overviewLabel}>
+            Task Overview {teamid} {pathName}
+          </Text>
           <Text style={styles.count}>{totalCount}</Text>
           <Text style={styles.monthProgress}>
             Task Completion{" "}
