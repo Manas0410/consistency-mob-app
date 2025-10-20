@@ -1,4 +1,5 @@
 import { useAddTeamBottomSheet } from "@/contexts/add-team-context";
+import { useJoinTeamBottomSheet } from "@/contexts/join-team-contex";
 import { usePallet } from "@/hooks/use-pallet";
 import { useNavigation } from "@react-navigation/native";
 import { usePathname, useRouter } from "expo-router";
@@ -36,7 +37,8 @@ const BottomBar = () => {
   const [isTeamsButtonExpanded, setIsTeamsButtonExpanded] =
     React.useState(true);
 
-  const { open } = useAddTeamBottomSheet();
+  const { open: AddTeamOpen } = useAddTeamBottomSheet();
+  const { open: JoinTeamOpen } = useJoinTeamBottomSheet();
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
@@ -82,7 +84,7 @@ const BottomBar = () => {
               <TouchableOpacity
                 style={styles.BtnCntBtn}
                 onPress={() => {
-                  open();
+                  AddTeamOpen();
                 }}
               >
                 <PackagePlus color="white" size={36} />
@@ -90,7 +92,7 @@ const BottomBar = () => {
               <TouchableOpacity
                 style={styles.BtnCntBtn}
                 onPress={() => {
-                  /* handle '+' action */
+                  JoinTeamOpen();
                 }}
               >
                 <UserPlus color="white" size={34} />

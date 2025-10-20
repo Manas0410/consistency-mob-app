@@ -4,13 +4,12 @@ import { Input } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { useToast } from "@/components/ui/toast";
 import { View } from "@/components/ui/view";
-import { useAddTeamBottomSheet } from "@/contexts/add-team-context";
+import { useJoinTeamBottomSheet } from "@/contexts/join-team-contex";
 import { useUser } from "@clerk/clerk-expo";
-import { Plus, Users } from "lucide-react-native";
+import { Plus } from "lucide-react-native";
 import React from "react";
-import { createTeam } from "../API/api-calls";
 
-export function AddTeam({
+export function JoinTeam({
   toggleRerender,
 }: {
   toggleRerender: (a: boolean) => void;
@@ -21,7 +20,7 @@ export function AddTeam({
 
   const { success, error, warning, info } = useToast();
   const { user } = useUser();
-  const { close, isVisible } = useAddTeamBottomSheet();
+  const { close, isVisible } = useJoinTeamBottomSheet();
 
   const handleTeamCreate = async () => {
     try {
@@ -30,9 +29,9 @@ export function AddTeam({
         return;
       }
       setLoading(true);
-      let res = await createTeam(teamName, user?.username, user?.email);
+      //   let res = await createTeam(teamName, user?.username, user?.email);
       if (res.success) {
-        success("Team Created", "Team created successfully");
+        success("Request successfully sent");
         setTeamName("");
         toggleRerender((p: boolean) => !p);
         close();
@@ -46,22 +45,21 @@ export function AddTeam({
     }
   };
 
-  const inpError = showError && !teamName ? "enter team name" : "";
+  const inpError = showError && !teamName ? "enter team code" : "";
 
   return (
     <View>
       <BottomSheet
         isVisible={isVisible}
         onClose={close}
-        snapPoints={[0.3, 0.6, 0.9]}
+        snapPoints={[0.4, 0.6, 0.9]}
       >
         <View style={{ gap: 16 }}>
-          <Text variant="title">Create new team</Text>
+          <Text variant="title">Join Team</Text>
+          <Text variant="caption">Enter Team Code</Text>
           <Input
             variant="outline"
-            label={"Team Name"}
-            placeholder={"Enter Team Name"}
-            icon={Users}
+            placeholder={"Team Code"}
             value={teamName}
             onChangeText={setTeamName}
             labelStyle={{ fontSize: 13 }}
@@ -73,7 +71,7 @@ export function AddTeam({
             variant="success"
             onPress={handleTeamCreate}
           >
-            Create
+            Join Team
           </Button>
         </View>
       </BottomSheet>

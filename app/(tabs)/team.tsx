@@ -1,5 +1,6 @@
 import { View } from "@/components/ui/view";
 import { AddTeam } from "@/pages/Team/components/create-team";
+import { JoinTeam } from "@/pages/Team/components/join-team";
 import TeamsListing from "@/pages/Team/Teams-listpage";
 import { useState } from "react";
 
@@ -16,6 +17,7 @@ const Team = () => {
     >
       <TeamsListing rerender={rerender} />
       <AddTeam toggleRerender={toggleRerender} />
+      <JoinTeam toggleRerender={toggleRerender} />
     </View>
   );
 };
