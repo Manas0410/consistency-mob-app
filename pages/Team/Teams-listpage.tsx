@@ -59,14 +59,7 @@ const TeamsListing = ({ rerender }: { rerender: boolean }) => {
           ItemSeparatorComponent={() => <View style={{ height: 16 }} />}
           data={Teams}
           keyExtractor={(item) => item._id}
-          renderItem={({ item }) => (
-            <TeamCard
-              teamName={item.teamName}
-              noOfMembers={item?.members?.length}
-              noOfTasks={item?.tasks?.length}
-              id={item._id}
-            />
-          )}
+          renderItem={({ item }) => <TeamCard teamData={item} />}
           contentContainerStyle={styles.listContent}
           showsVerticalScrollIndicator={false}
         />

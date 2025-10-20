@@ -2,23 +2,18 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Icon } from "@/components/ui/icon";
 import { View } from "@/components/ui/view";
+import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { useRouter } from "expo-router";
 import { ClipboardList, MoveRight, Package, Users } from "lucide-react-native";
 import React from "react";
 import { Text } from "./text";
 
-type Props = {
-  teamName: string;
-  noOfMembers: number;
-  noOfTasks: number;
-  id: string;
-};
-
-export function TeamCard({ teamName, noOfMembers, noOfTasks, id }: Props) {
+export function TeamCard({ teamData }: any) {
   const pallet = usePallet();
   const router = useRouter();
 
+  const { setCurrentTeamData } = useCurrentTeamData();
   return (
     <Card
       style={{
@@ -42,7 +37,7 @@ export function TeamCard({ teamName, noOfMembers, noOfTasks, id }: Props) {
           </View>
           <View style={{ flex: 1 }}>
             <CardTitle style={{ fontSize: 18, fontWeight: "600" }}>
-              {teamName}
+              {teamData?.teamName}
             </CardTitle>
             {/* <CardDescription>2 minutes ago</CardDescription> */}
           </View>
@@ -59,18 +54,21 @@ export function TeamCard({ teamName, noOfMembers, noOfTasks, id }: Props) {
       >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
           <Icon name={Users} color={pallet.shade2} size={18} />
-          <Text>{noOfMembers ?? 0} Members</Text>
+          <Text>{teamData?.members?.length ?? 0} Members</Text>
         </View>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
           <Icon name={ClipboardList} color={pallet.shade2} size={18} />
-          <Text>{noOfTasks ?? 0} Tasks</Text>
+          <Text>{teamData?.tasks?.length ?? 0} Tasks</Text>
         </View>
       </CardContent>
       <Button
         style={{ width: "100%", height: 40 }}
         variant="secondary"
         icon={MoveRight}
-        onPress={() => router.push(`/${id}/TeamDetails`)}
+        onPress={() => {
+          setCurrentTeamData(teamData);
+          router.push(`/${teamData?._id}/TeamDetails`);
+        }}
       >
         View tasks
       </Button>
