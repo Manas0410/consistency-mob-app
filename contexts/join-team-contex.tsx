@@ -14,11 +14,11 @@ type BottomSheetContextValue = {
   setVisible: (v: boolean) => void;
 };
 
-const TAskFormBottomSheetContext = createContext<
+const JoinTeamBottomSheetContext = createContext<
   BottomSheetContextValue | undefined
 >(undefined);
 
-export const TaskFormBottomSheetProvider = ({
+export const JoinTeamBottomSheetProvider = ({
   children,
 }: {
   children: ReactNode;
@@ -30,16 +30,16 @@ export const TaskFormBottomSheetProvider = ({
   const toggle = useCallback(() => setIsVisible((s) => !s), []);
 
   return (
-    <TAskFormBottomSheetContext.Provider
+    <JoinTeamBottomSheetContext.Provider
       value={{ isVisible, open, close, toggle, setVisible: setIsVisible }}
     >
       {children}
-    </TAskFormBottomSheetContext.Provider>
+    </JoinTeamBottomSheetContext.Provider>
   );
 };
 
-export const useTaskFormBottomSheet = () => {
-  const ctx = useContext(TAskFormBottomSheetContext);
+export const useJoinTeamBottomSheet = () => {
+  const ctx = useContext(JoinTeamBottomSheetContext);
   if (!ctx)
     throw new Error("useBottomSheet must be used within BottomSheetProvider");
   return ctx;

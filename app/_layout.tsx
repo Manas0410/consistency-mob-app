@@ -4,6 +4,7 @@ import "react-native-reanimated";
 
 import BottomBar from "@/components/bottom-bar";
 import { ToastProvider } from "@/components/ui/toast";
+import GlobalContextProvider from "@/contexts/global-context-provider";
 import { useTheme } from "@/hooks/use-theme";
 import TaskForm from "@/pages/addTask/task-form";
 import { ThemeProvider } from "@/theme/theme-provider";
@@ -22,19 +23,21 @@ export default function RootLayout() {
     <ClerkProvider tokenCache={tokenCache}>
       <ThemeProvider>
         <ToastProvider>
-          <Stack>
-            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-            <Stack.Screen
-              name="modal"
-              options={{ presentation: "modal", title: "Modal" }}
-            />
-          </Stack>
-          {!["/sign-in", "/sign-up", "/ai-chat"].includes(pathname) && (
-            <BottomBar />
-          )}
-          <TaskForm />
-          <StatusBar style="auto" />
+          <GlobalContextProvider>
+            <Stack>
+              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+              <Stack.Screen
+                name="modal"
+                options={{ presentation: "modal", title: "Modal" }}
+              />
+            </Stack>
+            {!["/sign-in", "/sign-up", "/ai-chat"].includes(pathname) && (
+              <BottomBar />
+            )}
+            <TaskForm />
+            <StatusBar style="auto" />
+          </GlobalContextProvider>
         </ToastProvider>
       </ThemeProvider>
     </ClerkProvider>
