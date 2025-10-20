@@ -472,13 +472,13 @@ export function TabsContent({ children, value, style }: TabsContentProps) {
   const isActive = activeTab === value;
 
   // For carousel mode, we need to render all content but only show active one
-  if (enableSwipe && orientation === "horizontal" && navigateToAdjacentTab) {
-    return (
-      <CarouselTabContent value={value} style={style}>
-        {children}
-      </CarouselTabContent>
-    );
-  }
+  // if (enableSwipe && orientation === "horizontal" && navigateToAdjacentTab) {
+  //   return (
+  //     <CarouselTabContent value={value} style={style}>
+  //       {children}
+  //     </CarouselTabContent>
+  //   );
+  // }
 
   // Regular mode - only render active content
   if (!isActive) {

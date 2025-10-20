@@ -12,9 +12,10 @@ type Props = {
   teamName: string;
   noOfMembers: number;
   noOfTasks: number;
+  id: string;
 };
 
-export function TeamCard({ teamName, noOfMembers, noOfTasks }: Props) {
+export function TeamCard({ teamName, noOfMembers, noOfTasks, id }: Props) {
   const pallet = usePallet();
   const router = useRouter();
 
@@ -69,7 +70,7 @@ export function TeamCard({ teamName, noOfMembers, noOfTasks }: Props) {
         style={{ width: "100%", height: 40 }}
         variant="secondary"
         icon={MoveRight}
-        onPress={() => router.push(`/TeamDetails`)}
+        onPress={() => router.push(`/${id}/TeamDetails`)}
       >
         View tasks
       </Button>

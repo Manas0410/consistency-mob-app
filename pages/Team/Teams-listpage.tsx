@@ -64,6 +64,7 @@ const TeamsListing = ({ rerender }: { rerender: boolean }) => {
               teamName={item.teamName}
               noOfMembers={item?.members?.length}
               noOfTasks={item?.tasks?.length}
+              id={item._id}
             />
           )}
           contentContainerStyle={styles.listContent}

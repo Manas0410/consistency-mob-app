@@ -1,5 +1,7 @@
 import { ParallaxScrollView } from "@/components/ui/parallax-scrollview";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Image } from "expo-image";
+import { useLocalSearchParams } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PieChart } from "react-native-gifted-charts";
@@ -28,6 +30,7 @@ function TeamDashboard() {
     // Implement navigation e.g., router.push(route)
     console.log("Navigate to", route);
   };
+  const { teamid } = useLocalSearchParams();
 
   return (
     <ParallaxScrollView
@@ -43,38 +46,90 @@ function TeamDashboard() {
       <View style={{ gap: 16 }}>
         {/* TOP CARD with chart + stats */}
         <View style={styles.card}>
-          <Text style={styles.overviewLabel}>Task Overview</Text>
+          <Text style={styles.overviewLabel}>Task Overview {teamid}</Text>
           <Text style={styles.count}>{totalCount}</Text>
           <Text style={styles.monthProgress}>
-            This Month{" "}
-            <Text style={{ color: "#17c964", fontWeight: "bold" }}>+15%</Text>
+            Task Completion{" "}
+            <Text style={{ color: "#17c964", fontWeight: "bold" }}>15%</Text>
           </Text>
 
-          <View style={styles.chartRow}>
-            <View style={styles.chartBox}>
-              <PieChart
-                donut
-                radius={65}
-                innerRadius={55}
-                data={pieData}
-                centerLabelComponent={() => {
-                  return <Text style={{ fontSize: 30 }}>70%</Text>;
-                }}
-              />
-            </View>
-          </View>
-
-          {/* Bottom labels */}
-          <View style={styles.statsRow}>
-            {stats.map((s) => (
-              <View key={s.label} style={styles.statBox}>
-                <Text style={styles.statLabel}>{s.label}</Text>
-                <Text style={[styles.statValue, s.color && { color: s.color }]}>
-                  {s.value}
-                </Text>
+          <Tabs defaultValue="account">
+            <TabsList
+              style={{
+                width: 140,
+                borderRadius: 10,
+                margin: "auto",
+                height: 40,
+              }}
+            >
+              <TabsTrigger style={{ borderRadius: 20 }} value="account">
+                Team
+              </TabsTrigger>
+              <TabsTrigger style={{ borderRadius: 20 }} value="followers">
+                Me
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="account" style={{ width: "100%" }}>
+              <View style={{ alignItems: "center", gap: 16 }}>
+                <PieChart
+                  donut
+                  radius={65}
+                  innerRadius={55}
+                  data={pieData}
+                  centerLabelComponent={() => {
+                    return <Text style={{ fontSize: 30 }}>70%</Text>;
+                  }}
+                />
+                {/* Bottom labels */}
+                <View style={styles.statsRow}>
+                  {stats.map((s) => (
+                    <View key={s.label} style={styles.statBox}>
+                      <Text style={styles.statLabel}>{s.label}</Text>
+                      <Text
+                        style={[
+                          styles.statValue,
+                          s.color && { color: s.color },
+                        ]}
+                      >
+                        {s.value}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
               </View>
-            ))}
-          </View>
+            </TabsContent>
+            <TabsContent value="followers" style={{ width: "100%" }}>
+              <View
+                style={{ paddingHorizontal: 16, alignItems: "center", gap: 16 }}
+              >
+                <PieChart
+                  donut
+                  radius={65}
+                  innerRadius={55}
+                  data={pieData}
+                  centerLabelComponent={() => {
+                    return <Text style={{ fontSize: 30 }}>70%</Text>;
+                  }}
+                />
+                {/* Bottom labels */}
+                <View style={styles.statsRow}>
+                  {stats.map((s) => (
+                    <View key={s.label} style={styles.statBox}>
+                      <Text style={styles.statLabel}>{s.label}</Text>
+                      <Text
+                        style={[
+                          styles.statValue,
+                          s.color && { color: s.color },
+                        ]}
+                      >
+                        {s.value}
+                      </Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            </TabsContent>
+          </Tabs>
         </View>
 
         {/* Action rows */}
