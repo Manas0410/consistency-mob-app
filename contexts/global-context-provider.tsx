@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { AddTaskBottomSheetProvider } from "./add-task-context";
 import { AddTeamBottomSheetProvider } from "./add-team-context";
+import { AddTeamTaskBottomSheetProvider } from "./add-team-task-context";
 import { JoinTeamBottomSheetProvider } from "./join-team-contex";
 import { TaskFormBottomSheetProvider } from "./task-form-context";
 import { CurrentTeamDataProvider } from "./team-data-context";
@@ -12,7 +13,9 @@ const GlobalContextProvider = ({ children }: { children: ReactNode }) => {
         <AddTeamBottomSheetProvider>
           <AddTaskBottomSheetProvider>
             <JoinTeamBottomSheetProvider>
-              {children}
+              <AddTeamTaskBottomSheetProvider>
+                {children}
+              </AddTeamTaskBottomSheetProvider>
             </JoinTeamBottomSheetProvider>
           </AddTaskBottomSheetProvider>
         </AddTeamBottomSheetProvider>

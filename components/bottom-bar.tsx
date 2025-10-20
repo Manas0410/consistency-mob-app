@@ -1,5 +1,6 @@
 import { useAddTaskSheet } from "@/contexts/add-task-context";
 import { useAddTeamBottomSheet } from "@/contexts/add-team-context";
+import { useAddTeamTaskSheet } from "@/contexts/add-team-task-context";
 import { useJoinTeamBottomSheet } from "@/contexts/join-team-contex";
 import { usePallet } from "@/hooks/use-pallet";
 import { useNavigation } from "@react-navigation/native";
@@ -41,6 +42,7 @@ const BottomBar = () => {
   const { open: AddTeamOpen } = useAddTeamBottomSheet();
   const { open: JoinTeamOpen } = useJoinTeamBottomSheet();
   const { open: AddTaskOpen } = useAddTaskSheet();
+  const { open: AddTeamTaskOpen } = useAddTeamTaskSheet();
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
@@ -61,16 +63,17 @@ const BottomBar = () => {
           </TouchableOpacity>
         ))}
       </View>
-      {!["/team", "/TeamDetails"].includes(pathname) && (
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => {
-            AddTaskOpen();
-          }}
-        >
-          <Plus color="white" size={36} />
-        </TouchableOpacity>
-      )}
+      {!["/team", "/TeamDetails"].includes(pathname) &&
+        !pathname.endsWith("/TeamDetails") && (
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => {
+              AddTaskOpen();
+            }}
+          >
+            <Plus color="white" size={36} />
+          </TouchableOpacity>
+        )}
       {["/team"].includes(pathname) && (
         <>
           {isTeamsButtonExpanded ? (
@@ -110,16 +113,16 @@ const BottomBar = () => {
           )}
         </>
       )}
-      {/* {!["/team", "/TeamDetails"].includes(pathname) && (
+      {pathname.endsWith("/TeamDetails") && (
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => {
-            AddTaskOpen();
+            AddTeamTaskOpen();
           }}
         >
           <Plus color="white" size={36} />
         </TouchableOpacity>
-      )} */}
+      )}
     </View>
   );
 };
