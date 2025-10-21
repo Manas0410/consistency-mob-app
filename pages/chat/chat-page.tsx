@@ -4,10 +4,12 @@ import { useState } from "react";
 import { StyleSheet } from "react-native";
 import { MotivationChatPage } from "./motivation-chat";
 import PlannningChat from "./planning-chat";
+
 const tabOptions = [
   { label: "Motivation", key: "motivation" },
   { label: "Planning", key: "planning" },
 ];
+
 const ChatPage = () => {
   const [activeTab, setActiveTab] = useState(tabOptions[0].key);
 

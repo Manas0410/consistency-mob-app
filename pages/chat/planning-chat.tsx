@@ -9,6 +9,9 @@ import { ScrollView } from "@/components/ui/scroll-view";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
+import { Colors } from "@/constants/theme";
+import { usePallet } from "@/hooks/use-pallet";
+import { useTheme } from "@/hooks/use-theme";
 import { useColor } from "@/hooks/useColor";
 import { Lightbulb, Plus, SendHorizonal, X } from "lucide-react-native";
 import { useState } from "react";
@@ -31,6 +34,9 @@ const PlanningChat = () => {
   const [fetchingResponse, setFetchingResponse] = useState(false);
   const [showSamplePrompts, setShowSamplePrompts] = useState(true);
 
+  const theme = useTheme();
+  const colors = theme === "dark" ? Colors.dark : Colors.light;
+  const pallet = usePallet();
   const card = useColor({}, "card");
   const blue = useColor({}, "blue");
   const insets = useSafeAreaInsets();
@@ -68,32 +74,23 @@ const PlanningChat = () => {
             maxWidth: "80%",
             padding: 12,
             borderRadius: 16,
-            backgroundColor: isMessage ? "#F2F2F7" : blue,
+            backgroundColor: isMessage ? "#F2F2F7" : pallet.shade1,
           }}
         >
           <Text
             style={{
-              color: isMessage ? "#000" : "white",
+              color: isMessage ? colors.text : "white",
               fontSize: 16,
             }}
           >
             {text}
           </Text>
-          {/* <Text
-          style={{
-            color: isMessage ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.7)",
-            fontSize: 12,
-            marginTop: 4,
-          }}
-        >
-          {format(parseISO(item.createdAt), "d MMMM hh:mmaaa")}
-        </Text> */}
         </View>
       </View>
     </View>
   );
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       {/* Message List */}
       <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
         {message && <RenderMessage text={message} isMessage={true} />}
@@ -107,15 +104,15 @@ const PlanningChat = () => {
               justifyContent: "center",
             }}
           >
-            <Spinner variant="pulse" color={blue} />
-            <Text style={{ color: blue }}>Generating plan ...</Text>
+            <Spinner variant="pulse" color={pallet.shade1} />
+            <Text style={{ color: pallet.shade1 }}>Generating plan ...</Text>
           </View>
         ) : (
           <>
             {summary && <RenderMessage text={summary} isMessage={false} />}
             {plan.map((task, index) => (
               <View
-                key={`${task.taskName}-${index}`}
+                key={`task-${index}`}
                 style={{
                   flexDirection: "row",
                   alignItems: "flex-start",
@@ -157,6 +154,7 @@ const PlanningChat = () => {
             }}
             name={X}
             size={25}
+            color={colors.icon}
             style={{ marginLeft: "auto" }}
           />
           {sampplePrompts.map((prompt, index) => (
@@ -167,13 +165,13 @@ const PlanningChat = () => {
               style={{
                 padding: 12,
                 borderBottomWidth: 1,
-                borderBottomColor: "#eee",
+                borderBottomColor: "#E2E8F0",
                 flexDirection: "row",
                 gap: 8,
               }}
             >
-              <Icon name={Lightbulb} size={16} color="#000" />
-              <Text style={{ color: "#000", fontSize: 13 }}>{prompt}</Text>
+              <Icon name={Lightbulb} size={16} color={colors.icon} />
+              <Text style={{ color: colors.text, fontSize: 13 }}>{prompt}</Text>
             </Pressable>
           ))}
         </View>
@@ -204,10 +202,23 @@ const PlanningChat = () => {
         </View>
         <Button
           onPress={sendMessage || fetchingResponse}
-          variant={inputText.trim() ? "success" : "outline"}
+          variant="ghost"
           size="icon"
+          style={{
+            backgroundColor: inputText.trim() ? pallet.shade1 : '#F1F5F9',
+            borderRadius: 25,
+            width: 44,
+            height: 44,
+            borderWidth: 0,
+            shadowOpacity: 0,
+            elevation: 0,
+            shadowColor: 'transparent',
+          }}
         >
-          <SendHorizonal size={20} color="white" />
+          <SendHorizonal 
+            size={20} 
+            color={inputText.trim() ? "white" : colors.icon} 
+          />
         </Button>
       </View>
 
