@@ -25,9 +25,17 @@ const BackHeader: React.FC<HeaderProps> = ({
 }) => {
   const router = useRouter();
 
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace("/");
+    }
+  };
+
   return (
     <View style={[styles.header, style]}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
+      <TouchableOpacity onPress={handleBack} style={styles.iconButton}>
         <Ionicons name="arrow-back" size={28} color="#333" />
       </TouchableOpacity>
       <Text style={[styles.title, textStyle]}>{title}</Text>
