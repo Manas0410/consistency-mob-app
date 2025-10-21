@@ -1,10 +1,10 @@
 import { useColor } from "@/hooks/useColor";
-import { FONT_SIZE } from "@/theme/globals";
+import { TYPOGRAPHY } from "@/theme/globals";
 import React, { forwardRef } from "react";
 import {
-  Text as RNText,
-  TextProps as RNTextProps,
-  TextStyle,
+    Text as RNText,
+    TextProps as RNTextProps,
+    TextStyle,
 } from "react-native";
 
 type TextVariant =
@@ -39,40 +39,48 @@ export const Text = forwardRef<RNText, TextProps>(
         case "heading":
           return {
             ...baseStyle,
-            fontSize: 28,
-            fontWeight: "800",
+            fontSize: TYPOGRAPHY.fontSize['4xl'],
+            fontWeight: TYPOGRAPHY.fontWeight.black,
+            lineHeight: TYPOGRAPHY.fontSize['4xl'] * TYPOGRAPHY.lineHeight.tight,
+            letterSpacing: -0.5,
           };
         case "title":
           return {
             ...baseStyle,
-            fontSize: 24,
-            fontWeight: "700",
+            fontSize: TYPOGRAPHY.fontSize['2xl'],
+            fontWeight: TYPOGRAPHY.fontWeight.bold,
+            lineHeight: TYPOGRAPHY.fontSize['2xl'] * TYPOGRAPHY.lineHeight.snug,
+            letterSpacing: -0.25,
           };
         case "subtitle":
           return {
             ...baseStyle,
-            fontSize: 19,
-            fontWeight: "600",
+            fontSize: TYPOGRAPHY.fontSize.lg,
+            fontWeight: TYPOGRAPHY.fontWeight.semibold,
+            lineHeight: TYPOGRAPHY.fontSize.lg * TYPOGRAPHY.lineHeight.normal,
           };
         case "caption":
           return {
             ...baseStyle,
-            fontSize: FONT_SIZE,
-            fontWeight: "400",
+            fontSize: TYPOGRAPHY.fontSize.sm,
+            fontWeight: TYPOGRAPHY.fontWeight.normal,
             color: mutedColor,
+            lineHeight: TYPOGRAPHY.fontSize.sm * TYPOGRAPHY.lineHeight.normal,
           };
         case "link":
           return {
             ...baseStyle,
-            fontSize: FONT_SIZE,
-            fontWeight: "500",
+            fontSize: TYPOGRAPHY.fontSize.base,
+            fontWeight: TYPOGRAPHY.fontWeight.medium,
             textDecorationLine: "underline",
+            lineHeight: TYPOGRAPHY.fontSize.base * TYPOGRAPHY.lineHeight.normal,
           };
         default: // 'body'
           return {
             ...baseStyle,
-            fontSize: FONT_SIZE,
-            fontWeight: "400",
+            fontSize: TYPOGRAPHY.fontSize.base,
+            fontWeight: TYPOGRAPHY.fontWeight.normal,
+            lineHeight: TYPOGRAPHY.fontSize.base * TYPOGRAPHY.lineHeight.normal,
           };
       }
     };
