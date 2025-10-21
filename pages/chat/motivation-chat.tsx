@@ -6,8 +6,11 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
+import { Colors } from "@/constants/theme";
 import { usePallet } from "@/hooks/use-pallet";
+import { useTheme } from "@/hooks/use-theme";
 import { useColor } from "@/hooks/useColor";
+import { RADIUS, SPACING, TYPOGRAPHY } from "@/theme/globals";
 import { format, parseISO } from "date-fns";
 import { SendHorizonal } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
@@ -30,6 +33,8 @@ export function MotivationChatPage() {
   const blue = useColor({}, "blue");
   const pallet = usePallet();
   const insets = useSafeAreaInsets();
+  const theme = useTheme();
+  const colors = theme === "dark" ? Colors.dark : Colors.light;
 
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -90,34 +95,37 @@ export function MotivationChatPage() {
   };
 
   const renderMessage = ({ item }: { item: any }) => (
-    <View>
+    <View style={{ marginBottom: SPACING.md }}>
       <View
         style={{
-          marginBottom: 12,
           alignItems: item.isUser ? "flex-end" : "flex-start",
         }}
       >
         <View
           style={{
             maxWidth: "80%",
-            padding: 12,
-            borderRadius: 16,
-            backgroundColor: item.isUser ? "#F2F2F7" : blue,
+            padding: SPACING.md,
+            borderRadius: RADIUS.xl,
+            backgroundColor: item.isUser ? "#F2F2F7" : pallet.shade1,
+            borderTopRightRadius: item.isUser ? RADIUS.sm : RADIUS.xl,
+            borderTopLeftRadius: item.isUser ? RADIUS.xl : RADIUS.sm,
           }}
         >
           <Text
+            variant="body"
             style={{
-              color: item.isUser ? "#000" : "white",
-              fontSize: 16,
+              color: item.isUser ? colors.text : "white",
+              lineHeight: TYPOGRAPHY.fontSize.base * TYPOGRAPHY.lineHeight.relaxed,
             }}
           >
             {item.message}
           </Text>
           <Text
+            variant="caption"
             style={{
-              color: item.isUser ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.7)",
-              fontSize: 12,
-              marginTop: 4,
+              color: item.isUser ? colors.textMuted : "rgba(255,255,255,0.8)",
+              marginTop: SPACING.xs,
+              opacity: 0.8,
             }}
           >
             {format(parseISO(item.createdAt), "d MMMM hh:mmaaa")}
@@ -128,8 +136,7 @@ export function MotivationChatPage() {
   );
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      {/* Header */}
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       {/* Messages */}
       {loading ? (
         <View
@@ -157,12 +164,13 @@ export function MotivationChatPage() {
       {sendingMessage && (
         <View
           style={{
-            backgroundColor: blue,
+            backgroundColor: pallet.shade1,
             width: 70,
-            paddingVertical: 20,
-            borderRadius: 35,
-            marginLeft: 20,
-            marginBottom: 10,
+            paddingVertical: SPACING.lg,
+            borderRadius: RADIUS.full,
+            marginLeft: SPACING.lg,
+            marginBottom: SPACING.sm,
+            alignItems: "center",
           }}
         >
           <Spinner variant="dots" size="default" color={"#fff"} />
@@ -173,10 +181,11 @@ export function MotivationChatPage() {
       <View
         style={{
           flexDirection: "row",
-          padding: 16,
+          paddingHorizontal: 16,
           gap: 12,
-          backgroundColor: card,
+          backgroundColor: colors.card,
           paddingBottom: insets.bottom,
+          paddingTop: 16,
         }}
       >
         <View style={{ flex: 1 }}>
@@ -191,10 +200,23 @@ export function MotivationChatPage() {
         </View>
         <Button
           onPress={sendMessage}
-          variant={inputText.trim() ? "success" : "outline"}
+          variant="ghost"
           size="icon"
+          style={{
+            backgroundColor: inputText.trim() ? pallet.shade1 : '#F1F5F9',
+            borderRadius: 25,
+            width: 44,
+            height: 44,
+            borderWidth: 0,
+            shadowOpacity: 0,
+            elevation: 0,
+            shadowColor: 'transparent',
+          }}
         >
-          <SendHorizonal size={20} color="white" />
+          <SendHorizonal 
+            size={20} 
+            color={inputText.trim() ? "white" : colors.icon} 
+          />
         </Button>
       </View>
 
