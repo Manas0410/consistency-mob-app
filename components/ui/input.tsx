@@ -1,7 +1,7 @@
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { useColor } from "@/hooks/useColor";
-import { BORDER_RADIUS, CORNERS, FONT_SIZE, HEIGHT } from "@/theme/globals";
+import { HEIGHT, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from "@/theme/globals";
 import { LucideProps } from "lucide-react-native";
 import React, { forwardRef, ReactElement, useState } from "react";
 import {
@@ -70,18 +70,19 @@ export const Input = forwardRef<TextInput, InputProps>(
       if (isTextarea) {
         return rows * 20 + 32; // Approximate line height + padding
       }
-      return HEIGHT;
+      return HEIGHT.base;
     };
 
     // Variant styles
     const getVariantStyle = (): ViewStyle => {
       const baseStyle: ViewStyle = {
-        borderRadius: isTextarea ? BORDER_RADIUS : CORNERS,
+        borderRadius: isTextarea ? RADIUS.lg : RADIUS.xl,
         flexDirection: isTextarea ? "column" : "row",
         alignItems: isTextarea ? "stretch" : "center",
         minHeight: getHeight(),
-        paddingHorizontal: 16,
-        paddingVertical: isTextarea ? 12 : 0,
+        paddingHorizontal: SPACING.md,
+        paddingVertical: isTextarea ? SPACING.md : 0,
+        ...SHADOWS.sm,
       };
 
       switch (variant) {
@@ -105,8 +106,9 @@ export const Input = forwardRef<TextInput, InputProps>(
 
     const getInputStyle = (): TextStyle => ({
       flex: 1,
-      fontSize: FONT_SIZE,
-      lineHeight: isTextarea ? 20 : undefined,
+      fontSize: TYPOGRAPHY.fontSize.base,
+      fontWeight: TYPOGRAPHY.fontWeight.normal,
+      lineHeight: isTextarea ? TYPOGRAPHY.fontSize.base * TYPOGRAPHY.lineHeight.normal : undefined,
       color: disabled ? muted : error ? danger : textColor,
       paddingVertical: 0, // Remove default padding
       textAlignVertical: isTextarea ? "top" : "center",
@@ -218,7 +220,7 @@ export const Input = forwardRef<TextInput, InputProps>(
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                gap: 8,
+                gap: SPACING.sm,
               }}
             >
               {/* Left section - Icon + Label (fixed width to simulate grid column) */}
@@ -278,9 +280,9 @@ export const Input = forwardRef<TextInput, InputProps>(
           <Text
             style={[
               {
-                marginLeft: 14,
-                marginTop: 4,
-                fontSize: 14,
+                marginLeft: SPACING.md,
+                marginTop: SPACING.xs,
+                fontSize: TYPOGRAPHY.fontSize.sm,
                 color: danger,
               },
               errorStyle,
@@ -338,7 +340,7 @@ export const GroupedInput = ({
           backgroundColor: background,
           borderColor: border,
           borderWidth: 1,
-          borderRadius: BORDER_RADIUS,
+          borderRadius: RADIUS.lg,
           overflow: "hidden",
         }}
       >
@@ -346,9 +348,9 @@ export const GroupedInput = ({
           <View
             key={index}
             style={{
-              minHeight: HEIGHT,
-              paddingVertical: 12,
-              paddingHorizontal: 16,
+              minHeight: HEIGHT.base,
+              paddingVertical: SPACING.md,
+              paddingHorizontal: SPACING.md,
               justifyContent: "center",
               borderBottomWidth: index !== childrenArray.length - 1 ? 1 : 0,
               borderColor: border,
@@ -365,10 +367,10 @@ export const GroupedInput = ({
             <Text
               key={i}
               style={{
-                fontSize: 14,
+                fontSize: TYPOGRAPHY.fontSize.sm,
                 color: danger,
                 marginTop: i === 0 ? 0 : 1,
-                marginLeft: 8,
+                marginLeft: SPACING.sm,
               }}
             >
               {error}
@@ -514,12 +516,13 @@ export const GroupedInputItem = forwardRef<TextInput, GroupedInputItemProps>(
                 numberOfLines={rows}
                 style={[
                   {
-                    fontSize: FONT_SIZE,
-                    lineHeight: 20,
+                    fontSize: TYPOGRAPHY.fontSize.base,
+                    fontWeight: TYPOGRAPHY.fontWeight.normal,
+                    lineHeight: TYPOGRAPHY.fontSize.base * TYPOGRAPHY.lineHeight.normal,
                     color: disabled ? muted : error ? danger : text,
                     textAlignVertical: "top",
                     paddingVertical: 0,
-                    minHeight: rows * 20,
+                    minHeight: rows * (TYPOGRAPHY.fontSize.base * TYPOGRAPHY.lineHeight.normal),
                   },
                   inputStyle,
                 ]}
@@ -539,7 +542,7 @@ export const GroupedInputItem = forwardRef<TextInput, GroupedInputItemProps>(
                 flex: 1,
                 flexDirection: "row",
                 alignItems: "center",
-                gap: 8,
+                gap: SPACING.sm,
               }}
             >
               {/* Icon & Label */}
@@ -580,7 +583,8 @@ export const GroupedInputItem = forwardRef<TextInput, GroupedInputItemProps>(
                   style={[
                     {
                       flex: 1,
-                      fontSize: FONT_SIZE,
+                      fontSize: TYPOGRAPHY.fontSize.base,
+                      fontWeight: TYPOGRAPHY.fontWeight.normal,
                       color: disabled ? muted : error ? danger : text,
                       paddingVertical: 0,
                     },
