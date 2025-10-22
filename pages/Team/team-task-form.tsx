@@ -38,7 +38,7 @@ export default function TeamTaskForm() {
   const [task, setTask] = useState<TaskData>({
     taskName: "",
     taskDescription: "",
-    TaskStartDateTime: addMinutes(new Date(), 15),
+    taskStartDateTime: addMinutes(new Date(), 15),
     duration: { hours: 0, minutes: 30 },
     priority: 0,
     frequency: [0],
@@ -89,11 +89,12 @@ export default function TeamTaskForm() {
       setLoading(true);
       const response = await addTeamTask(currentTeamData._id, task);
       if (response.success) {
+        close();
         success("Task added successfully!");
         setTask({
           taskName: "",
           taskDescription: "",
-          TaskStartDateTime: addMinutes(new Date(), 15),
+          taskStartDateTime: addMinutes(new Date(), 15),
           duration: { hours: 0, minutes: 30 },
           priority: 0,
           frequency: [0],
@@ -236,8 +237,8 @@ export default function TeamTaskForm() {
               <DatePicker
                 label="Date & Time"
                 mode="datetime"
-                value={task.TaskStartDateTime}
-                onChange={(date) => handleChange("TaskStartDateTime", date)}
+                value={task.taskStartDateTime}
+                onChange={(date) => handleChange("taskStartDateTime", date)}
                 placeholder="Select date and time"
                 timeFormat="12"
               />
