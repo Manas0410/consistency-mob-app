@@ -121,6 +121,7 @@ export const addTeamTask = async (
   taskData: TeamTask
 ): Promise<{ success: boolean; data: any }> => {
   try {
+    console.log(teamId, taskData);
     const response = await apicall.post("/team/tasks/add", {
       teamId,
       taskData,

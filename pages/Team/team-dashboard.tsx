@@ -47,9 +47,9 @@ function TeamDashboard() {
       <View style={{ gap: 16 }}>
         {/* TOP CARD with chart + stats */}
         <View style={styles.card}>
-          <Text style={styles.overviewLabel}>
+          {/* <Text style={styles.overviewLabel}>
             Task Overview {teamid} {pathName}
-          </Text>
+          </Text> */}
           <Text style={styles.count}>{totalCount}</Text>
           <Text style={styles.monthProgress}>
             Task Completion{" "}
