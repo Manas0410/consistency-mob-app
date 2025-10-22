@@ -147,7 +147,7 @@ function TeamDashboard() {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionBtn}
-            onPress={() => handlePress("members")}
+            onPress={() => router.replace(`/${teamid}/teamMembers`)}
           >
             <Text style={styles.actionText}>Manage Members</Text>
           </TouchableOpacity>

@@ -165,3 +165,17 @@ export const deleteTeam = async (
     return { success: false, data: { message: "error" } };
   }
 };
+
+export const getTeamMembers = async (
+  teamId: string
+): Promise<{ success: boolean; data: any }> => {
+  try {
+    const response = await apicall.post("/team/get-members", { teamId });
+    if (response.status !== 200)
+      throw new Error(`Failed to delete team: ${response.statusText}`);
+    return { success: true, data: response.data?.members };
+  } catch (error) {
+    console.error("Error deleting team:", error);
+    return { success: false, data: { message: "error" } };
+  }
+};
