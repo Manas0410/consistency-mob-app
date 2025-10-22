@@ -4,8 +4,8 @@ import { useGetCurrentDateTime } from "@/hooks/use-get-current-date-time";
 import { usePallet } from "@/hooks/use-pallet";
 import { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import DateSelector from "../task-viewer/date-selector";
-import TeamTaskList from "./Team-task-list";
+import DateSelector from "../../../pages/task-viewer/date-selector";
+import TeamTaskList from "../../../pages/Team/Team-task-list";
 
 const TeamTaskPage = () => {
   const { date, day, month } = useGetCurrentDateTime();
@@ -31,3 +31,5 @@ const TeamTaskPage = () => {
     </SafeAreaView>
   );
 };
+
+export default TeamTaskPage;

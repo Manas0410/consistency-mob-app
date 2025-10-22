@@ -1,7 +1,7 @@
 import { ParallaxScrollView } from "@/components/ui/parallax-scrollview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Image } from "expo-image";
-import { useLocalSearchParams, usePathname } from "expo-router";
+import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PieChart } from "react-native-gifted-charts";
@@ -32,6 +32,8 @@ function TeamDashboard() {
   };
   const { teamid } = useLocalSearchParams();
   const pathName = usePathname();
+
+  const router = useRouter();
 
   return (
     <ParallaxScrollView
@@ -139,7 +141,7 @@ function TeamDashboard() {
         <View style={styles.actionRow}>
           <TouchableOpacity
             style={styles.actionBtn}
-            onPress={() => handlePress("tasks")}
+            onPress={() => router.replace(`/${teamid}/teamTaskPage`)}
           >
             <Text style={styles.actionText}>View Tasks</Text>
           </TouchableOpacity>

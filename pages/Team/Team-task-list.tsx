@@ -1,15 +1,15 @@
 import { Icon } from "@/components/ui/icon";
 import { ScrollView } from "@/components/ui/scroll-view";
 import { Spinner } from "@/components/ui/spinner";
+import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { addHours, differenceInMinutes, format, parseISO } from "date-fns";
-import { ClockPlus, FileText, Flag } from "lucide-react-native";
+import { useLocalSearchParams } from "expo-router";
+import { ClockPlus, FileText, Flag, Users } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import StatusChangeCheckbox from "../task-viewer/components/status-change-checkbox";
-import { getTasksByDate } from "./API/getTasks";
 import { getTeamTasks } from "./API/api-calls";
-import { useCurrentTeamData } from "@/contexts/team-data-context";
 
 const MIN_GAP_MINUTES = 120;
 
@@ -29,41 +29,41 @@ const getTimeDuration = (start: string, end: string) => {
   return `${hours ? `${hours}h` : ""} ${minutes ? `${minutes}m` : ""}`.trim();
 };
 
-{
-  //   "taskName": "Team 1",
-  //   "taskDescription": "Ddfg",
-  //   "taskStartDateTime": "2025-10-22T20:28:28.381Z",
-  //   "endTime": "2025-10-22T20:58:28.381Z",
-  //   "duration": {
-  //     "hours": 0,
-  //     "minutes": 30
-  //   },
-  //   "priority": 0,
-  //   "isDone": false,
-  //   "isHabbit": false,
-  //   "frequency": [
-  //     0,
-  //     8
-  //   ],
-  //   "assignees": [
-  //     {
-  //       "userId": "user_34IAd9X7gJrqzoBOUSq8ZVOGneH",
-  //       "userName": "qwerty"
-  //     }
-  //   ]
-  // }
-
+// {
+//   "taskName": "Team 1",
+//   "taskDescription": "Ddfg",
+//   "taskStartDateTime": "2025-10-22T20:28:28.381Z",
+//   "endTime": "2025-10-22T20:58:28.381Z",
+//   "duration": {
+//     "hours": 0,
+//     "minutes": 30
+//   },
+//   "priority": 0,
+//   "isDone": false,
+//   "isHabbit": false,
+//   "frequency": [
+//     0,
+//     8
+//   ],
+//   "assignees": [
+//     {
+//       "userId": "user_34IAd9X7gJrqzoBOUSq8ZVOGneH",
+//       "userName": "qwerty"
+//     }
+//   ]
+// }
 
 const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
   const pallet = usePallet();
   const [taskListData, setTaskListData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const { currentTeamData } = useCurrentTeamData();
+  const { teamid } = useLocalSearchParams();
 
   const loadTasks = async () => {
     try {
       setLoading(true);
-      const res = await getTeamTasks(currentTeamData._id , selectedDate);
+      const res = await getTeamTasks(teamid, selectedDate);
       if (res.success) setTaskListData(res?.data);
     } finally {
       setLoading(false);
@@ -73,6 +73,8 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
   useEffect(() => {
     loadTasks();
   }, [selectedDate]);
+
+  console.log(taskListData);
 
   // Sort tasks by start time for correct timeline order
   const sortedTasks = [...taskListData].sort(
@@ -231,6 +233,12 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
                     {item.taskName}
                   </Text>
                   {item.taskDescription && <Icon name={FileText} size={18} />}
+                  {item?.assignees && item?.assignees?.length && (
+                    <Text>
+                      <Icon name={Users} size={18} />
+                      {item?.assignees?.length} Assignees
+                    </Text>
+                  )}
                 </View>
               </View>
               {/* Status check pill */}
