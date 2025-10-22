@@ -1,6 +1,7 @@
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
 import { getTeamMembers } from "@/pages/Team/API/api-calls";
+import { AddTeamMember } from "@/pages/Team/components/add-member";
 import { useLocalSearchParams } from "expo-router";
 import { User } from "lucide-react-native"; // Lucide icon
 import React, { useEffect, useState } from "react";
@@ -55,7 +56,6 @@ export default function ManageMembers() {
     <View style={styles.container}>
       <SafeAreaView>
         <Text variant="heading">Team Members </Text>
-
         <FlatList
           data={members}
           keyExtractor={(item) => item.userId}
@@ -64,6 +64,7 @@ export default function ManageMembers() {
           renderItem={renderItem}
           contentContainerStyle={{ paddingHorizontal: 20 }}
         />
+        <AddTeamMember />
       </SafeAreaView>
     </View>
   );
