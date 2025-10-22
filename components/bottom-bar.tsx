@@ -1,5 +1,6 @@
 import { useAddTaskSheet } from "@/contexts/add-task-context";
 import { useAddTeamBottomSheet } from "@/contexts/add-team-context";
+import { useAddTeamMemberBottomSheet } from "@/contexts/add-team-member-context";
 import { useAddTeamTaskSheet } from "@/contexts/add-team-task-context";
 import { useJoinTeamBottomSheet } from "@/contexts/join-team-contex";
 import { usePallet } from "@/hooks/use-pallet";
@@ -43,6 +44,7 @@ const BottomBar = () => {
   const { open: JoinTeamOpen } = useJoinTeamBottomSheet();
   const { open: AddTaskOpen } = useAddTaskSheet();
   const { open: AddTeamTaskOpen } = useAddTeamTaskSheet();
+  const { open: AddTeamMemberTaskOpen } = useAddTeamMemberBottomSheet();
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
@@ -64,7 +66,9 @@ const BottomBar = () => {
         ))}
       </View>
       {!["/team", "/TeamDetails"].includes(pathname) &&
-        !pathname.endsWith("/TeamDetails") && (
+        !pathname.endsWith("/TeamDetails") &&
+        !pathname.endsWith("/teamTaskPage") &&
+        !pathname.endsWith("/teamMembers") && (
           <TouchableOpacity
             style={styles.addButton}
             onPress={() => {
@@ -113,7 +117,8 @@ const BottomBar = () => {
           )}
         </>
       )}
-      {pathname.endsWith("/TeamDetails") && (
+      {(pathname.endsWith("/TeamDetails") ||
+        pathname.endsWith("/teamTaskPage")) && (
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => {
@@ -121,6 +126,16 @@ const BottomBar = () => {
           }}
         >
           <Plus color="white" size={36} />
+        </TouchableOpacity>
+      )}
+      {pathname.endsWith("/teamMembers") && (
+        <TouchableOpacity
+          style={styles.addButton}
+          onPress={() => {
+            AddTeamMemberTaskOpen();
+          }}
+        >
+          <UserPlus color="white" size={34} />
         </TouchableOpacity>
       )}
     </View>
