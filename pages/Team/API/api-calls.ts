@@ -49,11 +49,10 @@ export const createTeam = async (
 };
 
 // 2. Invite Member
-export const inviteMember = async (payload: {
-  teamId: string;
-  userId: string;
+export const requestTojoin = async (payload: {
   userName: string;
-  role?: string;
+  mail: string;
+  teamId: string;
 }): Promise<{ success: boolean; data: any }> => {
   try {
     const response = await apicall.post("/team/invite-member", payload);
@@ -67,7 +66,7 @@ export const inviteMember = async (payload: {
 // 3. Accept Team Invite
 export const acceptTeamInvite = async (payload: {
   teamId: string;
-  userId: string;
+  requestUserId: string;
 }): Promise<{ success: boolean; data: any }> => {
   try {
     const response = await apicall.post("/team/accept-invite", payload);

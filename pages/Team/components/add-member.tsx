@@ -39,7 +39,7 @@ export function AddTeamMember() {
         <View style={styles.codeContainer}>
           <Text style={styles.codeText}>{teamid || "No code available"}</Text>
           <TouchableOpacity onPress={copyToClipboard} style={styles.copyButton}>
-            <Copy size={20} color={copied ? "green" : "#333"} />
+            <Copy size={18} color={copied ? "green" : "#333"} />
           </TouchableOpacity>
         </View>
       </BottomSheet>
