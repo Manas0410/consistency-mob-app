@@ -5,12 +5,14 @@ import { Image } from "@/components/ui/image";
 import { ParallaxScrollView } from "@/components/ui/parallax-scrollview";
 import StreakCard from "@/components/ui/streak-card";
 import TaskProgressCard from "@/components/ui/task-progress-card";
+import { Text } from "@/components/ui/text";
 import WeekTaskCompletionCard from "@/components/ui/WeekTaskCompletionCard";
 import { Colors } from "@/constants/theme";
 import { usePallet } from "@/hooks/use-pallet";
 import { useTheme } from "@/hooks/use-theme";
+import { SPACING } from "@/theme/globals";
 import { useUser } from "@clerk/clerk-expo";
-import { ScrollView, StyleSheet, Text, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function HomeScreen() {
@@ -31,48 +33,34 @@ export default function HomeScreen() {
         />
       }
     >
-      <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         <SafeAreaView style={{ flex: 1 }}>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              paddingHorizontal: 16,
-              paddingTop: 10,
-              position: "sticky",
-              top: 0,
-            }}
-          >
-            <Text style={[styles.Heading, { color: pallet.shade1 }]}>
-              25 Hours
+          <View style={styles.header}>
+            <View style={styles.headerContent}>
+              <Text variant="heading" style={{ color: pallet.shade1 }}>
+                25 Hours
+              </Text>
+              <Avatar>
+                <AvatarImage
+                  source={{
+                    uri:
+                      user?.imageUrl ||
+                      `https://avatars.githubusercontent.com/u/99088394?v=4`,
+                  }}
+                />
+                <AvatarFallback>{user?.username?.[0]}</AvatarFallback>
+              </Avatar>
+            </View>
+            <Text variant="caption" style={styles.subtitle}>
+              Believe you can and you're halfway there! ✨
             </Text>
-            <Avatar>
-              <AvatarImage
-                source={{
-                  uri:
-                    user?.imageUrl ||
-                    `https://avatars.githubusercontent.com/u/99088394?v=4`,
-                }}
-              />
-              <AvatarFallback>{user?.username?.[0]}</AvatarFallback>
-            </Avatar>
           </View>
-          <Text
-            style={{
-              color: colors.textSecondary,
-              marginLeft: 10,
-              marginBottom: 10,
-            }}
-          >
-            Believe you can and you're halfway there!
-          </Text>
 
           <ScrollView
-            contentContainerStyle={{ paddingBottom: 100 }}
+            contentContainerStyle={styles.scrollContent}
             showsVerticalScrollIndicator={false}
           >
-            <View style={{ flex: 1, display: "flex", gap: 12, padding: 10 }}>
+            <View style={styles.cardsContainer}>
               <StreakCard streak={50} />
               <TaskProgressCard
                 percentage={75}
@@ -100,11 +88,30 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  Heading: {
-    fontSize: 30,
-    fontWeight: "800",
-    marginBottom: 0,
-    display: "flex",
-    flexDirection: "column",
+  container: {
+    flex: 1,
+  },
+  header: {
+    paddingHorizontal: SPACING.md,
+    paddingTop: SPACING.md,
+    paddingBottom: SPACING.sm,
+  },
+  headerContent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: SPACING.sm,
+  },
+  subtitle: {
+    marginLeft: SPACING.xs,
+    opacity: 0.8,
+  },
+  scrollContent: {
+    paddingBottom: 120,
+  },
+  cardsContainer: {
+    flex: 1,
+    gap: SPACING.md,
+    paddingHorizontal: SPACING.md,
   },
 });

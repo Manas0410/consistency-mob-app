@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/theme";
 import { usePallet } from "@/hooks/use-pallet";
 import { useTheme } from "@/hooks/use-theme";
+import { RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from "@/theme/globals";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PieChart } from "react-native-gifted-charts";
@@ -72,18 +73,17 @@ export default function TaskProgressCard({
 const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
-    borderRadius: 18,
-    padding: 18,
-    borderWidth: 2,
+    borderRadius: RADIUS.xl,
+    padding: SPACING.lg,
     alignItems: "center",
-    borderColor: "#e0e0e0",
+    ...SHADOWS.base,
   },
   leftBox: {
     alignItems: "center",
     justifyContent: "center",
-    borderRadius: 12,
-    padding: 8,
-    marginRight: 18,
+    borderRadius: RADIUS.md,
+    padding: SPACING.sm,
+    marginRight: SPACING.lg,
   },
   chartContainer: {
     position: "relative",
@@ -102,8 +102,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   centerText: {
-    fontSize: 22,
-    fontWeight: "bold",
+    fontSize: TYPOGRAPHY.fontSize['2xl'],
+    fontWeight: TYPOGRAPHY.fontWeight.bold,
   },
   rightBox: {
     flex: 1,
@@ -111,35 +111,37 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     flexDirection: "column",
     height: 160,
-    paddingTop: 10,
+    paddingTop: SPACING.sm,
   },
   statusTitle: {
-    fontSize: 18,
-    fontWeight: "500",
-    marginBottom: 8,
+    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontWeight: TYPOGRAPHY.fontWeight.semibold,
+    marginBottom: SPACING.sm,
+    lineHeight: TYPOGRAPHY.fontSize.lg * TYPOGRAPHY.lineHeight.snug,
   },
   taskRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: SPACING.sm,
   },
   taskName: {
-    fontSize: 16,
+    fontSize: TYPOGRAPHY.fontSize.base,
     flex: 1,
+    lineHeight: TYPOGRAPHY.fontSize.base * TYPOGRAPHY.lineHeight.normal,
   },
   checkbox: {
-    marginLeft: 12,
+    marginLeft: SPACING.md,
     borderWidth: 1,
-    borderRadius: 4,
-    padding: 2,
+    borderRadius: RADIUS.sm,
+    padding: SPACING.xs,
   },
   detailBtn: {
     alignSelf: "flex-end",
-    marginTop: 12,
+    marginTop: SPACING.md,
   },
   detailText: {
-    fontSize: 15,
-    fontWeight: "500",
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    fontWeight: TYPOGRAPHY.fontWeight.medium,
     textDecorationLine: "underline",
   },
 });

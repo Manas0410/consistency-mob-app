@@ -5,37 +5,62 @@
 
 import { Platform } from "react-native";
 
-const tintColorLight = "#0a7ea4";
-const tintColorDark = "#fff";
+// Modern theme colors aligned with the main color system
+const tintColorLight = "#6366F1";
+const tintColorDark = "#818CF8";
 
 export const Colors = {
   light: {
-    text: "#11181C",
-    textSecondary: "#888",
-    background: "#fff",
+    text: "#0F172A",
+    textSecondary: "#64748B",
+    background: "#FAFAFA",
     tint: tintColorLight,
-    icon: "#687076",
-    tabIconDefault: "#687076",
+    icon: "#64748B",
+    tabIconDefault: "#94A3B8",
     tabIconSelected: tintColorLight,
   },
   dark: {
-    text: "#ECEDEE",
-    textSecondary: "#888",
-    background: "#151718",
+    text: "#F8FAFC",
+    textSecondary: "#94A3B8",
+    background: "#0F0F10",
     tint: tintColorDark,
-    icon: "#9BA1A6",
-    tabIconDefault: "#9BA1A6",
+    icon: "#94A3B8",
+    tabIconDefault: "#64748B",
     tabIconSelected: tintColorDark,
   },
 };
 
+// Enhanced color palettes for different app features
 export const Pallets = {
   blue: {
-    // shade1: "#175385",
-    shade1: "#177AD5",
-    shade2: "#0eafff",
-    shade3: "#77d2ff",
-    shade4: "#d8f1fc",
+    shade1: "#3B82F6",
+    shade2: "#60A5FA", 
+    shade3: "#93C5FD",
+    shade4: "#DBEAFE",
+  },
+  indigo: {
+    shade1: "#6366F1",
+    shade2: "#818CF8",
+    shade3: "#A5B4FC", 
+    shade4: "#E0E7FF",
+  },
+  purple: {
+    shade1: "#8B5CF6",
+    shade2: "#A78BFA",
+    shade3: "#C4B5FD",
+    shade4: "#EDE9FE",
+  },
+  teal: {
+    shade1: "#14B8A6",
+    shade2: "#2DD4BF",
+    shade3: "#5EEAD4",
+    shade4: "#CCFBF1",
+  },
+  green: {
+    shade1: "#10B981",
+    shade2: "#34D399",
+    shade3: "#6EE7B7",
+    shade4: "#D1FAE5",
   },
 };
 

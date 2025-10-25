@@ -1,5 +1,6 @@
 import { Colors } from "@/constants/theme";
 import { useTheme } from "@/hooks/use-theme";
+import { RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from "@/theme/globals";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -95,55 +96,57 @@ export default function HabitCard({
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 24,
-    padding: 18,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 8,
-    elevation: 2,
+    borderRadius: RADIUS.xl,
+    padding: SPACING.lg,
+    ...SHADOWS.base,
     minWidth: 320,
   },
   title: {
-    fontSize: 22,
-    fontWeight: "bold",
-    marginBottom: 2,
+    fontSize: TYPOGRAPHY.fontSize['2xl'],
+    fontWeight: TYPOGRAPHY.fontWeight.bold,
+    marginBottom: SPACING.xs,
   },
   habitRow: {
     flexDirection: "row",
     alignItems: "center",
+    marginBottom: SPACING.md,
   },
   iconCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+    width: 52,
+    height: 52,
+    borderRadius: RADIUS.full,
     justifyContent: "center",
     alignItems: "center",
-    marginRight: 14,
+    marginRight: SPACING.md,
   },
   habitInfo: {
     flex: 1,
   },
   habitName: {
-    fontSize: 17,
-    fontWeight: "bold",
+    fontSize: TYPOGRAPHY.fontSize.lg,
+    fontWeight: TYPOGRAPHY.fontWeight.semibold,
+    lineHeight: TYPOGRAPHY.fontSize.lg * TYPOGRAPHY.lineHeight.snug,
   },
   habitSub: {
-    fontSize: 15,
-    marginTop: 2,
+    fontSize: TYPOGRAPHY.fontSize.sm,
+    marginTop: SPACING.xs,
+    lineHeight: TYPOGRAPHY.fontSize.sm * TYPOGRAPHY.lineHeight.normal,
   },
   habitStatus: {
-    marginLeft: 10,
+    marginLeft: SPACING.sm,
   },
   manageBtn: {
-    backgroundColor: "#D6E7FF",
-    borderRadius: 16,
-    paddingVertical: 12,
+    backgroundColor: "#E0E7FF",
+    borderRadius: RADIUS.lg,
+    paddingVertical: SPACING.md,
+    paddingHorizontal: SPACING.lg,
     alignItems: "center",
-    marginTop: 8,
+    marginTop: SPACING.md,
+    ...SHADOWS.sm,
   },
   manageText: {
-    color: "#2196F3",
-    fontSize: 16,
-    fontWeight: "bold",
+    color: "#6366F1",
+    fontSize: TYPOGRAPHY.fontSize.base,
+    fontWeight: TYPOGRAPHY.fontWeight.semibold,
   },
 });

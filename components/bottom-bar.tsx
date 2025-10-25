@@ -1,44 +1,50 @@
+import { Colors } from "@/constants/theme";
 import { useAddTaskSheet } from "@/contexts/add-task-context";
 import { useAddTeamBottomSheet } from "@/contexts/add-team-context";
 import { useAddTeamMemberBottomSheet } from "@/contexts/add-team-member-context";
 import { useAddTeamTaskSheet } from "@/contexts/add-team-task-context";
 import { useJoinTeamBottomSheet } from "@/contexts/join-team-contex";
 import { usePallet } from "@/hooks/use-pallet";
-import { useNavigation } from "@react-navigation/native";
+import { useTheme } from "@/hooks/use-theme";
 import { usePathname, useRouter } from "expo-router";
 import {
   Brain,
-  Calendar,
   ChevronUp,
+  Flame,
   Home,
   PackagePlus,
   Plus,
   Settings,
   UserPlus,
   Users,
-  X,
+  X
 } from "lucide-react-native";
 import React from "react";
-import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context"; // <-- Add this
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const bottomBarOptions = [
   { name: "Home", icon: Home, url: "/" },
-  { name: "Tasks", icon: Calendar, url: "/calendar" },
+  { name: "Streaks", icon: Flame, url: "/streaks" },
   { name: "AI Chat", icon: Brain, url: "/ai-chat" },
   { name: "Team", icon: Users, url: "/team" },
   { name: "Settings", icon: Settings, url: "/settings" },
 ];
 
 const BottomBar = () => {
-  const navigation = useNavigation();
-  const insets = useSafeAreaInsets(); // <-- Get insets
+  const insets = useSafeAreaInsets();
   const router = useRouter();
   const pathname = usePathname();
   const pallet = usePallet();
+  const theme = useTheme();
+  const colors = theme === "dark" ? Colors.dark : Colors.light;
 
   const [isTeamsButtonExpanded, setIsTeamsButtonExpanded] =
     React.useState(true);
+
+  // Animation values
+  const buttonScale = useSharedValue(1);
 
   const { open: AddTeamOpen } = useAddTeamBottomSheet();
   const { open: JoinTeamOpen } = useJoinTeamBottomSheet();
@@ -46,44 +52,79 @@ const BottomBar = () => {
   const { open: AddTeamTaskOpen } = useAddTeamTaskSheet();
   const { open: AddTeamMemberTaskOpen } = useAddTeamMemberBottomSheet();
 
+  const animatedButtonStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: buttonScale.value }],
+  }));
+
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
       <View style={styles.bar}>
         {bottomBarOptions.map((option) => (
           <TouchableOpacity
             key={option.name}
-            style={styles.iconButton}
-            // @ts-ignore
-            onPress={() => router.push(option.url)}
+            style={[
+              styles.iconButton,
+              pathname === option.url && [styles.activeIconButton, { backgroundColor: pallet.shade4 }]
+            ]}
+            onPress={() => {
+              buttonScale.value = withSpring(0.95, {}, () => {
+                buttonScale.value = withSpring(1);
+              });
+              // @ts-ignore
+              router.push(option.url);
+            }}
             activeOpacity={0.7}
           >
             <option.icon
               size={24}
-              color={pathname === option.url ? pallet.shade2 : undefined}
-              fill={pathname === option.url ? pallet.shade2 : "none"}
+              color={pathname === option.url ? pallet.shade1 : colors.icon}
+              fill={pathname === option.url ? pallet.shade1 : "none"}
             />
           </TouchableOpacity>
         ))}
       </View>
       {!["/team", "/TeamDetails"].includes(pathname) &&
-        !pathname.endsWith("/TeamDetails") &&
-        !pathname.endsWith("/teamTaskPage") &&
-        !pathname.endsWith("/teamMembers") && (
-          <TouchableOpacity
-            style={styles.addButton}
-            onPress={() => {
-              AddTaskOpen();
-            }}
-          >
-            <Plus color="white" size={36} />
-          </TouchableOpacity>
+        !pathname.endsWith("/TeamDetails") && (
+          <Animated.View style={[
+            styles.addButton, 
+            { 
+              backgroundColor: pallet.shade1,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 8,
+            }, 
+            animatedButtonStyle
+          ]}>
+            <TouchableOpacity
+              style={styles.addButtonInner}
+              onPress={() => {
+                buttonScale.value = withSpring(0.9, {}, () => {
+                  buttonScale.value = withSpring(1);
+                });
+                AddTaskOpen();
+              }}
+            >
+              <Plus color="white" size={32} />
+            </TouchableOpacity>
+          </Animated.View>
         )}
       {["/team"].includes(pathname) && (
         <>
           {isTeamsButtonExpanded ? (
             <View style={styles.buttonCnt}>
               <TouchableOpacity
-                style={styles.BtnCntCross}
+                style={[
+                  styles.BtnCntCross,
+                  {
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.2,
+                    shadowRadius: 4,
+                    elevation: 4,
+                  }
+                ]}
                 onPress={() => {
                   setIsTeamsButtonExpanded(false);
                 }}
@@ -91,7 +132,17 @@ const BottomBar = () => {
                 <X size={24} />
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.BtnCntBtn}
+                style={[
+                  styles.BtnCntBtn, 
+                  { 
+                    backgroundColor: pallet.shade1,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 8,
+                    elevation: 8,
+                  }
+                ]}
                 onPress={() => {
                   AddTeamOpen();
                 }}
@@ -99,7 +150,17 @@ const BottomBar = () => {
                 <PackagePlus color="white" size={36} />
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.BtnCntBtn}
+                style={[
+                  styles.BtnCntBtn, 
+                  { 
+                    backgroundColor: pallet.shade2,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 4 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 8,
+                    elevation: 8,
+                  }
+                ]}
                 onPress={() => {
                   JoinTeamOpen();
                 }}
@@ -153,80 +214,64 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    alignItems: "center",
-    zIndex: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 5,
-    backgroundColor: "#fff",
-    // borderTopLeftRadius: 23,
-    // borderTopRightRadius: 23,
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
   },
   bar: {
     flexDirection: "row",
-    borderTopLeftRadius: 23,
-    borderTopRightRadius: 23,
     height: BAR_HEIGHT,
     justifyContent: "space-around",
     alignItems: "center",
-    width: Dimensions.get("window").width,
-    paddingHorizontal: 14,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
   },
   iconButton: {
     flex: 1,
     alignItems: "center",
     paddingVertical: 8,
+    paddingHorizontal: 4,
+  },
+  activeIconButton: {
+    backgroundColor: '#f0f0f0',
+    borderRadius: 8,
   },
   addButton: {
     position: "absolute",
-    right: 22,
-    bottom: BAR_HEIGHT + 48,
-    backgroundColor: "#23A8FF",
+    right: 20,
+    bottom: BAR_HEIGHT + 45,
     width: ADD_BUTTON_SIZE,
     height: ADD_BUTTON_SIZE,
     borderRadius: ADD_BUTTON_SIZE / 2,
+  },
+  addButtonInner: {
+    width: '100%',
+    height: '100%',
     justifyContent: "center",
     alignItems: "center",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
+    borderRadius: ADD_BUTTON_SIZE / 2,
   },
   buttonCnt: {
     position: "absolute",
-    right: 22,
-    bottom: BAR_HEIGHT + 48,
+    right: 20,
+    bottom: BAR_HEIGHT + 45,
     gap: 16,
     alignItems: "center",
   },
   BtnCntBtn: {
-    backgroundColor: "#23A8FF",
     width: ADD_BUTTON_SIZE,
     height: ADD_BUTTON_SIZE,
     borderRadius: ADD_BUTTON_SIZE / 2,
     justifyContent: "center",
     alignItems: "center",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
   },
   BtnCntCross: {
-    backgroundColor: "#c6c4c4ff",
+    backgroundColor: "#94A3B8",
     width: 34,
     height: 34,
     borderRadius: 17,
     justifyContent: "center",
     alignItems: "center",
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
   },
 });
 
