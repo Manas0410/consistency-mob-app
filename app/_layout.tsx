@@ -36,6 +36,7 @@ export default function RootLayout() {
             {!["/sign-in", "/sign-up", "/ai-chat"].includes(pathname) && (
               <BottomBar />
             )}
+            {/* Keep TaskForm and TeamTaskForm inside GlobalContextProvider to access contexts */}
             <TaskForm />
             <TeamTaskForm />
             <StatusBar style="auto" />
