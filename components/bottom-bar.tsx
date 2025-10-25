@@ -5,20 +5,18 @@ import { useAddTeamTaskSheet } from "@/contexts/add-team-task-context";
 import { useJoinTeamBottomSheet } from "@/contexts/join-team-contex";
 import { usePallet } from "@/hooks/use-pallet";
 import { useTheme } from "@/hooks/use-theme";
-// Removed design token imports for simplified styling
-import { useNavigation } from "@react-navigation/native";
 import { usePathname, useRouter } from "expo-router";
 import {
   Brain,
-  Calendar,
   ChevronUp,
+  Flame,
   Home,
   PackagePlus,
   Plus,
   Settings,
   UserPlus,
   Users,
-  X,
+  X
 } from "lucide-react-native";
 import React from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
@@ -27,14 +25,13 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const bottomBarOptions = [
   { name: "Home", icon: Home, url: "/" },
-  { name: "Tasks", icon: Calendar, url: "/calendar" },
+  { name: "Streaks", icon: Flame, url: "/streaks" },
   { name: "AI Chat", icon: Brain, url: "/ai-chat" },
   { name: "Team", icon: Users, url: "/team" },
   { name: "Settings", icon: Settings, url: "/settings" },
 ];
 
 const BottomBar = () => {
-  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const pathname = usePathname();
