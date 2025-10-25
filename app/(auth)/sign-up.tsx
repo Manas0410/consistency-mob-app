@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InputOTP } from "@/components/ui/input-otp";
+import { PasswordInput } from "@/components/ui/password-input";
 import { useSignUp } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import { KeyRound, Mail, User } from "lucide-react-native";
@@ -13,6 +14,7 @@ export default function Page() {
 
   const [emailAddress, setEmailAddress] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
   const [username, setUsername] = React.useState(""); // NEW FIELD
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [code, setCode] = React.useState("");
@@ -28,6 +30,17 @@ export default function Page() {
       setErrorMsg("Username is required.");
       return;
     }
+
+    if (password !== confirmPassword) {
+      setErrorMsg("Passwords don't match. Please try again.");
+      return;
+    }
+
+    if (password.length < 8) {
+      setErrorMsg("Password must be at least 8 characters long.");
+      return;
+    }
+
     setLoading(true);
     try {
       await signUp.create({ emailAddress, password, username }); // ADD USERNAME HERE
@@ -129,19 +142,28 @@ export default function Page() {
         onChangeText={setEmailAddress}
         keyboardType="email-address"
       />
-      <Input
+      <PasswordInput
         placeholder="Enter Password"
         variant="outline"
         icon={KeyRound}
         label="Password"
         placeholderTextColor="#888"
-        secureTextEntry={true}
+        value={password}
         onChangeText={setPassword}
+      />
+      <PasswordInput
+        placeholder="Confirm Password"
+        variant="outline"
+        icon={KeyRound}
+        label="Confirm Password"
+        placeholderTextColor="#888"
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
       />
       {errorMsg ? <Text style={styles.error}>{errorMsg}</Text> : null}
       <Button
         onPress={onSignUpPress}
-        disabled={loading || !emailAddress || !password || !username}
+        disabled={loading || !emailAddress || !password || !confirmPassword || !username}
         variant="success"
         loading={loading}
       >
