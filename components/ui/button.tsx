@@ -2,22 +2,22 @@ import { Icon } from "@/components/ui/icon";
 import { ButtonSpinner, SpinnerVariant } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { useColor } from "@/hooks/useColor";
-import { CORNERS, FONT_SIZE, HEIGHT } from "@/theme/globals";
+import { HEIGHT, RADIUS, SHADOWS, SPACING, TYPOGRAPHY } from "@/theme/globals";
 import * as Haptics from "expo-haptics";
 import { LucideProps } from "lucide-react-native";
 import { forwardRef } from "react";
 import {
-  Pressable,
-  TextStyle,
-  TouchableOpacity,
-  TouchableOpacityProps,
-  View,
-  ViewStyle,
+    Pressable,
+    TextStyle,
+    TouchableOpacity,
+    TouchableOpacityProps,
+    View,
+    ViewStyle,
 } from "react-native";
 import Animated, {
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
 } from "react-native-reanimated";
 
 export type ButtonVariant =
@@ -81,29 +81,40 @@ export const Button = forwardRef<View, ButtonProps>(
 
     const getButtonStyle = (): ViewStyle => {
       const baseStyle: ViewStyle = {
-        borderRadius: CORNERS,
+        borderRadius: RADIUS.xl,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
+        ...SHADOWS.sm, // Add subtle shadow for depth
       };
 
-      // Size variants
+      // Size variants with modern spacing
       switch (size) {
         case "sm":
-          Object.assign(baseStyle, { height: 44, paddingHorizontal: 24 });
+          Object.assign(baseStyle, { 
+            height: HEIGHT.sm, 
+            paddingHorizontal: SPACING.lg 
+          });
           break;
         case "lg":
-          Object.assign(baseStyle, { height: 54, paddingHorizontal: 36 });
+          Object.assign(baseStyle, { 
+            height: HEIGHT.lg, 
+            paddingHorizontal: SPACING.xl 
+          });
           break;
         case "icon":
           Object.assign(baseStyle, {
-            height: HEIGHT,
-            width: HEIGHT,
+            height: HEIGHT.base,
+            width: HEIGHT.base,
             paddingHorizontal: 0,
+            borderRadius: RADIUS.full,
           });
           break;
         default:
-          Object.assign(baseStyle, { height: HEIGHT, paddingHorizontal: 32 });
+          Object.assign(baseStyle, { 
+            height: HEIGHT.base, 
+            paddingHorizontal: SPACING.xl 
+          });
       }
 
       // Variant styles
@@ -127,7 +138,7 @@ export const Button = forwardRef<View, ButtonProps>(
           return {
             ...baseStyle,
             backgroundColor: "transparent",
-            height: "auto",
+            height: undefined, // Allow auto height for links
             paddingHorizontal: 0,
           };
         default:
@@ -137,8 +148,9 @@ export const Button = forwardRef<View, ButtonProps>(
 
     const getButtonTextStyle = (): TextStyle => {
       const baseTextStyle: TextStyle = {
-        fontSize: FONT_SIZE,
-        fontWeight: "500",
+        fontSize: TYPOGRAPHY.fontSize.base,
+        fontWeight: TYPOGRAPHY.fontWeight.medium,
+        letterSpacing: 0.5, // Add subtle letter spacing for modern look
       };
 
       switch (variant) {
@@ -297,7 +309,7 @@ export const Button = forwardRef<View, ButtonProps>(
         : flexValue !== null
         ? {
             flex: flexValue,
-            maxHeight: size === "sm" ? 44 : size === "lg" ? 54 : HEIGHT,
+            maxHeight: size === "sm" ? HEIGHT.sm : size === "lg" ? HEIGHT.lg : HEIGHT.base,
           }
         : {};
     };
@@ -341,7 +353,7 @@ export const Button = forwardRef<View, ButtonProps>(
             />
           ) : typeof children === "string" ? (
             <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+              style={{ flexDirection: "row", alignItems: "center", gap: SPACING.sm }}
             >
               {icon && (
                 <Icon name={icon} color={contentColor} size={iconSize} />
@@ -350,7 +362,7 @@ export const Button = forwardRef<View, ButtonProps>(
             </View>
           ) : (
             <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+              style={{ flexDirection: "row", alignItems: "center", gap: SPACING.sm }}
             >
               {icon && (
                 <Icon name={icon} color={contentColor} size={iconSize} />
@@ -376,7 +388,7 @@ export const Button = forwardRef<View, ButtonProps>(
             color={contentColor}
           />
         ) : typeof children === "string" ? (
-          <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: SPACING.sm }}>
             {icon && <Icon name={icon} color={contentColor} size={iconSize} />}
             <Text style={[finalTextStyle, textStyle]}>{children}</Text>
           </View>

@@ -1,7 +1,10 @@
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
+import { Colors } from "@/constants/theme";
+import { useTheme } from "@/hooks/use-theme";
+import { HEIGHT, SHADOWS, SPACING } from "@/theme/globals";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useRouter } from "expo-router";
+import { router, useRouter } from "expo-router";
 import React, { ReactNode } from "react";
 import {
   StyleSheet,
@@ -17,6 +20,13 @@ interface HeaderProps {
   textStyle?: TextStyle;
 }
 
+const backClick = () => {
+  if (router.canGoBack()) {
+    router.back();
+  } else {
+    router.replace("/");
+  }
+};  
 const BackHeader: React.FC<HeaderProps> = ({
   title,
   children,
@@ -24,13 +34,17 @@ const BackHeader: React.FC<HeaderProps> = ({
   textStyle,
 }) => {
   const router = useRouter();
+  const theme = useTheme();
+  const colors = theme === "dark" ? Colors.dark : Colors.light;
 
   return (
-    <View style={[styles.header, style]}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
-        <Ionicons name="arrow-back" size={28} color="#333" />
+    <View style={[styles.header, { backgroundColor: colors.background, borderBottomColor: "#ddd" }, style]}>
+      <TouchableOpacity onPress={backClick} style={styles.iconButton}>
+        <Ionicons name="arrow-back" size={24} color={colors.text} />
       </TouchableOpacity>
-      <Text style={[styles.title, textStyle]}>{title}</Text>
+      <Text variant="subtitle" style={[styles.title, { color: colors.text }, textStyle]}>
+        {title}
+      </Text>
       {children ? children : <View style={styles.iconButton} />}
     </View>
   );
@@ -38,20 +52,22 @@ const BackHeader: React.FC<HeaderProps> = ({
 
 const styles = StyleSheet.create({
   header: {
-    height: 56,
+    height: HEIGHT.lg,
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 12,
+    paddingHorizontal: SPACING.md,
     justifyContent: "space-between",
-    backgroundColor: "#fff",
     borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    ...SHADOWS.sm,
   },
-  iconButton: { padding: 6 },
+  iconButton: { 
+    padding: SPACING.sm,
+    borderRadius: 999,
+  },
   title: {
-    fontSize: 22,
-    fontWeight: "700",
-    color: "#222",
+    flex: 1,
+    textAlign: "center",
+    marginHorizontal: SPACING.md,
   },
 });
 
