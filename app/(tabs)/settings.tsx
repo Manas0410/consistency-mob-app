@@ -3,19 +3,21 @@ import { Text } from '@/components/ui/text';
 import { Colors } from '@/constants/theme';
 import { usePallet } from '@/hooks/use-pallet';
 import { useTheme } from '@/hooks/use-theme';
+import { useClerk } from '@clerk/clerk-expo';
+import { useRouter } from 'expo-router';
 import {
-  ChevronRight,
-  Clock,
-  Download,
-  Edit3,
-  Moon,
-  Palette,
-  Shield,
-  Star,
-  User
+    ChevronRight,
+    Clock,
+    Download,
+    Edit3,
+    Moon,
+    Palette,
+    Shield,
+    Star,
+    User
 } from 'lucide-react-native';
 import React, { useState } from 'react';
-import { Dimensions, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Alert, Dimensions, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width } = Dimensions.get('window');
@@ -81,11 +83,39 @@ export default function SettingsScreen() {
   const theme = useTheme();
   const colors = theme === "dark" ? Colors.dark : Colors.light;
   const pallet = usePallet();
+  const { signOut } = useClerk();
+  const router = useRouter();
 
   const [selectedTheme, setSelectedTheme] = useState("light");
   const [selectedAccentColor, setSelectedAccentColor] = useState(0);
   const [remindersEnabled, setRemindersEnabled] = useState(true);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+
+  const handleSignOut = async () => {
+    Alert.alert(
+      "Sign Out",
+      "Are you sure you want to sign out?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Sign Out",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await signOut();
+              router.replace('/sign-in');
+            } catch (err) {
+              console.error('Sign out error:', err);
+              Alert.alert("Error", "Failed to sign out. Please try again.");
+            }
+          }
+        }
+      ]
+    );
+  };
 
   const ThemeToggleButtons = () => (
     <View style={styles.themeToggleContainer}>
@@ -327,7 +357,7 @@ export default function SettingsScreen() {
 
         {/* Sign Out and Version */}
         <View style={styles.bottomSection}>
-          <TouchableOpacity style={styles.signOutButton}>
+          <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
             <Text style={styles.signOutText}>Sign Out</Text>
           </TouchableOpacity>
           
