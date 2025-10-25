@@ -16,7 +16,7 @@ import {
   TouchableOpacity,
   ViewStyle,
 } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { Gesture, GestureDetector, GestureHandlerRootView } from "react-native-gesture-handler";
 import Animated, {
   Extrapolate,
   interpolate,
@@ -311,58 +311,60 @@ function CarouselContainer({
   });
 
   return (
-    <GestureDetector gesture={panGesture}>
-      <View style={{ overflow: "hidden" }}>
-        {/* Previous content */}
-        {previousTab && (
+    <GestureHandlerRootView>
+      <GestureDetector gesture={panGesture}>
+        <View style={{ overflow: "hidden" }}>
+          {/* Previous content */}
+          {previousTab && (
+            <Animated.View
+              style={[
+                {
+                  position: "absolute",
+                  width: screenWidth,
+                  paddingTop: 16,
+                },
+                style,
+                previousStyle,
+              ]}
+              pointerEvents="none"
+            >
+              {allTabContents[previousTab]}
+            </Animated.View>
+          )}
+
+          {/* Current content */}
           <Animated.View
             style={[
               {
-                position: "absolute",
-                width: screenWidth,
                 paddingTop: 16,
               },
               style,
-              previousStyle,
+              containerStyle,
             ]}
-            pointerEvents="none"
           >
-            {allTabContents[previousTab]}
+            {allTabContents[activeTab]}
           </Animated.View>
-        )}
 
-        {/* Current content */}
-        <Animated.View
-          style={[
-            {
-              paddingTop: 16,
-            },
-            style,
-            containerStyle,
-          ]}
-        >
-          {allTabContents[activeTab]}
-        </Animated.View>
-
-        {/* Next content */}
-        {nextTab && (
-          <Animated.View
-            style={[
-              {
-                position: "absolute",
-                width: screenWidth,
-                paddingTop: 16,
-              },
-              style,
-              nextStyle,
-            ]}
-            pointerEvents="none"
-          >
-            {allTabContents[nextTab]}
-          </Animated.View>
-        )}
-      </View>
-    </GestureDetector>
+          {/* Next content */}
+          {nextTab && (
+            <Animated.View
+              style={[
+                {
+                  position: "absolute",
+                  width: screenWidth,
+                  paddingTop: 16,
+                },
+                style,
+                nextStyle,
+              ]}
+              pointerEvents="none"
+            >
+              {allTabContents[nextTab]}
+            </Animated.View>
+          )}
+        </View>
+      </GestureDetector>
+    </GestureHandlerRootView>
   );
 }
 
@@ -429,7 +431,7 @@ export function TabsTrigger({
     borderRadius: style?.borderRadius ?? 8,
     alignItems: "center",
     justifyContent: "center",
-    minHeight: HEIGHT - 8,
+    minHeight: HEIGHT.base - 8,
     backgroundColor: isActive ? backgroundColor : "transparent",
     opacity: disabled ? 0.5 : 1,
     flex: orientation === "horizontal" ? 1 : undefined,
