@@ -6,8 +6,10 @@ import { useToast } from "@/components/ui/toast";
 import { View } from "@/components/ui/view";
 import { useJoinTeamBottomSheet } from "@/contexts/join-team-contex";
 import { useUser } from "@clerk/clerk-expo";
+import { useLocalSearchParams } from "expo-router";
 import { Plus } from "lucide-react-native";
 import React from "react";
+import { requestTojoin } from "../API/api-calls";
 
 export function JoinTeam({
   toggleRerender,
@@ -21,6 +23,7 @@ export function JoinTeam({
   const { success, error, warning, info } = useToast();
   const { user } = useUser();
   const { close, isVisible } = useJoinTeamBottomSheet();
+  const { teamid } = useLocalSearchParams();
 
   const handleTeamCreate = async () => {
     try {
@@ -29,7 +32,11 @@ export function JoinTeam({
         return;
       }
       setLoading(true);
-      //   let res = await createTeam(teamName, user?.username, user?.email);
+      let res = await requestTojoin({
+        userName: user?.username,
+        mail: user?.email,
+        teamId: teamid,
+      });
       if (res.success) {
         success("Request successfully sent");
         setTeamName("");

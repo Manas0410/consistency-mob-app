@@ -38,7 +38,7 @@ const StatusChangeCheckbox = ({ isChecked }: Props) => {
           onCheckedChange={(checked) => handleChange(checked)}
           styles={{
             borderColor: pallet.shade3,
-            backgroundColor: pallet.shade2,
+            backgroundColor: checked ? pallet.shade1 : undefined,
           }}
         />
       )}

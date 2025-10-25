@@ -49,11 +49,10 @@ export const createTeam = async (
 };
 
 // 2. Invite Member
-export const inviteMember = async (payload: {
-  teamId: string;
-  userId: string;
+export const requestTojoin = async (payload: {
   userName: string;
-  role?: string;
+  mail: string;
+  teamId: string;
 }): Promise<{ success: boolean; data: any }> => {
   try {
     const response = await apicall.post("/team/invite-member", payload);
@@ -67,7 +66,7 @@ export const inviteMember = async (payload: {
 // 3. Accept Team Invite
 export const acceptTeamInvite = async (payload: {
   teamId: string;
-  userId: string;
+  requestUserId: string;
 }): Promise<{ success: boolean; data: any }> => {
   try {
     const response = await apicall.post("/team/accept-invite", payload);
@@ -121,6 +120,7 @@ export const addTeamTask = async (
   taskData: TeamTask
 ): Promise<{ success: boolean; data: any }> => {
   try {
+    console.log(teamId, taskData);
     const response = await apicall.post("/team/tasks/add", {
       teamId,
       taskData,
@@ -159,6 +159,20 @@ export const deleteTeam = async (
     if (response.status !== 200)
       throw new Error(`Failed to delete team: ${response.statusText}`);
     return { success: true, data: response.data };
+  } catch (error) {
+    console.error("Error deleting team:", error);
+    return { success: false, data: { message: "error" } };
+  }
+};
+
+export const getTeamMembers = async (
+  teamId: string
+): Promise<{ success: boolean; data: any }> => {
+  try {
+    const response = await apicall.post("/team/get-members", { teamId });
+    if (response.status !== 200)
+      throw new Error(`Failed to delete team: ${response.statusText}`);
+    return { success: true, data: response.data?.members };
   } catch (error) {
     console.error("Error deleting team:", error);
     return { success: false, data: { message: "error" } };

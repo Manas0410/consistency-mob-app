@@ -20,6 +20,7 @@ import {
 } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { addTeamTask } from "./API/api-calls";
 
 const options = [
   { label: "Once", value: 0 },
@@ -37,7 +38,7 @@ export default function TeamTaskForm() {
   const [task, setTask] = useState<TaskData>({
     taskName: "",
     taskDescription: "",
-    TaskStartDateTime: addMinutes(new Date(), 15),
+    taskStartDateTime: addMinutes(new Date(), 15),
     duration: { hours: 0, minutes: 30 },
     priority: 0,
     frequency: [0],
@@ -84,29 +85,30 @@ export default function TeamTaskForm() {
       setStep(1);
       return;
     }
-    // try {
-    //   setLoading(true);
-    //   // const response = await addTeamTask(task);
-    //   if (response.success) {
-    //     success("Task added successfully!");
-    //     setTask({
-    //       taskName: "",
-    //       taskDescription: "",
-    //       TaskStartDateTime: addMinutes(new Date(), 15),
-    //       duration: { hours: 0, minutes: 30 },
-    //       priority: 0,
-    //       frequency: [0],
-    //     });
-    //     setStep(1);
-    //   } else {
-    //     error("Failed to add task.");
-    //   }
-    // } catch (err) {
-    //   console.log(err);
-    //   error("Failed to add task.");
-    // } finally {
-    //   setLoading(false);
-    // }
+    try {
+      setLoading(true);
+      const response = await addTeamTask(currentTeamData._id, task);
+      if (response.success) {
+        close();
+        success("Task added successfully!");
+        setTask({
+          taskName: "",
+          taskDescription: "",
+          taskStartDateTime: addMinutes(new Date(), 15),
+          duration: { hours: 0, minutes: 30 },
+          priority: 0,
+          frequency: [0],
+        });
+        setStep(1);
+      } else {
+        error("Failed to add task.");
+      }
+    } catch (err) {
+      console.log(err);
+      error("Failed to add task.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleNext = () => {
@@ -235,8 +237,8 @@ export default function TeamTaskForm() {
               <DatePicker
                 label="Date & Time"
                 mode="datetime"
-                value={task.TaskStartDateTime}
-                onChange={(date) => handleChange("TaskStartDateTime", date)}
+                value={task.taskStartDateTime}
+                onChange={(date) => handleChange("taskStartDateTime", date)}
                 placeholder="Select date and time"
                 timeFormat="12"
               />

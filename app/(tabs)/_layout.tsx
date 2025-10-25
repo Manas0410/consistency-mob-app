@@ -27,6 +27,14 @@ export default function TabLayout() {
         name="[teamid]/TeamDetails"
         options={{ headerShown: false }}
       />
+      <Stack.Screen
+        name="[teamid]/teamTaskPage"
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="[teamid]/teamMembers"
+        options={{ headerShown: false }}
+      />
     </Stack>
   );
 }

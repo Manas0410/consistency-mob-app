@@ -1,7 +1,7 @@
 import { ParallaxScrollView } from "@/components/ui/parallax-scrollview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Image } from "expo-image";
-import { useLocalSearchParams, usePathname } from "expo-router";
+import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PieChart } from "react-native-gifted-charts";
@@ -33,6 +33,8 @@ function TeamDashboard() {
   const { teamid } = useLocalSearchParams();
   const pathName = usePathname();
 
+  const router = useRouter();
+
   return (
     <ParallaxScrollView
       headerHeight={350}
@@ -47,9 +49,9 @@ function TeamDashboard() {
       <View style={{ gap: 16 }}>
         {/* TOP CARD with chart + stats */}
         <View style={styles.card}>
-          <Text style={styles.overviewLabel}>
+          {/* <Text style={styles.overviewLabel}>
             Task Overview {teamid} {pathName}
-          </Text>
+          </Text> */}
           <Text style={styles.count}>{totalCount}</Text>
           <Text style={styles.monthProgress}>
             Task Completion{" "}
@@ -139,13 +141,13 @@ function TeamDashboard() {
         <View style={styles.actionRow}>
           <TouchableOpacity
             style={styles.actionBtn}
-            onPress={() => handlePress("tasks")}
+            onPress={() => router.replace(`/${teamid}/teamTaskPage`)}
           >
             <Text style={styles.actionText}>View Tasks</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.actionBtn}
-            onPress={() => handlePress("members")}
+            onPress={() => router.replace(`/${teamid}/teamMembers`)}
           >
             <Text style={styles.actionText}>Manage Members</Text>
           </TouchableOpacity>
