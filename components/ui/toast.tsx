@@ -9,6 +9,7 @@ import React, {
 } from 'react';
 import {
   Dimensions,
+  Modal,
   Platform,
   TouchableOpacity,
   View,
@@ -230,12 +231,26 @@ export function Toast({
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.25,
     shadowRadius: 20,
-    elevation: 10,
-    zIndex: 1000 + index,
+    elevation: 25,
+    zIndex: 1,
   };
 
+  // Use Modal to ensure toast appears above all other content including other modals
   return (
-    <GestureDetector gesture={panGesture}>
+    <Modal
+      transparent
+      visible={true}
+      statusBarTranslucent
+      animationType="none"
+      pointerEvents="box-none"
+    >
+      <GestureHandlerRootView 
+        style={{ 
+          flex: 1, 
+          pointerEvents: 'box-none'
+        }}
+      >
+        <GestureDetector gesture={panGesture}>
       <Animated.View style={[toastStyle, animatedContainerStyle]}>
         <Animated.View style={animatedIslandStyle}>
           {/* Compact state - just icon or indicator */}
@@ -333,7 +348,9 @@ export function Toast({
           )}
         </Animated.View>
       </Animated.View>
-    </GestureDetector>
+        </GestureDetector>
+      </GestureHandlerRootView>
+    </Modal>
   );
 }
 
@@ -416,30 +433,20 @@ export function ToastProvider({ children, maxToasts = 3 }: ToastProviderProps) {
     dismissAll,
   };
 
-  const containerStyle: ViewStyle = {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    zIndex: 1000,
-    pointerEvents: 'box-none',
-  };
-
   return (
     <ToastContext.Provider value={contextValue}>
       <GestureHandlerRootView style={{ flex: 1 }}>
         {children}
-        <View style={containerStyle} pointerEvents='box-none'>
-          {toasts.map((toast, index) => (
-            <Toast
-              key={toast.id}
-              {...toast}
-              index={index}
-              onDismiss={dismissToast}
-            />
-          ))}
-        </View>
       </GestureHandlerRootView>
+      {/* Render toasts as separate modals to ensure they appear above everything */}
+      {toasts.map((toast, index) => (
+        <Toast
+          key={toast.id}
+          {...toast}
+          index={index}
+          onDismiss={dismissToast}
+        />
+      ))}
     </ToastContext.Provider>
   );
 }
