@@ -1,7 +1,8 @@
+import CategoryClock from "@/components/category-clock";
 import { View } from "@/components/ui/view";
-import { AddTeam } from "@/pages/Team/components/create-team";
-import { JoinTeam } from "@/pages/Team/components/join-team";
-import TeamsListing from "@/pages/Team/Teams-listpage";
+// import { AddTeam } from "@/pages/Team/components/create-team";
+// import { JoinTeam } from "@/pages/Team/components/join-team";
+// import TeamsListing from "@/pages/Team/Teams-listpage";
 import { useState } from "react";
 
 const Team = () => {
@@ -15,9 +16,10 @@ const Team = () => {
         backgroundColor: "#fff",
       }}
     >
-      <TeamsListing rerender={rerender} />
+      {/* <TeamsListing rerender={rerender} />
       <AddTeam toggleRerender={toggleRerender} />
-      <JoinTeam toggleRerender={toggleRerender} />
+      <JoinTeam toggleRerender={toggleRerender} /> */}
+      <CategoryClock />
     </View>
   );
 };

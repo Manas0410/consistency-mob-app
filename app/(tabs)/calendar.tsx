@@ -16,10 +16,12 @@ export default function CalendarScreen() {
       <View>
         <Text style={{ fontSize: 34, fontWeight: "700" }}>
           {month}
-          <Text style={{ color: pallet.shade1 }}> {date}</Text>
-        </Text>
-        <Text style={{ fontSize: 20, color: "#666", marginBottom: 20 }}>
-          {day}
+          <Text
+            style={{ color: pallet.shade1, fontSize: 38, fontWeight: "800" }}
+          >
+            {" "}
+            {date}
+          </Text>
         </Text>
       </View>
       <DateSelector
