@@ -1,5 +1,6 @@
-import CategoryClock from "@/components/category-clock";
+// import CategoryClock from "@/components/category-clock";
 import { View } from "@/components/ui/view";
+import TaskDetail from "@/pages/task-viewer/task-description";
 // import { AddTeam } from "@/pages/Team/components/create-team";
 // import { JoinTeam } from "@/pages/Team/components/join-team";
 // import TeamsListing from "@/pages/Team/Teams-listpage";
@@ -19,7 +20,8 @@ const Team = () => {
       {/* <TeamsListing rerender={rerender} />
       <AddTeam toggleRerender={toggleRerender} />
       <JoinTeam toggleRerender={toggleRerender} /> */}
-      <CategoryClock />
+      {/* <CategoryClock /> */}
+      <TaskDetail />
     </View>
   );
 };
