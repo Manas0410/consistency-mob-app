@@ -1,3 +1,4 @@
+import { SignOutButton } from "@/components/SignOutButton";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import HabbitCompletionCard from "@/components/ui/HabbitCompletionCard";
 import HabitCard from "@/components/ui/HabitCard";
@@ -33,6 +34,7 @@ export default function HomeScreen() {
     >
       <View style={{ flex: 1, backgroundColor: "#fff" }}>
         <SafeAreaView style={{ flex: 1 }}>
+          <SignOutButton />
           <View
             style={{
               flexDirection: "row",

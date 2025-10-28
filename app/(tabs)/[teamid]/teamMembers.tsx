@@ -112,7 +112,10 @@
 //   },
 // });
 
+import { SignOutButton } from "@/components/SignOutButton";
+import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { getTeamMembers } from "@/pages/Team/API/api-calls";
+import { JoinRequests } from "@/pages/Team/components/join-requests";
 import { TeamMembersList } from "@/pages/Team/components/member-list";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -161,6 +164,8 @@ export default function TeamManagement() {
   const [loading, setLoading] = useState(false);
   const { teamid } = useLocalSearchParams();
 
+  const { currentTeamData } = useCurrentTeamData();
+
   const fetchMembers = async () => {
     try {
       setLoading(true);
@@ -189,6 +194,7 @@ export default function TeamManagement() {
       }}
     >
       <StatusBar style="dark" />
+
       {/* Header (same as before) */}
       {/* ...team stats cards... (same as before) */}
 
@@ -200,15 +206,7 @@ export default function TeamManagement() {
         // }
       >
         {/* Team Stats Cards here (same as your code) */}
-
-        {/* Join Requests */}
-        {/* <JoinRequests
-          joinRequests={joinRequests}
-          handleApproveRequest={handleApproveRequest}
-          handleRejectRequest={handleRejectRequest}
-          formatDate={formatDate}
-        /> */}
-
+        <SignOutButton />
         {/* Team Members List */}
         <TeamMembersList
           users={members}
@@ -216,6 +214,8 @@ export default function TeamManagement() {
           getRoleColor={getRoleColor}
         />
 
+        {/* Join Requests */}
+        <JoinRequests joinRequests={currentTeamData.joinRequests} />
         {/* Invite New Member Button */}
         <View style={{ margin: 20 }}>
           <TouchableOpacity

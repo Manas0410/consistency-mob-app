@@ -34,8 +34,9 @@ export function JoinTeam({
       setLoading(true);
       let res = await requestTojoin({
         userName: user?.username,
-        mail: user?.email,
-        teamId: teamid,
+        mail: "user@mail.com",
+        // mail: user?.email,
+        teamId: teamName,
       });
       if (res.success) {
         success("Request successfully sent");

@@ -1,13 +1,38 @@
+import { Text } from "@/components/ui/text";
+// import { Button } from "@/components/ui/button";
 import { Check, UserPlus, X } from "lucide-react-native";
-import { Text, TouchableOpacity, View } from "react-native";
+import { useState } from "react";
+import { TouchableOpacity, View } from "react-native";
 
-export function JoinRequests({
-  joinRequests,
-  handleApproveRequest,
-  handleRejectRequest,
-  formatDate,
-}) {
-  if (!joinRequests.length) return null;
+export function JoinRequests({ joinRequests }) {
+  if (!joinRequests.length)
+    return (
+      <Text style={{ margin: 15 }} variant="caption">
+        No Joining Requests{" "}
+      </Text>
+    );
+
+  const [approveActionLoading, setApproveActionLoading] = useState(false);
+  const [rejectActionLoading, setRejectActionLoading] = useState(false);
+
+  const handleApproveRequest = () => {
+    try {
+      setApproveActionLoading(true);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setApproveActionLoading(false);
+    }
+  };
+  const handleRejectRequest = () => {
+    try {
+      setRejectActionLoading(true);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setRejectActionLoading(false);
+    }
+  };
 
   return (
     <View
@@ -23,7 +48,7 @@ export function JoinRequests({
       </View>
       {joinRequests.map((request) => (
         <View
-          key={request.requestId}
+          key={request.userId}
           style={{
             marginHorizontal: 20,
             backgroundColor: "#f8fafc",
@@ -70,12 +95,13 @@ export function JoinRequests({
                       fontWeight: "600",
                     }}
                   >
-                    {request.userName}
+                    {request?.userName}
                   </Text>
                   <Text
                     style={{ color: "#64748b", fontSize: 12, marginTop: 2 }}
                   >
-                    {formatDate(request.requestDate)}
+                    {/* {format(request.requestDate, "dd-MM-yyyy")} */}
+                    {"10-10-2200"}
                   </Text>
                 </View>
               </View>
