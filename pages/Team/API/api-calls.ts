@@ -136,12 +136,14 @@ export const addTeamTask = async (
 };
 
 // 7. Get All Teams
-export const getAllTeams = async (): Promise<{
+export const getAllTeams = async (
+  query: string
+): Promise<{
   success: boolean;
   data: Team[] | { message: string };
 }> => {
   try {
-    const response = await apicall.get("/team/all");
+    const response = await apicall.get(`/team/all?search=${query}`);
     if (response.status !== 200)
       throw new Error(`Failed to get teams: ${response.statusText}`);
     return { success: true, data: response.data.teams };

@@ -100,6 +100,7 @@
 
 import BackHeader from "@/components/ui/back-header";
 import { Input } from "@/components/ui/input";
+import { ScrollView } from "@/components/ui/scroll-view";
 import { Spinner } from "@/components/ui/spinner";
 import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { usePallet } from "@/hooks/use-pallet";
@@ -113,6 +114,7 @@ import {
   Search,
   TrendingUp,
   Users,
+  X,
 } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import {
@@ -133,11 +135,12 @@ const TeamsListing = ({ rerender }) => {
   const [Teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   // Mock API call - replace with your actual API
   const fetchTeams = async () => {
     try {
-      const response = await getAllTeams();
+      const response = await getAllTeams(searchQuery);
       if (response.success) {
         // @ts-ignore
         setTeams(response.data);
@@ -160,7 +163,7 @@ const TeamsListing = ({ rerender }) => {
 
   useEffect(() => {
     fetchTeams();
-  }, [rerender]);
+  }, [rerender, searchQuery]);
 
   const user = useUser();
   const userId = user.user?.id;
@@ -367,11 +370,23 @@ const TeamsListing = ({ rerender }) => {
             shadowRadius: 8,
             elevation: 4,
           }}
+          value={searchQuery}
+          onChangeText={setSearchQuery}
           placeholder="Search Teams"
         />
 
         <View style={styles.secondaryButton}>
-          <Search size={20} color="#6B7280" />
+          {searchQuery.length > 0 ? (
+            <X
+              size={20}
+              color="#6B7280"
+              onPress={() => {
+                setSearchQuery("");
+              }}
+            />
+          ) : (
+            <Search size={20} color="#6B7280" />
+          )}
         </View>
       </View>
     </View>
@@ -414,25 +429,28 @@ const TeamsListing = ({ rerender }) => {
           </View>
         </View>
       ) : (
-        <FlatList
-          style={styles.listContainer}
-          ListHeaderComponent={renderHeader}
-          ListEmptyComponent={renderEmptyState}
-          ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
-          data={Teams}
-          keyExtractor={(item) => item._id}
-          renderItem={renderTeamCard}
-          contentContainerStyle={styles.listContent}
-          showsVerticalScrollIndicator={false}
-          refreshControl={
-            <RefreshControl
-              refreshing={refreshing}
-              onRefresh={onRefresh}
-              colors={["#3B82F6"]}
-              tintColor="#3B82F6"
-            />
-          }
-        />
+        <ScrollView>
+          {renderHeader()}
+          <FlatList
+            style={styles.listContainer}
+            // ListHeaderComponent={renderHeader}
+            ListEmptyComponent={renderEmptyState}
+            ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
+            data={Teams}
+            keyExtractor={(item) => item._id}
+            renderItem={renderTeamCard}
+            contentContainerStyle={styles.listContent}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl
+                refreshing={refreshing}
+                onRefresh={onRefresh}
+                colors={["#3B82F6"]}
+                tintColor="#3B82F6"
+              />
+            }
+          />
+        </ScrollView>
       )}
     </SafeAreaView>
   );
@@ -572,7 +590,7 @@ const styles = StyleSheet.create({
   },
   listContent: {
     // paddingHorizontal: 20,
-    paddingBottom: 32,
+    paddingBottom: 220,
   },
   itemSeparator: {
     height: 16,
