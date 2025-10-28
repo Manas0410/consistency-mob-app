@@ -3,7 +3,7 @@ import apicall from "@/constants/axios-config";
 export const addTask = async (taskData: any) => {
   try {
     const response = await apicall.post("/task/addtasks", {
-      tasks: [taskData],
+      tasks: Array.isArray(taskData) ? taskData : [taskData],
     });
     console.log("Add Task Response:", response);
 

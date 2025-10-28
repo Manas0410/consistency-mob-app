@@ -8,12 +8,14 @@ import { Input } from "@/components/ui/input";
 import { ScrollView } from "@/components/ui/scroll-view";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
+import { useToast } from "@/components/ui/toast";
 import { View } from "@/components/ui/view";
 import { useColor } from "@/hooks/useColor";
 import { Lightbulb, Plus, SendHorizonal, X } from "lucide-react-native";
 import { useState } from "react";
 import { Pressable } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { addTask } from "../addTask/API/addTask";
 import { createTaskPlan } from "./APi/api-calls";
 import { PlanTaskCard } from "./components/plan-task-card";
 
@@ -30,10 +32,44 @@ const PlanningChat = () => {
   const [inputText, setInputText] = useState("");
   const [fetchingResponse, setFetchingResponse] = useState(false);
   const [showSamplePrompts, setShowSamplePrompts] = useState(true);
+  const [selectedTaskIds, setSelectedTaskIds] = useState({});
+  const [selectedTasks, setSelectedTasks] = useState<any[]>([]);
+  const [taskAddLoading, setTaskAddLoading] = useState(false);
+
+  const { success, error } = useToast();
 
   const card = useColor({}, "card");
   const blue = useColor({}, "blue");
   const insets = useSafeAreaInsets();
+
+  const hadleCheckBoxChange = (isChecked: boolean, item: any) => {
+    if (isChecked) {
+      setSelectedTasks((p) => [...p, item]);
+      setSelectedTaskIds((p) => ({ ...p, [item.id]: true }));
+    } else {
+      setSelectedTasks((p) => {
+        let temp = [...p];
+        return temp.filter((task) => task?.id === item?.id);
+      });
+      setSelectedTaskIds((p) => ({ ...p, [item.id]: false }));
+    }
+  };
+
+  const handleAddTask = async () => {
+    try {
+      setTaskAddLoading(true);
+      const res = await addTask(selectedTasks);
+      if (res.success) {
+        success("Tasks added to calendar");
+      } else {
+        error("Error in adding tasks");
+      }
+    } catch {
+      error("Error in adding tasks");
+    } finally {
+      setTaskAddLoading(true);
+    }
+  };
 
   const sendMessage = async () => {
     if (inputText.trim()) {
@@ -44,7 +80,12 @@ const PlanningChat = () => {
         const res = await createTaskPlan({ taskDescription: inputText.trim() });
         if (res.success) {
           setSummary(res.data.summary ?? "");
-          setPlan(res.data.planTasks ?? []);
+          setPlan(
+            (res.data.planTasks ?? []).map((item, i) => ({
+              ...item,
+              ["id"]: i + 1,
+            }))
+          );
         }
       } catch (error) {
         console.error("Error sending message:", error);
@@ -126,8 +167,10 @@ const PlanningChat = () => {
                 <View style={{ marginTop: 10 }}>
                   <Checkbox
                     isRectangle
-                    checked={false}
-                    onCheckedChange={() => {}}
+                    checked={selectedTaskIds[item?.id]}
+                    onCheckedChange={(check) => {
+                      hadleCheckBoxChange(check, task);
+                    }}
                     styles={{}}
                   />
                 </View>
@@ -137,7 +180,14 @@ const PlanningChat = () => {
           </>
         )}
         {plan.length > 0 && (
-          <Button icon={Plus} variant="secondary" style={{ marginBottom: 26 }}>
+          <Button
+            icon={Plus}
+            loading={taskAddLoading}
+            variant="secondary"
+            style={{ marginBottom: 26 }}
+            onPress={handleAddTask}
+            disabled={plan.length < 1}
+          >
             Add tasks to calendar
           </Button>
         )}
