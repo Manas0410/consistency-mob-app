@@ -778,6 +778,7 @@
 
 // dashboard TBD
 
+import CategoryClock from "@/components/category-clock";
 import Heatmap from "@/components/charts/heat-map";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Text } from "@/components/ui/text";
@@ -1192,7 +1193,6 @@ export default function CalendarScreen() {
             </View>
           </View>
         </LinearGradient>
-
         {/* Progress Circle Section */}
         <View
           style={{ paddingHorizontal: 24, marginTop: -20, marginBottom: 30 }}
@@ -1242,7 +1242,7 @@ export default function CalendarScreen() {
             </View>
           </View>
         </View>
-
+        <CategoryClock />
         {/* {focus hours} */}
         <View
           style={{
@@ -1332,7 +1332,6 @@ export default function CalendarScreen() {
             </View>
           </View>
         </View>
-
         {/* Quick Actions */}
         <View style={{ paddingHorizontal: 24, marginBottom: 32 }}>
           <Text

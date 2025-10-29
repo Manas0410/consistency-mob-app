@@ -189,26 +189,16 @@ export default function CategoryClock() {
     <View
       style={{
         flex: 1,
-        backgroundColor: isDark ? "#0a0a0a" : "#fff",
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
+        backgroundColor: "transparent",
+        paddingTop: 12,
+        paddingBottom: 12,
         paddingHorizontal: 20,
       }}
     >
-      <View>
-        <Text style={{ fontSize: 34, fontWeight: "700" }}>
-          {month}
-          <Text
-            style={{ color: pallet.shade1, fontSize: 38, fontWeight: "800" }}
-          >
-            {" "}
-            {date}
-          </Text>
-        </Text>
-        <Text style={{ fontSize: 20, color: "#666", marginBottom: 20 }}>
-          {day}
-        </Text>
-      </View>
+      <Text variant="heading" style={{ marginBottom: 12, textAlign: "center" }}>
+        Track Productivity
+      </Text>
+
       <View
         style={{
           // flex: 1,
@@ -388,10 +378,7 @@ export default function CategoryClock() {
       </View>
 
       {/* labels section */}
-      <View style={{ alignItems: "flex-start" }}>
-        <Text variant="subtitle" style={{ marginBottom: 12 }}>
-          Track Productivity
-        </Text>
+      <View style={{ alignItems: "center" }}>
         {Object.entries(categorySummary).map(([category, hours]) => (
           <View
             key={category}
