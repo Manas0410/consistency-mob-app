@@ -2,7 +2,7 @@ import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
-import React, { ReactNode } from "react";
+import React, { ReactNode, useCallback } from "react";
 import {
   StyleSheet,
   TextStyle,
@@ -24,10 +24,16 @@ const BackHeader: React.FC<HeaderProps> = ({
   textStyle,
 }) => {
   const router = useRouter();
-
+  const goBack = useCallback(() => {
+    if(router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace("/");
+    }
+  }, [router]);
   return (
     <View style={[styles.header, style]}>
-      <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
+      <TouchableOpacity onPress={goBack} style={styles.iconButton}>
         <Ionicons name="arrow-back" size={28} color="#333" />
       </TouchableOpacity>
       <Text style={[styles.title, textStyle]}>{title}</Text>
