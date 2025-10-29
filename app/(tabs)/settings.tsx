@@ -1,9 +1,11 @@
 import { Colors } from "@/constants/theme";
 import { usePallet } from "@/hooks/use-pallet";
 import { useTheme } from "@/hooks/use-theme";
+import { useClerk, useUser } from "@clerk/clerk-expo";
 import Ionicons from "@expo/vector-icons/Ionicons";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
+import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const paletteColors = ["#2196F3", "#4CAF50", "#E5734A", "#7B3FF2"];
@@ -12,15 +14,49 @@ export default function SettingsScreen() {
   const theme = useTheme();
   const colors = theme === "dark" ? Colors.dark : Colors.light;
   const pallet = usePallet();
+  const { user } = useUser();
+  const { signOut } = useClerk();
+  const router = useRouter();
 
   const [selectedTheme, setSelectedTheme] = useState("light");
   const [selectedPalette, setSelectedPalette] = useState(0);
   const [remindersEnabled, setRemindersEnabled] = useState(true);
 
+  const handleSignOut = async () => {
+    Alert.alert(
+      "Sign Out",
+      "Are you sure you want to sign out?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Sign Out",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await signOut();
+              router.replace("/sign-in");
+            } catch (err) {
+              console.error("Sign out error:", err);
+              Alert.alert("Error", "Failed to sign out. Please try again.");
+            }
+          },
+        },
+      ]
+    );
+  };
+
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <SafeAreaView style={{ flex: 1 }}>
-        <View style={[styles.container]}>
+        <ScrollView 
+          style={{ flex: 1 }}
+          contentContainerStyle={styles.scrollContainer}
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={[styles.container]}>
           <View style={styles.headerRow}>
             <TouchableOpacity>
               <Ionicons name="arrow-back" size={28} color={colors.text} />
@@ -37,10 +73,10 @@ export default function SettingsScreen() {
             <Ionicons name="person-circle" size={64} color={colors.text} />
             <View style={styles.profileInfo}>
               <Text style={[styles.profileName, { color: colors.text }]}>
-                Sophia Carter
+                {user?.fullName || user?.firstName || "User"}
               </Text>
               <Text style={[styles.profileEmail, { color: colors.icon }]}>
-                sophia.carter@email.com
+                {user?.primaryEmailAddress?.emailAddress || "No email"}
               </Text>
             </View>
           </View>
@@ -128,15 +164,38 @@ export default function SettingsScreen() {
               thumbColor={"#f4f3f4"}
             />
           </View>
-        </View>
+
+          {/* Sign Out Section */}
+          <Text style={[styles.sectionTitle, { color: colors.text }]}>
+            Account
+          </Text>
+          <TouchableOpacity
+            style={[styles.signOutButton, { borderColor: colors.text + "20" }]}
+            onPress={handleSignOut}
+          >
+            <View style={styles.signOutContent}>
+              <Ionicons name="log-out-outline" size={24} color="#ff4444" />
+              <Text style={[styles.signOutText]}>
+                Sign Out
+              </Text>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={colors.icon} />
+          </TouchableOpacity>
+          
+          {/* Bottom spacing for tab bar */}
+          <View style={styles.bottomSpacer} />
+          </View>
+        </ScrollView>
       </SafeAreaView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
-    flex: 1,
     paddingHorizontal: 18,
     paddingTop: 32,
   },
@@ -247,5 +306,29 @@ const styles = StyleSheet.create({
   reminderLabel: {
     fontSize: 16,
     fontWeight: "500",
+  },
+  signOutButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 16,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    marginTop: 8,
+    backgroundColor: "transparent",
+  },
+  signOutContent: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  signOutText: {
+    fontSize: 16,
+    fontWeight: "500",
+    marginLeft: 12,
+    color: "#ff4444",
+  },
+  bottomSpacer: {
+    height: 100, // Extra space to ensure content is visible above bottom tab bar
   },
 });
