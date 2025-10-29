@@ -2,7 +2,7 @@ import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { useColor } from "@/hooks/useColor";
 import { BORDER_RADIUS, CORNERS, FONT_SIZE, HEIGHT } from "@/theme/globals";
-import { LucideProps } from "lucide-react-native";
+import { Eye, EyeOff, LucideProps } from "lucide-react-native";
 import React, { forwardRef, ReactElement, useState } from "react";
 import {
   Pressable,
@@ -28,6 +28,7 @@ export interface InputProps extends Omit<TextInputProps, "style"> {
   type?: "input" | "textarea";
   placeholder?: string;
   rows?: number; // Only used when type="textarea"
+  showPasswordToggle?: boolean; // New prop for password visibility toggle
 }
 
 export const Input = forwardRef<TextInput, InputProps>(
@@ -49,11 +50,13 @@ export const Input = forwardRef<TextInput, InputProps>(
       onFocus,
       onBlur,
       placeholder,
+      showPasswordToggle = false,
       ...props
     },
     ref
   ) => {
     const [isFocused, setIsFocused] = useState(false);
+    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
     // Theme colors
     const cardColor = useColor({}, "card");
@@ -76,9 +79,7 @@ export const Input = forwardRef<TextInput, InputProps>(
     // Variant styles
     const getVariantStyle = (): ViewStyle => {
       const baseStyle: ViewStyle = {
-        borderRadius: isTextarea
-          ? BORDER_RADIUS
-          : containerStyle?.borderRadius ?? CORNERS,
+        borderRadius: isTextarea ? BORDER_RADIUS : CORNERS,
         flexDirection: isTextarea ? "column" : "row",
         alignItems: isTextarea ? "stretch" : "center",
         minHeight: getHeight(),
@@ -124,8 +125,33 @@ export const Input = forwardRef<TextInput, InputProps>(
       onBlur?.(e);
     };
 
+    // Handle password visibility toggle
+    const togglePasswordVisibility = () => {
+      setIsPasswordVisible(!isPasswordVisible);
+    };
+
     // Render right component - supports both direct components and functions
     const renderRightComponent = () => {
+      // If showPasswordToggle is true, show the eye icon
+      if (showPasswordToggle) {
+        return (
+          <Pressable
+            onPress={togglePasswordVisibility}
+            style={{
+              padding: 4,
+              borderRadius: 4,
+            }}
+            disabled={disabled}
+          >
+            <Icon
+              name={isPasswordVisible ? EyeOff : Eye}
+              size={16}
+              color={muted}
+            />
+          </Pressable>
+        );
+      }
+
       if (!rightComponent) return null;
 
       // If it's a function, call it. Otherwise, render directly
@@ -211,6 +237,7 @@ export const Input = forwardRef<TextInput, InputProps>(
                 onBlur={handleBlur}
                 editable={!disabled}
                 selectionColor={primary}
+                secureTextEntry={showPasswordToggle ? !isPasswordVisible : props.secureTextEntry}
                 {...props}
               />
             </>
@@ -265,6 +292,7 @@ export const Input = forwardRef<TextInput, InputProps>(
                   editable={!disabled}
                   placeholder={placeholder}
                   selectionColor={primary}
+                  secureTextEntry={showPasswordToggle ? !isPasswordVisible : props.secureTextEntry}
                   {...props}
                 />
               </View>
