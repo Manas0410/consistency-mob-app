@@ -790,7 +790,7 @@ import { useUser } from "@clerk/clerk-expo";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
-import { Bell, Timer, TrendingUp } from "lucide-react-native";
+import { Bell, Timer } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, ScrollView, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -886,84 +886,6 @@ const AnimatedProgressRing = ({
   );
 };
 
-const StatCard = ({
-  title,
-  value,
-  subtitle,
-  icon: Icon,
-  color,
-  bgColor,
-  trend,
-}) => (
-  <View
-    style={{
-      backgroundColor: "#ffffff",
-      borderRadius: 24,
-      padding: 20,
-      flex: 1,
-      marginHorizontal: 6,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 8 },
-      shadowOpacity: 0.1,
-      shadowRadius: 20,
-      elevation: 8,
-    }}
-  >
-    <View
-      style={{
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "space-between",
-        marginBottom: 12,
-      }}
-    >
-      <View
-        style={{
-          width: 40,
-          height: 40,
-          borderRadius: 12,
-          backgroundColor: bgColor,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Icon size={20} color={color} />
-      </View>
-      {trend && (
-        <View style={{ flexDirection: "row", alignItems: "center" }}>
-          <TrendingUp size={16} color="#10b981" />
-          <Text
-            style={{
-              fontSize: 12,
-              color: "#10b981",
-              fontWeight: "600",
-              marginLeft: 4,
-            }}
-          >
-            +{trend}%
-          </Text>
-        </View>
-      )}
-    </View>
-    <Text
-      style={{
-        fontSize: 28,
-        fontWeight: "bold",
-        color: "#1f2937",
-        marginBottom: 4,
-      }}
-    >
-      {value}
-    </Text>
-    <Text style={{ fontSize: 13, color: "#64748b", fontWeight: "500" }}>
-      {title}
-    </Text>
-    <Text style={{ fontSize: 11, color: "#94a3b8", marginTop: 2 }}>
-      {subtitle}
-    </Text>
-  </View>
-);
-
 export default function CalendarScreen() {
   const insets = useSafeAreaInsets();
   const [selectedPeriod, setSelectedPeriod] = useState("Week");
@@ -974,7 +896,7 @@ export default function CalendarScreen() {
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fafafa" }}>
-      <StatusBar style="light" />
+      <StatusBar style="dark" />
 
       <ScrollView
         style={{ flex: 1 }}
@@ -1220,7 +1142,7 @@ export default function CalendarScreen() {
                 marginBottom: 16,
               }}
             >
-              <Timer size={24} color="#8B5CF6" />
+              <Timer size={24} color={pallet.shade1} />
               <Text
                 style={{
                   fontSize: 18,
@@ -1241,7 +1163,7 @@ export default function CalendarScreen() {
                   style={{
                     fontSize: 24,
                     fontWeight: "800",
-                    color: "#8B5CF6",
+                    color: pallet.shade1,
                   }}
                 >
                   15
@@ -1270,7 +1192,7 @@ export default function CalendarScreen() {
                   style={{
                     fontSize: 24,
                     fontWeight: "800",
-                    color: "#8B5CF6",
+                    color: pallet.shade1,
                   }}
                 >
                   13

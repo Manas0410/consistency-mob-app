@@ -1,5 +1,6 @@
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
+import { usePallet } from "@/hooks/use-pallet";
 import { Activity, CheckCircle2, Flame } from "lucide-react-native";
 import { TouchableOpacity } from "react-native";
 
@@ -12,6 +13,7 @@ const habbitData = [
 ];
 
 const HabbitCard = () => {
+  const pallet = usePallet();
   return (
     <View
       style={{

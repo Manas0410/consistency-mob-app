@@ -115,6 +115,7 @@
 import { SignOutButton } from "@/components/SignOutButton";
 import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { getTeamMembers } from "@/pages/Team/API/api-calls";
+import { AddTeamMember } from "@/pages/Team/components/add-member";
 import { JoinRequests } from "@/pages/Team/components/join-requests";
 import { TeamMembersList } from "@/pages/Team/components/member-list";
 import { useLocalSearchParams, useRouter } from "expo-router";
@@ -194,6 +195,7 @@ export default function TeamManagement() {
       }}
     >
       <StatusBar style="dark" />
+      <AddTeamMember />
 
       {/* Header (same as before) */}
       {/* ...team stats cards... (same as before) */}
