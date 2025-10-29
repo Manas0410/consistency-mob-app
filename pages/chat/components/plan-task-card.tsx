@@ -11,7 +11,7 @@ const PRIORITY_MAPPING = {
 };
 
 type Task = {
-  taskStartDateTime: string;
+  TaskStartDateTime: string;
   duration: { hours: number; minutes: number };
   taskName: string;
   taskDescription?: string;
@@ -23,10 +23,32 @@ type CardProps = {
   open?: boolean;
 };
 
+const getPriorityLabel = (priority) => {
+  switch (priority) {
+    case 2:
+      return "High";
+    case 1:
+      return "Medium";
+    default:
+      return "Low";
+  }
+};
+
+const getPriorityColor = (priority) => {
+  switch (priority) {
+    case 2:
+      return { text: "#EF4444", bg: "#FEF2F2" };
+    case 1:
+      return { text: "#F97316", bg: "#FFF7ED" };
+    default:
+      return { text: "#3B82F6", bg: "#EFF6FF" };
+  }
+};
+
 export const PlanTaskCard: React.FC<CardProps> = ({ task, open = false }) => {
   const [expanded, setExpanded] = useState(open);
 
-  const startDate = parseISO(task.taskStartDateTime);
+  const startDate = parseISO(task.TaskStartDateTime);
   const endDate = addHours(
     addMinutes(startDate, task.duration.minutes),
     task.duration.hours
@@ -38,6 +60,7 @@ export const PlanTaskCard: React.FC<CardProps> = ({ task, open = false }) => {
   )}`;
 
   const priority = PRIORITY_MAPPING[task.priority] || PRIORITY_MAPPING[0];
+  const priorityColors = getPriorityColor(task.priority);
 
   return (
     <View style={styles.card}>
@@ -47,15 +70,34 @@ export const PlanTaskCard: React.FC<CardProps> = ({ task, open = false }) => {
         activeOpacity={0.8}
       >
         <View style={styles.titleRow}>
-          <Icon
-            name={Flag}
-            width={18}
-            height={18}
-            fill={priority.color}
-            style={styles.flagIcon}
-            stroke={priority.color}
-          />
           <Text style={styles.title}>{task.taskName}</Text>
+          <View style={{ alignItems: "flex-end", gap: 4 }}>
+            <View
+              style={{
+                backgroundColor: priorityColors.bg,
+                paddingHorizontal: 8,
+                paddingVertical: 4,
+                borderRadius: 6,
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 4,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 12,
+                  fontWeight: "500",
+                  color: priorityColors.text,
+                }}
+              >
+                {getPriorityLabel(task.priority)}
+              </Text>
+
+              {task.priority === 2 && (
+                <Flag size={14} color={priorityColors.text} />
+              )}
+            </View>
+          </View>
         </View>
         <Text style={styles.arrow}>
           <Icon
@@ -69,14 +111,10 @@ export const PlanTaskCard: React.FC<CardProps> = ({ task, open = false }) => {
       {expanded && (
         <View style={styles.details}>
           <Text style={styles.timeText}>
-            {timeRange} {"("}
-            {}
-            {")"}
+            {format(task.TaskStartDateTime, "dd-MM-yyyy")}
           </Text>
+          <Text style={styles.timeText}>{timeRange}</Text>
 
-          <Text style={[styles.priorityLabel, { color: priority.color }]}>
-            {priority.label}
-          </Text>
           {task.taskDescription && (
             <Text style={styles.desc}>{task.taskDescription}</Text>
           )}

@@ -67,7 +67,7 @@ const PlanningChat = () => {
     } catch {
       error("Error in adding tasks");
     } finally {
-      setTaskAddLoading(true);
+      setTaskAddLoading(false);
     }
   };
 
@@ -167,7 +167,7 @@ const PlanningChat = () => {
                 <View style={{ marginTop: 10 }}>
                   <Checkbox
                     isRectangle
-                    checked={selectedTaskIds[item?.id]}
+                    checked={selectedTaskIds[task?.id]}
                     onCheckedChange={(check) => {
                       hadleCheckBoxChange(check, task);
                     }}
