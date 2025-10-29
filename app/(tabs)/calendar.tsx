@@ -783,20 +783,14 @@ import Heatmap from "@/components/charts/heat-map";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Text } from "@/components/ui/text";
 import { usePallet } from "@/hooks/use-pallet";
+import GoalCard from "@/pages/Dashboard/components/goals-card";
+import HabbitCard from "@/pages/Dashboard/components/habbit-card";
+import QuickActions from "@/pages/Dashboard/components/quick-actions";
 import { useUser } from "@clerk/clerk-expo";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
-import {
-  Activity,
-  ArrowRight,
-  BarChart3,
-  Bell,
-  Calendar,
-  Plus,
-  Timer,
-  TrendingUp,
-} from "lucide-react-native";
+import { Bell, Timer, TrendingUp } from "lucide-react-native";
 import React, { useEffect, useRef, useState } from "react";
 import { Animated, ScrollView, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -970,60 +964,6 @@ const StatCard = ({
   </View>
 );
 
-const QuickActionCard = ({
-  title,
-  subtitle,
-  icon: Icon,
-  color,
-  bgColor,
-  onPress,
-}) => (
-  <TouchableOpacity
-    onPress={onPress}
-    style={{
-      backgroundColor: "#ffffff",
-      borderRadius: 20,
-      padding: 20,
-      flexDirection: "row",
-      alignItems: "center",
-      marginBottom: 12,
-      shadowColor: "#000",
-      shadowOffset: { width: 0, height: 4 },
-      shadowOpacity: 0.08,
-      shadowRadius: 12,
-      elevation: 4,
-    }}
-  >
-    <View
-      style={{
-        width: 52,
-        height: 52,
-        borderRadius: 16,
-        backgroundColor: bgColor,
-        justifyContent: "center",
-        alignItems: "center",
-        marginRight: 16,
-      }}
-    >
-      <Icon size={24} color={color} />
-    </View>
-    <View style={{ flex: 1 }}>
-      <Text
-        style={{
-          fontSize: 16,
-          fontWeight: "600",
-          color: "#1f2937",
-          marginBottom: 2,
-        }}
-      >
-        {title}
-      </Text>
-      <Text style={{ fontSize: 13, color: "#64748b" }}>{subtitle}</Text>
-    </View>
-    <ArrowRight size={20} color="#94a3b8" />
-  </TouchableOpacity>
-);
-
 export default function CalendarScreen() {
   const insets = useSafeAreaInsets();
   const [selectedPeriod, setSelectedPeriod] = useState("Week");
@@ -1193,189 +1133,166 @@ export default function CalendarScreen() {
             </View>
           </View>
         </LinearGradient>
+
         {/* Progress Circle Section */}
-        <View
-          style={{ paddingHorizontal: 24, marginTop: -20, marginBottom: 30 }}
-        >
+        <View style={{ flex: 1, gap: 24, paddingHorizontal: 24 }}>
+          <View style={{ marginTop: -20, marginBottom: 30 }}>
+            <View
+              style={{
+                backgroundColor: "#ffffff",
+                borderRadius: 28,
+                padding: 32,
+                alignItems: "center",
+                shadowColor: "#000",
+                shadowOffset: { width: 0, height: 12 },
+                shadowOpacity: 0.15,
+                shadowRadius: 24,
+                elevation: 12,
+              }}
+            >
+              <AnimatedProgressRing
+                percentage={87}
+                size={180}
+                strokeWidth={14}
+              />
+              <View
+                style={{
+                  flexDirection: "row",
+                  marginTop: 24,
+                  gap: 16,
+                }}
+              >
+                <View style={{ alignItems: "center" }}>
+                  <Text variant="heading" style={{ color: pallet.shade1 }}>
+                    15
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: "#64748b",
+                      fontWeight: "500",
+                    }}
+                  >
+                    Tasks Completed
+                  </Text>
+                </View>
+
+                <View style={{ alignItems: "center" }}>
+                  <Text variant="heading" style={{ color: "#9aa2adff" }}>
+                    04
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 12,
+                      color: "#64748b",
+                      fontWeight: "500",
+                    }}
+                  >
+                    Remaining Tasks
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          <CategoryClock />
+
+          {/* habbit */}
+          <HabbitCard />
+
+          {/* {focus hours} */}
           <View
             style={{
-              backgroundColor: "#ffffff",
-              borderRadius: 28,
-              padding: 32,
-              alignItems: "center",
+              backgroundColor: "#fff",
+              borderRadius: 16,
+              padding: 20,
               shadowColor: "#000",
-              shadowOffset: { width: 0, height: 12 },
-              shadowOpacity: 0.15,
-              shadowRadius: 24,
-              elevation: 12,
+              shadowOffset: { width: 0, height: 1 },
+              shadowOpacity: 0.1,
+              shadowRadius: 3,
+              elevation: 2,
             }}
           >
-            <AnimatedProgressRing percentage={87} size={180} strokeWidth={14} />
             <View
               style={{
                 flexDirection: "row",
-                marginTop: 24,
-                gap: 16,
+                alignItems: "center",
+                marginBottom: 16,
               }}
             >
-              <View style={{ alignItems: "center" }}>
-                <Text variant="heading" style={{ color: pallet.shade1 }}>
-                  15
-                </Text>
-                <Text
-                  style={{ fontSize: 12, color: "#64748b", fontWeight: "500" }}
-                >
-                  Tasks Completed
-                </Text>
-              </View>
-
-              <View style={{ alignItems: "center" }}>
-                <Text variant="heading" style={{ color: "#9aa2adff" }}>
-                  04
-                </Text>
-                <Text
-                  style={{ fontSize: 12, color: "#64748b", fontWeight: "500" }}
-                >
-                  Remaining Tasks
-                </Text>
-              </View>
-            </View>
-          </View>
-        </View>
-        <CategoryClock />
-        {/* {focus hours} */}
-        <View
-          style={{
-            backgroundColor: "#fff",
-            borderRadius: 16,
-            padding: 20,
-            marginBottom: 20,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.1,
-            shadowRadius: 3,
-            elevation: 2,
-            marginHorizontal: 24,
-          }}
-        >
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              marginBottom: 16,
-            }}
-          >
-            <Timer size={24} color="#8B5CF6" />
-            <Text
-              style={{
-                fontSize: 18,
-                fontWeight: "700",
-                color: "#1E293B",
-                marginLeft: 8,
-              }}
-            >
-              Focus Time
-            </Text>
-          </View>
-
-          <View
-            style={{ flexDirection: "row", justifyContent: "space-around" }}
-          >
-            <View style={{ alignItems: "center" }}>
+              <Timer size={24} color="#8B5CF6" />
               <Text
                 style={{
-                  fontSize: 24,
-                  fontWeight: "800",
-                  color: "#8B5CF6",
+                  fontSize: 18,
+                  fontWeight: "700",
+                  color: "#1E293B",
+                  marginLeft: 8,
                 }}
               >
-                15
-              </Text>
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: "#64748B",
-                  marginTop: 4,
-                }}
-              >
-                Today
+                Focus Time
               </Text>
             </View>
 
             <View
-              style={{
-                width: 1,
-                backgroundColor: "#E2E8F0",
-                marginHorizontal: 20,
-              }}
-            />
+              style={{ flexDirection: "row", justifyContent: "space-around" }}
+            >
+              <View style={{ alignItems: "center" }}>
+                <Text
+                  style={{
+                    fontSize: 24,
+                    fontWeight: "800",
+                    color: "#8B5CF6",
+                  }}
+                >
+                  15
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: "#64748B",
+                    marginTop: 4,
+                  }}
+                >
+                  Today
+                </Text>
+              </View>
 
-            <View style={{ alignItems: "center" }}>
-              <Text
+              <View
                 style={{
-                  fontSize: 24,
-                  fontWeight: "800",
-                  color: "#8B5CF6",
+                  width: 1,
+                  backgroundColor: "#E2E8F0",
+                  marginHorizontal: 20,
                 }}
-              >
-                13
-              </Text>
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: "#64748B",
-                  marginTop: 4,
-                }}
-              >
-                This Week
-              </Text>
+              />
+
+              <View style={{ alignItems: "center" }}>
+                <Text
+                  style={{
+                    fontSize: 24,
+                    fontWeight: "800",
+                    color: "#8B5CF6",
+                  }}
+                >
+                  13
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 14,
+                    color: "#64748B",
+                    marginTop: 4,
+                  }}
+                >
+                  This Week
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
-        {/* Quick Actions */}
-        <View style={{ paddingHorizontal: 24, marginBottom: 32 }}>
-          <Text
-            style={{
-              fontSize: 20,
-              fontWeight: "bold",
-              color: "#1f2937",
-              marginBottom: 16,
-            }}
-          >
-            Quick Actions
-          </Text>
 
-          <QuickActionCard
-            title="Create New Project"
-            subtitle="Set up a new project with team assignments"
-            icon={Plus}
-            color="#10b981"
-            bgColor="#dcfce7"
-          />
+          {/* goals */}
+          <GoalCard />
 
-          <QuickActionCard
-            title="Team Performance"
-            subtitle="View detailed analytics and reports"
-            icon={BarChart3}
-            color="#3b82f6"
-            bgColor="#dbeafe"
-          />
-
-          <QuickActionCard
-            title="Schedule Meeting"
-            subtitle="Organize team sync and project reviews"
-            icon={Calendar}
-            color="#f59e0b"
-            bgColor="#fef3c7"
-          />
-
-          <QuickActionCard
-            title="Assign Tasks"
-            subtitle="Distribute work among team members"
-            icon={Activity}
-            color="#8b5cf6"
-            bgColor="#f3e8ff"
-          />
+          {/* Quick Actions */}
+          <QuickActions />
         </View>
       </ScrollView>
     </View>
