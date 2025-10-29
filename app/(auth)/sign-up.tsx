@@ -13,6 +13,7 @@ export default function Page() {
 
   const [emailAddress, setEmailAddress] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [confirmPassword, setConfirmPassword] = React.useState("");
   const [username, setUsername] = React.useState(""); // NEW FIELD
   const [pendingVerification, setPendingVerification] = React.useState(false);
   const [code, setCode] = React.useState("");
@@ -28,12 +29,23 @@ export default function Page() {
       setErrorMsg("Username is required.");
       return;
     }
+
+    if (password !== confirmPassword) {
+      setErrorMsg("Passwords do not match.");
+      return;
+    }
+
+    if (password.length < 8) {
+      setErrorMsg("Password must be at least 8 characters long.");
+      return;
+    }
+
     setLoading(true);
     try {
       await signUp.create({ emailAddress, password, username }); // ADD USERNAME HERE
       await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setPendingVerification(true);
-    } catch (err) {
+    } catch (err: any) {
       let message = "Something went wrong. Try again.";
       if (err.errors && err.errors.length) {
         message = err.errors[0].message;
@@ -61,7 +73,7 @@ export default function Page() {
       } else {
         setErrorMsg("Verification incomplete, additional steps may be needed.");
       }
-    } catch (err) {
+    } catch (err: any) {
       let message = "Verification failed. Try again.";
       if (err.errors && err.errors.length) {
         message = err.errors[0].message;
@@ -135,13 +147,24 @@ export default function Page() {
         icon={KeyRound}
         label="Password"
         placeholderTextColor="#888"
-        secureTextEntry={true}
+        showPasswordToggle
+        value={password}
         onChangeText={setPassword}
+      />
+      <Input
+        placeholder="Confirm Password"
+        variant="outline"
+        icon={KeyRound}
+        label="Confirm Password"
+        placeholderTextColor="#888"
+        showPasswordToggle
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
       />
       {errorMsg ? <Text style={styles.error}>{errorMsg}</Text> : null}
       <Button
         onPress={onSignUpPress}
-        disabled={loading || !emailAddress || !password || !username}
+        disabled={loading || !emailAddress || !password || !confirmPassword || !username}
         variant="success"
         loading={loading}
       >
