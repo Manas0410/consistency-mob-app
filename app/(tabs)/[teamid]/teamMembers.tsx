@@ -209,6 +209,9 @@ export default function TeamManagement() {
       >
         {/* Team Stats Cards here (same as your code) */}
         <SignOutButton />
+
+        {/* Join Requests */}
+        <JoinRequests joinRequests={currentTeamData.joinRequests} />
         {/* Team Members List */}
         <TeamMembersList
           users={members}
@@ -216,8 +219,6 @@ export default function TeamManagement() {
           getRoleColor={getRoleColor}
         />
 
-        {/* Join Requests */}
-        <JoinRequests joinRequests={currentTeamData.joinRequests} />
         {/* Invite New Member Button */}
         <View style={{ margin: 20 }}>
           <TouchableOpacity

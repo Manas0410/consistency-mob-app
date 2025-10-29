@@ -1,8 +1,10 @@
 import { Text } from "@/components/ui/text";
 // import { Button } from "@/components/ui/button";
+import { useLocalSearchParams } from "expo-router";
 import { Check, UserPlus, X } from "lucide-react-native";
 import { useState } from "react";
 import { TouchableOpacity, View } from "react-native";
+import { acceptTeamRequest, rejectTeamRequest } from "../API/api-calls";
 
 export function JoinRequests({ joinRequests }) {
   if (!joinRequests.length)
@@ -15,18 +17,22 @@ export function JoinRequests({ joinRequests }) {
   const [approveActionLoading, setApproveActionLoading] = useState(false);
   const [rejectActionLoading, setRejectActionLoading] = useState(false);
 
-  const handleApproveRequest = () => {
+  const { teamid } = useLocalSearchParams();
+
+  const handleApproveRequest = async (userId) => {
     try {
       setApproveActionLoading(true);
+      await acceptTeamRequest(teamid, userId);
     } catch (err) {
       console.log(err);
     } finally {
       setApproveActionLoading(false);
     }
   };
-  const handleRejectRequest = () => {
+  const handleRejectRequest = async (userId) => {
     try {
       setRejectActionLoading(true);
+      await rejectTeamRequest(teamid, userId);
     } catch (err) {
       console.log(err);
     } finally {
@@ -121,9 +127,7 @@ export function JoinRequests({ joinRequests }) {
 
               <View style={{ flexDirection: "row", gap: 12 }}>
                 <TouchableOpacity
-                  onPress={() =>
-                    handleApproveRequest(request.requestId, request.userName)
-                  }
+                  onPress={() => handleApproveRequest(request.userId)}
                   style={{
                     flex: 1,
                     backgroundColor: "#10b981",
@@ -148,9 +152,7 @@ export function JoinRequests({ joinRequests }) {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                  onPress={() =>
-                    handleRejectRequest(request.requestId, request.userName)
-                  }
+                  onPress={() => handleRejectRequest(request.userId)}
                   style={{
                     flex: 1,
                     backgroundColor: "#ef4444",

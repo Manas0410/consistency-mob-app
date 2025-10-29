@@ -181,3 +181,32 @@ export const getTeamMembers = async (
     return { success: false, data: { message: "error" } };
   }
 };
+
+export const acceptTeamRequest = async (teamId, requestUserId) => {
+  try {
+    const response = await apicall.post("/team/accept-invite", {
+      teamId,
+      requestUserId,
+    });
+    if (response.status !== 200)
+      throw new Error(`Failed to delete team: ${response.statusText}`);
+    return { success: true, data: response.data?.members };
+  } catch (error) {
+    console.error("Error deleting team:", error);
+    return { success: false, data: { message: "error" } };
+  }
+};
+export const rejectTeamRequest = async (teamId, requestUserId) => {
+  try {
+    const response = await apicall.post("/team/accept-invite", {
+      teamId,
+      requestUserId,
+    });
+    if (response.status !== 200)
+      throw new Error(`Failed to delete team: ${response.statusText}`);
+    return { success: true, data: response.data?.members };
+  } catch (error) {
+    console.error("Error deleting team:", error);
+    return { success: false, data: { message: "error" } };
+  }
+};
