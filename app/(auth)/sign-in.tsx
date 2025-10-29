@@ -4,7 +4,7 @@ import { useSignIn } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import { KeyRound, Mail } from "lucide-react-native";
 import * as React from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function Page() {
   const { signIn, setActive, isLoaded } = useSignIn();
@@ -25,13 +25,25 @@ export default function Page() {
     setErrorMsg("");
     try {
       // Create sign-in attempt with email only, no password
-      await signIn.create({
+      const signInAttempt = await signIn.create({
         identifier: emailAddress,
       });
-      // Send OTP code to email
-      await signIn.prepareEmailAddressVerification({ strategy: "email_code" });
-      setIsOtpSent(true);
-    } catch (err) {
+      
+      // Find email code factor
+      const firstFactor = signInAttempt.supportedFirstFactors?.find(
+        (factor) => factor.strategy === "email_code"
+      );
+      
+      if (firstFactor) {
+        await signIn.prepareFirstFactor({
+          strategy: "email_code",
+          emailAddressId: firstFactor.emailAddressId,
+        });
+        setIsOtpSent(true);
+      } else {
+        setErrorMsg("Email verification not available.");
+      }
+    } catch (err: any) {
       setErrorMsg(err.errors?.[0]?.message || "Failed to send OTP.");
     } finally {
       setLoading(false);
@@ -44,7 +56,8 @@ export default function Page() {
     setLoading(true);
     setErrorMsg("");
     try {
-      const attempt = await signIn.attemptEmailAddressVerification({
+      const attempt = await signIn.attemptFirstFactor({
+        strategy: "email_code",
         code: otpCode,
       });
       if (attempt.status === "complete") {
@@ -53,7 +66,7 @@ export default function Page() {
       } else {
         setErrorMsg("Verification incomplete. Please try again.");
       }
-    } catch (err) {
+    } catch (err: any) {
       setErrorMsg(err.errors?.[0]?.message || "OTP verification failed.");
     } finally {
       setLoading(false);
@@ -76,12 +89,13 @@ export default function Page() {
       } else {
         setErrorMsg("Sign in incomplete. Please check your credentials.");
       }
-    } catch (err) {
+    } catch (err: any) {
       setErrorMsg(err.errors?.[0]?.message || "Sign in failed.");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <View style={styles.container}>
@@ -105,12 +119,13 @@ export default function Page() {
         label="Password"
         placeholder="Enter password"
         placeholderTextColor="#888"
-        secureTextEntry
+        showPasswordToggle
         value={password}
         onChangeText={setPassword}
       />
 
       {errorMsg ? <Text style={styles.error}>{errorMsg}</Text> : null}
+      
       <Button
         onPress={onSignInPasswordPress}
         disabled={loading || !emailAddress || !password}
@@ -119,6 +134,12 @@ export default function Page() {
       >
         Sign In
       </Button>
+
+      <Link href="/forgot-password" asChild>
+        <Pressable>
+          <Text style={styles.forgotPassword}>Forgot Password?</Text>
+        </Pressable>
+      </Link>
 
       <View style={styles.footer}>
         <Text>Don't have an account?</Text>
@@ -150,6 +171,13 @@ const styles = StyleSheet.create({
     color: "#B00020",
     textAlign: "center",
     marginBottom: 10,
+  },
+  forgotPassword: {
+    color: "#267BF4",
+    textAlign: "center",
+    marginTop: 10,
+    marginBottom: 10,
+    textDecorationLine: "underline",
   },
   switchContainer: {
     marginTop: 20,
