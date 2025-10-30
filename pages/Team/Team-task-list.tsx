@@ -74,8 +74,6 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
     loadTasks();
   }, [selectedDate]);
 
-  console.log(taskListData);
-
   // Sort tasks by start time for correct timeline order
   const sortedTasks = [...taskListData].sort(
     (a, b) =>

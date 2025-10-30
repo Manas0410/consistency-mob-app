@@ -11,7 +11,6 @@ const TeamTaskPage = () => {
   const { date, day, month } = useGetCurrentDateTime();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const pallet = usePallet();
-  console.log(selectedDate, "selectedDate in calendar screen");
   return (
     <SafeAreaView style={{ flex: 1, padding: 10, backgroundColor: "#fff" }}>
       <View>

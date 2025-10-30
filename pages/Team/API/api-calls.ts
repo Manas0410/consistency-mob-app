@@ -55,7 +55,6 @@ export const requestTojoin = async (payload: {
   teamId: string;
 }): Promise<{ success: boolean; data: any }> => {
   try {
-    console.log(payload);
     const response = await apicall.post("/team/invite-member", payload);
     return { success: true, data: response.data };
   } catch (error) {
@@ -121,7 +120,6 @@ export const addTeamTask = async (
   taskData: TeamTask
 ): Promise<{ success: boolean; data: any }> => {
   try {
-    console.log(teamId, taskData);
     const response = await apicall.post("/team/tasks/add", {
       teamId,
       taskData,

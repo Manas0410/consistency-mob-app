@@ -1,10 +1,11 @@
-import { ParallaxScrollView } from "@/components/ui/parallax-scrollview";
+import BackHeader from "@/components/ui/back-header";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Image } from "expo-image";
+import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PieChart } from "react-native-gifted-charts";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const pieData = [
   { value: 50, color: "#17c964" },
@@ -35,18 +36,13 @@ function TeamDashboard() {
 
   const router = useRouter();
 
+  const { currentTeamData } = useCurrentTeamData();
+  console.log(currentTeamData);
+
   return (
-    <ParallaxScrollView
-      headerHeight={350}
-      headerImage={
-        <Image
-          source={require("@/assets/images/home-banner.png")}
-          style={{ width: "100%", height: "100%" }}
-          contentFit="cover"
-        />
-      }
-    >
-      <View style={{ gap: 16 }}>
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <SafeAreaView>
+        <BackHeader title={currentTeamData?.teamName ?? "Team"} />
         {/* TOP CARD with chart + stats */}
         <View style={styles.card}>
           {/* <Text style={styles.overviewLabel}>
@@ -158,8 +154,8 @@ function TeamDashboard() {
             <Text style={styles.actionText}>Team Settings</Text>
           </TouchableOpacity>
         </View>
-      </View>
-    </ParallaxScrollView>
+      </SafeAreaView>
+    </View>
   );
 }
 

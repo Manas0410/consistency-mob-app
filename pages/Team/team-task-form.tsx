@@ -52,8 +52,6 @@ export default function TeamTaskForm() {
     return { ...item, ["label"]: item?.userName, ["value"]: item?.userId };
   });
 
-  console.log(task.assignees, "asdf");
-
   useEffect(() => {
     if (assigneeValues && assigneesOptions) {
       const selected = assigneesOptions
