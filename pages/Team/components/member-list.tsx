@@ -1,5 +1,5 @@
 import { useRouter } from "expo-router";
-import { ChevronRight } from "lucide-react-native";
+import { Trash2 } from "lucide-react-native";
 import { Text, TouchableOpacity, View } from "react-native";
 
 export function TeamMembersList({ users, getRoleIcon, getRoleColor }) {
@@ -20,9 +20,8 @@ export function TeamMembersList({ users, getRoleIcon, getRoleColor }) {
         </Text>
       </View>
       {users.map((user, index) => (
-        <TouchableOpacity
+        <View
           key={user.userId}
-          onPress={() => {}}
           style={{
             flexDirection: "row",
             alignItems: "center",
@@ -80,8 +79,18 @@ export function TeamMembersList({ users, getRoleIcon, getRoleColor }) {
               </Text>
             </View>
           </View>
-          <ChevronRight size={20} color="#cbd5e1" />
-        </TouchableOpacity>
+          {user.role !== "admin" && (
+            <TouchableOpacity
+              style={{
+                backgroundColor: "#FEF2F2",
+                padding: 10,
+                borderRadius: 10,
+              }}
+            >
+              <Trash2 size={18} color="#F87171" />
+            </TouchableOpacity>
+          )}
+        </View>
       ))}
     </View>
   );
