@@ -426,7 +426,6 @@ export function TabsTrigger({
   const triggerStyle: ViewStyle = {
     paddingHorizontal: 12,
     paddingVertical: orientation === "vertical" ? 8 : undefined,
-    borderRadius: style?.borderRadius ?? 8,
     alignItems: "center",
     justifyContent: "center",
     minHeight: HEIGHT - 8,
@@ -434,6 +433,7 @@ export function TabsTrigger({
     opacity: disabled ? 0.5 : 1,
     flex: orientation === "horizontal" ? 1 : undefined,
     marginBottom: orientation === "vertical" ? 4 : 0,
+    borderRadius: 8,
     ...style,
   };
 

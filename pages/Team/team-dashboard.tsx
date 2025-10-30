@@ -1,31 +1,20 @@
 import BackHeader from "@/components/ui/back-header";
+import { Button } from "@/components/ui/button";
+import AnimatedProgressRing from "@/components/ui/progress-ring";
+import { ScrollView } from "@/components/ui/scroll-view";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Text } from "@/components/ui/text";
 import { useCurrentTeamData } from "@/contexts/team-data-context";
+import { usePallet } from "@/hooks/use-pallet";
+import { useUser } from "@clerk/clerk-expo";
 import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
+import { Calendar, LogOut, Users } from "lucide-react-native";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { PieChart } from "react-native-gifted-charts";
+import { StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-
-const pieData = [
-  { value: 50, color: "#17c964" },
-  { value: 30, color: "#4299e1" },
-  { value: 20, color: "#F87171" },
-];
 
 function TeamDashboard() {
   // Example stats
-  const completedCount = 72;
-  const totalCount = 120;
-  const stats = [
-    { label: "Completed", value: completedCount, color: "#17c964" },
-    {
-      label: "Remaining",
-      value: totalCount - completedCount,
-      color: "#F87171 ",
-    },
-    { label: "Assigned", value: 20, color: "#4299e1" },
-  ];
 
   const handlePress = (route: string) => {
     // Implement navigation e.g., router.push(route)
@@ -37,123 +26,162 @@ function TeamDashboard() {
   const router = useRouter();
 
   const { currentTeamData } = useCurrentTeamData();
+  const { user } = useUser();
+  const userId = user?.id;
   console.log(currentTeamData);
+
+  const totalCount = currentTeamData.tasks?.length || 0;
+  const assignedTasks =
+    currentTeamData.tasks?.filter((task) =>
+      task.assignees?.some((assignee) => assignee.userId === userId)
+    ) || [];
+  const completedCount = assignedTasks.filter((task) => task.isDone).length;
+  const remainingCount = assignedTasks.filter((task) => !task.isDone).length;
+
+  const totalCompleted = () =>
+    currentTeamData?.tasks?.filter((task) => task.isDone).length;
+
+  const stats = [
+    { label: "Completed", value: completedCount, color: "#17c964" },
+    { label: "Remaining", value: remainingCount, color: "#F87171" },
+    { label: "Assigned", value: assignedTasks.length, color: "#4299e1" },
+  ];
+
+  const pallet = usePallet();
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <SafeAreaView>
         <BackHeader title={currentTeamData?.teamName ?? "Team"} />
         {/* TOP CARD with chart + stats */}
-        <View style={styles.card}>
-          {/* <Text style={styles.overviewLabel}>
-            Task Overview {teamid} {pathName}
-          </Text> */}
-          <Text style={styles.count}>{totalCount}</Text>
-          <Text style={styles.monthProgress}>
-            Task Completion{" "}
-            <Text style={{ color: "#17c964", fontWeight: "bold" }}>15%</Text>
-          </Text>
-
-          <Tabs defaultValue="account">
-            <TabsList
-              style={{
-                width: 140,
-                borderRadius: 10,
-                margin: "auto",
-                height: 40,
-              }}
+        <ScrollView>
+          <View style={styles.card}>
+            <Text
+              variant="heading"
+              style={{ textAlign: "center", color: pallet.shade1 }}
             >
-              <TabsTrigger style={{ borderRadius: 20 }} value="account">
-                Team
-              </TabsTrigger>
-              <TabsTrigger style={{ borderRadius: 20 }} value="followers">
-                Me
-              </TabsTrigger>
-            </TabsList>
-            <TabsContent value="account" style={{ width: "100%" }}>
-              <View style={{ alignItems: "center", gap: 16 }}>
-                <PieChart
-                  donut
-                  radius={65}
-                  innerRadius={55}
-                  data={pieData}
-                  centerLabelComponent={() => {
-                    return <Text style={{ fontSize: 30 }}>70%</Text>;
-                  }}
-                />
-                {/* Bottom labels */}
-                <View style={styles.statsRow}>
-                  {stats.map((s) => (
-                    <View key={s.label} style={styles.statBox}>
-                      <Text style={styles.statLabel}>{s.label}</Text>
-                      <Text
-                        style={[
-                          styles.statValue,
-                          s.color && { color: s.color },
-                        ]}
-                      >
-                        {s.value}
-                      </Text>
-                    </View>
-                  ))}
-                </View>
-              </View>
-            </TabsContent>
-            <TabsContent value="followers" style={{ width: "100%" }}>
-              <View
-                style={{ paddingHorizontal: 16, alignItems: "center", gap: 16 }}
+              Team Stats
+            </Text>
+            <Text style={styles.count}>
+              {totalCount} <Text variant="caption">Tasks</Text>
+            </Text>{" "}
+            <Text style={styles.monthProgress}>
+              Task Completion{" "}
+              <Text style={{ color: "#17c964", fontWeight: "bold" }}>
+                {totalCount === 0
+                  ? "0%"
+                  : Math.round(
+                      (totalCompleted() / currentTeamData?.tasks?.length) * 100
+                    )}
+                %
+              </Text>
+            </Text>
+            <Tabs defaultValue="account">
+              <TabsList
+                style={{
+                  width: 140,
+                  borderRadius: 10,
+                  margin: "auto",
+                  height: 40,
+                }}
               >
-                <PieChart
-                  donut
-                  radius={65}
-                  innerRadius={55}
-                  data={pieData}
-                  centerLabelComponent={() => {
-                    return <Text style={{ fontSize: 30 }}>70%</Text>;
-                  }}
-                />
-                {/* Bottom labels */}
-                <View style={styles.statsRow}>
-                  {stats.map((s) => (
-                    <View key={s.label} style={styles.statBox}>
-                      <Text style={styles.statLabel}>{s.label}</Text>
-                      <Text
-                        style={[
-                          styles.statValue,
-                          s.color && { color: s.color },
-                        ]}
-                      >
-                        {s.value}
-                      </Text>
-                    </View>
-                  ))}
+                <TabsTrigger style={{ borderRadius: 200 }} value="account">
+                  <Text>Team</Text>
+                </TabsTrigger>
+                <TabsTrigger style={{ borderRadius: 20 }} value="followers">
+                  <Text>Me</Text>
+                </TabsTrigger>
+              </TabsList>
+              <TabsContent value="account" style={{ width: "100%" }}>
+                <View style={{ alignItems: "center", gap: 16 }}>
+                  <AnimatedProgressRing
+                    percentage={Math.round((completedCount / totalCount) * 100)}
+                  />
+                  {/* Bottom labels */}
+                  <View style={styles.statsRow}>
+                    {stats.map((s) => (
+                      <View key={s.label} style={styles.statBox}>
+                        <Text
+                          style={[
+                            styles.statValue,
+                            s.color && { color: s.color },
+                          ]}
+                        >
+                          {s.value}
+                        </Text>
+                        <Text style={styles.statLabel}>{s.label}</Text>
+                      </View>
+                    ))}
+                  </View>
                 </View>
-              </View>
-            </TabsContent>
-          </Tabs>
-        </View>
+              </TabsContent>
+              <TabsContent value="followers" style={{ width: "100%" }}>
+                <View
+                  style={{
+                    paddingHorizontal: 16,
+                    alignItems: "center",
+                    gap: 16,
+                  }}
+                >
+                  <AnimatedProgressRing
+                    percentage={Math.round(
+                      (completedCount / assignedTasks.length) * 100
+                    )}
+                  />
+                  {/* Bottom labels */}
+                  <View style={styles.statsRow}>
+                    {stats.map((s) => (
+                      <View key={s.label} style={styles.statBox}>
+                        <Text
+                          style={[
+                            styles.statValue,
+                            s.color && { color: s.color },
+                          ]}
+                        >
+                          {s.value}
+                        </Text>
+                        <Text style={styles.statLabel}>{s.label}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+              </TabsContent>
+            </Tabs>
+          </View>
 
-        {/* Action rows */}
-        <View style={styles.actionRow}>
-          <TouchableOpacity
-            style={styles.actionBtn}
-            onPress={() => router.replace(`/${teamid}/teamTaskPage`)}
-          >
-            <Text style={styles.actionText}>View Tasks</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionBtn}
-            onPress={() => router.replace(`/${teamid}/teamMembers`)}
-          >
-            <Text style={styles.actionText}>Manage Members</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.actionBtn}
-            onPress={() => handlePress("settings")}
-          >
-            <Text style={styles.actionText}>Team Settings</Text>
-          </TouchableOpacity>
-        </View>
+          {/* Action rows */}
+          <View style={styles.actionRow}>
+            <Button
+              variant="default"
+              style={{ borderRadius: 12, backgroundColor: pallet.shade1 }}
+              icon={Calendar}
+              onPress={() => router.replace(`/${teamid}/teamTaskPage`)}
+            >
+              View Tasks
+            </Button>
+            <Button
+              variant="default"
+              style={{
+                borderRadius: 12,
+                backgroundColor: pallet.shade1,
+              }}
+              icon={Users}
+              onPress={() => router.replace(`/${teamid}/teamMembers`)}
+            >
+              Manage Members
+            </Button>
+            <Button
+              variant="destructive"
+              style={{
+                borderRadius: 12,
+              }}
+              icon={LogOut}
+              onPress={() => {}}
+            >
+              Exit Team
+            </Button>
+          </View>
+        </ScrollView>
       </SafeAreaView>
     </View>
   );
@@ -164,13 +192,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 18,
     padding: 24,
-    shadowColor: "#000",
-    shadowOpacity: 0.06,
-    shadowRadius: 9,
-    elevation: 2,
-    marginTop: 12,
     gap: 2,
-    marginHorizontal: 4,
   },
   overviewLabel: {
     color: "#7a7a7a",
@@ -187,7 +209,7 @@ const styles = StyleSheet.create({
   monthProgress: {
     color: "#7a7a7a",
     fontSize: 14,
-    marginBottom: 8,
+    marginBottom: 18,
   },
   chartRow: {
     alignItems: "center",
@@ -201,7 +223,7 @@ const styles = StyleSheet.create({
   },
   statsRow: {
     flexDirection: "row",
-    justifyContent: "space-around",
+    justifyContent: "space-between",
     marginTop: 6,
   },
   statBox: {
@@ -224,8 +246,9 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     marginHorizontal: 4,
     overflow: "hidden",
-    gap: 2,
-    marginBottom: 150,
+    gap: 8,
+    marginBottom: 350,
+    padding: 20,
   },
   actionBtn: {
     paddingVertical: 18,

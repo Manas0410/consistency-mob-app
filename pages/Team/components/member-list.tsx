@@ -22,7 +22,7 @@ export function TeamMembersList({ users, getRoleIcon, getRoleColor }) {
       {users.map((user, index) => (
         <TouchableOpacity
           key={user.userId}
-          onPress={() => router.push(`/`)}
+          onPress={() => {}}
           style={{
             flexDirection: "row",
             alignItems: "center",

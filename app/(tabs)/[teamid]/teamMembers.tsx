@@ -112,8 +112,11 @@
 //   },
 // });
 
-import { SignOutButton } from "@/components/SignOutButton";
+import BackHeader from "@/components/ui/back-header";
+import { Spinner } from "@/components/ui/spinner";
+import { useAddTeamMemberBottomSheet } from "@/contexts/add-team-member-context";
 import { useCurrentTeamData } from "@/contexts/team-data-context";
+import { usePallet } from "@/hooks/use-pallet";
 import { getTeamMembers } from "@/pages/Team/API/api-calls";
 import { AddTeamMember } from "@/pages/Team/components/add-member";
 import { JoinRequests } from "@/pages/Team/components/join-requests";
@@ -185,6 +188,25 @@ export default function TeamManagement() {
     fetchMembers();
   }, [teamid]);
 
+  const pallet = usePallet();
+  const { open } = useAddTeamMemberBottomSheet();
+
+  if (loading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: "#fff",
+          width: "100%",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Spinner variant="bars" size="default" color={pallet.shade1} />
+      </View>
+    );
+  }
+
   return (
     <View
       style={{
@@ -196,6 +218,7 @@ export default function TeamManagement() {
     >
       <StatusBar style="dark" />
       <AddTeamMember />
+      <BackHeader title={currentTeamData?.teamName ?? "Team"} />
 
       {/* Header (same as before) */}
       {/* ...team stats cards... (same as before) */}
@@ -208,7 +231,6 @@ export default function TeamManagement() {
         // }
       >
         {/* Team Stats Cards here (same as your code) */}
-        <SignOutButton />
 
         {/* Join Requests */}
         <JoinRequests joinRequests={currentTeamData.joinRequests} />
@@ -222,7 +244,9 @@ export default function TeamManagement() {
         {/* Invite New Member Button */}
         <View style={{ margin: 20 }}>
           <TouchableOpacity
-            onPress={() => router.push("/")}
+            onPress={() => {
+              open();
+            }}
             style={{
               backgroundColor: "#3b82f6",
               borderRadius: 12,
