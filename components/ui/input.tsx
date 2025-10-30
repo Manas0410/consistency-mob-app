@@ -79,7 +79,11 @@ export const Input = forwardRef<TextInput, InputProps>(
     // Variant styles
     const getVariantStyle = (): ViewStyle => {
       const baseStyle: ViewStyle = {
-        borderRadius: isTextarea ? BORDER_RADIUS : CORNERS,
+        borderRadius: containerStyle?.borderRadius
+          ? containerStyle?.borderRadius
+          : isTextarea
+          ? BORDER_RADIUS
+          : CORNERS,
         flexDirection: isTextarea ? "column" : "row",
         alignItems: isTextarea ? "stretch" : "center",
         minHeight: getHeight(),
@@ -237,7 +241,11 @@ export const Input = forwardRef<TextInput, InputProps>(
                 onBlur={handleBlur}
                 editable={!disabled}
                 selectionColor={primary}
-                secureTextEntry={showPasswordToggle ? !isPasswordVisible : props.secureTextEntry}
+                secureTextEntry={
+                  showPasswordToggle
+                    ? !isPasswordVisible
+                    : props.secureTextEntry
+                }
                 {...props}
               />
             </>
@@ -292,7 +300,11 @@ export const Input = forwardRef<TextInput, InputProps>(
                   editable={!disabled}
                   placeholder={placeholder}
                   selectionColor={primary}
-                  secureTextEntry={showPasswordToggle ? !isPasswordVisible : props.secureTextEntry}
+                  secureTextEntry={
+                    showPasswordToggle
+                      ? !isPasswordVisible
+                      : props.secureTextEntry
+                  }
                   {...props}
                 />
               </View>

@@ -311,9 +311,9 @@ const TeamsListing = ({ rerender }) => {
             <TrendingUp size={20} color="#F59E0B" />
           </View>
           <Text style={styles.statNumber}>
-            {getTotalTasks()}
-            {"/"}
             {getTotalAssignedTasks()}
+            {"/"}
+            {getTotalTasks()}
           </Text>
           <Text style={styles.statLabel}>Tasks Assigned</Text>
         </View>
