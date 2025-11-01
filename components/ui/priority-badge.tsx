@@ -26,11 +26,17 @@ const PriorityBadge = ({
             backgroundColor: "#10b981",
             flexDirection: "row",
             alignItems: "center",
-            padding: 6,
-            gap: 8,
+            padding: 0,
+            gap: 4,
           }}
         >
-          <Text style={{ color: "white", fontWeight: "600", marginRight: 6 }}>
+          <Text
+            style={{
+              color: "white",
+              fontWeight: "500",
+              marginRight: 6,
+            }}
+          >
             Low
           </Text>
           <Checkbox

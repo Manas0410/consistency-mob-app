@@ -1,3 +1,4 @@
+import { Badge } from "@/components/ui/badge";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
@@ -10,10 +11,17 @@ import { TaskData } from "@/constants/types";
 import { useAddTaskSheet } from "@/contexts/add-task-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { addMinutes } from "date-fns";
-import { ChevronLeft, LayoutList, Plus, ScrollText } from "lucide-react-native";
+import {
+  ChevronLeft,
+  LayoutList,
+  Plus,
+  ScrollText,
+  SquarePen,
+} from "lucide-react-native";
 import React, { useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { addTask } from "./API/addTask";
+import AddPriority from "./components/add-priority";
 
 const options = [
   { label: "Once", value: 0 },
@@ -35,10 +43,12 @@ export default function TaskForm() {
     duration: { hours: 0, minutes: 30 },
     priority: 0,
     frequency: [0],
+    category: "",
   });
 
   const [showError, setShowError] = useState(false);
   const [step, setStep] = useState(1);
+  const [openPriority, setOpenPriority] = useState(false);
 
   const taskNameError =
     showError && task.taskName.trim() === "" ? "Task name is required." : "";
@@ -68,6 +78,7 @@ export default function TaskForm() {
           duration: { hours: 0, minutes: 30 },
           priority: 0,
           frequency: [0],
+          category: "",
         });
         setStep(1);
       } else {
@@ -108,117 +119,133 @@ export default function TaskForm() {
       }}
       snapPoints={[0.65, 0.9, 0.5]}
     >
-      <View style={styles.container}>
-        {step === 1 ? (
-          <>
-            <Text variant="subtitle" style={{ marginBottom: 12 }}>
-              Add Task
-            </Text>
-            <Input
-              label="Task"
-              placeholder="Enter task name"
-              icon={LayoutList}
-              value={task.taskName}
-              onChangeText={(text) => handleChange("taskName", text)}
-              error={taskNameError}
-            />
-            <Input
-              type="textarea"
-              label="Description"
-              placeholder="Enter task description"
-              icon={ScrollText}
-              value={task.taskDescription}
-              onChangeText={(text) => handleChange("taskDescription", text)}
-            />
-            <Text variant="caption">Priority</Text>
-            <PriorityBadge
-              value={task.priority}
-              onChange={(val) => handleChange("priority", val)}
-            />
-            <Button
-              variant="default"
-              onPress={handleNext}
-              style={{ marginTop: 16 }}
-            >
-              Next
-            </Button>
-          </>
-        ) : (
-          <>
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginBottom: 8,
-              }}
-            >
-              <TouchableOpacity onPress={handleBack} style={styles.backArrow}>
-                <ChevronLeft size={26} />
-                <Text variant="subtitle" style={{ marginBottom: 12 }}>
-                  Task Details
-                </Text>
-              </TouchableOpacity>
-            </View>
+      {openPriority ? (
+        <AddPriority />
+      ) : (
+        <View style={styles.container}>
+          {step === 1 ? (
+            <>
+              <Text variant="subtitle" style={{ marginBottom: 12 }}>
+                Add Task
+              </Text>
+              <Input
+                label="Task"
+                placeholder="Enter task name"
+                icon={LayoutList}
+                value={task.taskName}
+                onChangeText={(text) => handleChange("taskName", text)}
+                error={taskNameError}
+              />
+              <Input
+                type="textarea"
+                label="Description"
+                placeholder="Enter task description"
+                icon={ScrollText}
+                value={task.taskDescription}
+                onChangeText={(text) => handleChange("taskDescription", text)}
+              />
+              <Text variant="caption">Priority</Text>
+              <PriorityBadge
+                value={task.priority}
+                onChange={(val) => handleChange("priority", val)}
+              />
+              {task.category ? (
+                <Badge variant="outline">
+                  <Text>
+                    {" "}
+                    <SquarePen size={16} /> Category : {task.category}{" "}
+                  </Text>{" "}
+                </Badge>
+              ) : (
+                <Button variant="secondary" icon={Plus}>
+                  Category
+                </Button>
+              )}
+              <Button
+                variant="default"
+                onPress={handleNext}
+                style={{ marginTop: 16 }}
+              >
+                Next
+              </Button>
+            </>
+          ) : (
+            <>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  marginBottom: 8,
+                }}
+              >
+                <TouchableOpacity onPress={handleBack} style={styles.backArrow}>
+                  <ChevronLeft size={26} />
+                  <Text variant="subtitle" style={{ marginBottom: 12 }}>
+                    Task Details
+                  </Text>
+                </TouchableOpacity>
+              </View>
 
-            <Text variant="caption">Duration</Text>
-            <View style={styles.row}>
-              <Input
-                containerStyle={{ flex: 1, marginRight: 12 }}
-                labelWidth={80}
-                label="Hours"
-                placeholder=""
-                keyboardType="numeric"
-                value={String(task.duration.hours)}
-                onChangeText={(text) =>
-                  handleChange("duration", {
-                    ...task.duration,
-                    hours: Number(text),
-                  })
-                }
+              <Text variant="caption">Duration</Text>
+              <View style={styles.row}>
+                <Input
+                  containerStyle={{ flex: 1, marginRight: 12 }}
+                  labelWidth={80}
+                  label="Hours"
+                  placeholder=""
+                  keyboardType="numeric"
+                  value={String(task.duration.hours)}
+                  onChangeText={(text) =>
+                    handleChange("duration", {
+                      ...task.duration,
+                      hours: Number(text),
+                    })
+                  }
+                />
+                <Input
+                  containerStyle={{ flex: 1 }}
+                  labelWidth={80}
+                  label="Minutes"
+                  placeholder=""
+                  keyboardType="numeric"
+                  value={String(task.duration.minutes)}
+                  onChangeText={(text) =>
+                    handleChange("duration", {
+                      ...task.duration,
+                      minutes: Number(text),
+                    })
+                  }
+                />
+              </View>
+              <View style={styles.row}>
+                <DatePicker
+                  label="Date & Time"
+                  mode="datetime"
+                  value={task.TaskStartDateTime}
+                  onChange={(date) => handleChange("TaskStartDateTime", date)}
+                  placeholder="Select date and time"
+                  timeFormat="12"
+                />
+              </View>
+              <Picker
+                label="Select Frequency"
+                multiple
+                values={task.frequency}
+                options={options}
+                onValuesChange={(val) => handleChange("frequency", val)}
               />
-              <Input
-                containerStyle={{ flex: 1 }}
-                labelWidth={80}
-                label="Minutes"
-                placeholder=""
-                keyboardType="numeric"
-                value={String(task.duration.minutes)}
-                onChangeText={(text) =>
-                  handleChange("duration", {
-                    ...task.duration,
-                    minutes: Number(text),
-                  })
-                }
-              />
-            </View>
-            <View style={styles.row}>
-              <DatePicker
-                label="Date & Time"
-                mode="datetime"
-                value={task.TaskStartDateTime}
-                onChange={(date) => handleChange("TaskStartDateTime", date)}
-                placeholder="Select date and time"
-                timeFormat="12"
-              />
-            </View>
-            <Picker
-              label="Select Frequency"
-              multiple
-              values={task.frequency}
-              options={options}
-              onValuesChange={(val) => handleChange("frequency", val)}
-            />
-            <Button
-              icon={Plus}
-              loading={loading}
-              variant="success"
-              onPress={onSubmit}
-            >
-              Add Task
-            </Button>
-          </>
-        )}
-      </View>
+              <Button
+                icon={Plus}
+                loading={loading}
+                variant="success"
+                onPress={onSubmit}
+              >
+                Add Task
+              </Button>
+            </>
+          )}
+        </View>
+      )}
     </BottomSheet>
   );
 }

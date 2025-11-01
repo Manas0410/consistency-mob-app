@@ -36,7 +36,7 @@ export function Badge({
       alignItems: "center",
       justifyContent: "center",
       paddingVertical: 6,
-      paddingHorizontal: 18,
+      paddingHorizontal: 12,
       borderRadius: 30,
     };
 
