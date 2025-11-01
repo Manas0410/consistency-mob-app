@@ -1,9 +1,10 @@
 import { Icon } from "@/components/ui/icon";
+import PriorityLabel from "@/components/ui/prioritty-label";
 import { ScrollView } from "@/components/ui/scroll-view";
 import { Spinner } from "@/components/ui/spinner";
 import { usePallet } from "@/hooks/use-pallet";
 import { addHours, differenceInMinutes, format, parseISO } from "date-fns";
-import { ClockPlus, FileText, Flag } from "lucide-react-native";
+import { ClockPlus, FileText } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { getTasksByDate } from "./API/getTasks";
@@ -175,25 +176,7 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
                     item.isDone && { backgroundColor: pallet.shade4 },
                   ]}
                 >
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      gap: 6,
-                    }}
-                  >
-                    <Icon
-                      name={Flag}
-                      size={18}
-                      fill={PRIORITY_MAPPING[item.priority].color}
-                      stroke={PRIORITY_MAPPING[item.priority].color}
-                    />
-                    <Text
-                      style={{ color: PRIORITY_MAPPING[item.priority].color }}
-                    >
-                      {PRIORITY_MAPPING[item.priority].label}
-                    </Text>
-                  </View>
+                  <PriorityLabel priority={item.prioritty} />
                   <Text
                     style={[
                       styles.taskTitle,

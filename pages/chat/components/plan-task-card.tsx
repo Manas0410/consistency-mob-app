@@ -1,6 +1,7 @@
 import { Icon } from "@/components/ui/icon"; // adjust your Icon import
+import PriorityLabel from "@/components/ui/prioritty-label";
 import { addHours, addMinutes, format, parseISO } from "date-fns";
-import { ChevronDown, ChevronUp, Flag } from "lucide-react-native"; // or your icon source
+import { ChevronDown, ChevronUp } from "lucide-react-native"; // or your icon source
 import React, { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
@@ -23,28 +24,6 @@ type CardProps = {
   open?: boolean;
 };
 
-const getPriorityLabel = (priority) => {
-  switch (priority) {
-    case 2:
-      return "High";
-    case 1:
-      return "Medium";
-    default:
-      return "Low";
-  }
-};
-
-const getPriorityColor = (priority) => {
-  switch (priority) {
-    case 2:
-      return { text: "#EF4444", bg: "#FEF2F2" };
-    case 1:
-      return { text: "#F97316", bg: "#FFF7ED" };
-    default:
-      return { text: "#3B82F6", bg: "#EFF6FF" };
-  }
-};
-
 export const PlanTaskCard: React.FC<CardProps> = ({ task, open = false }) => {
   const [expanded, setExpanded] = useState(open);
 
@@ -60,7 +39,6 @@ export const PlanTaskCard: React.FC<CardProps> = ({ task, open = false }) => {
   )}`;
 
   const priority = PRIORITY_MAPPING[task.priority] || PRIORITY_MAPPING[0];
-  const priorityColors = getPriorityColor(task.priority);
 
   return (
     <View style={styles.card}>
@@ -72,31 +50,7 @@ export const PlanTaskCard: React.FC<CardProps> = ({ task, open = false }) => {
         <View style={styles.titleRow}>
           <Text style={styles.title}>{task.taskName}</Text>
           <View style={{ alignItems: "flex-end", gap: 4 }}>
-            <View
-              style={{
-                backgroundColor: priorityColors.bg,
-                paddingHorizontal: 8,
-                paddingVertical: 4,
-                borderRadius: 6,
-                flexDirection: "row",
-                alignItems: "center",
-                gap: 4,
-              }}
-            >
-              <Text
-                style={{
-                  fontSize: 12,
-                  fontWeight: "500",
-                  color: priorityColors.text,
-                }}
-              >
-                {getPriorityLabel(task.priority)}
-              </Text>
-
-              {task.priority === 2 && (
-                <Flag size={14} color={priorityColors.text} />
-              )}
-            </View>
+            <PriorityLabel priority={task.priority} />
           </View>
         </View>
         <Text style={styles.arrow}>
