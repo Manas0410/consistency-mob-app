@@ -1,36 +1,36 @@
-// import { useGetCurrentDateTime } from "@/hooks/use-get-current-date-time";
-// import { usePallet } from "@/hooks/use-pallet";
-// import DateSelector from "@/pages/task-viewer/date-selector";
-// import TaskList from "@/pages/task-viewer/task-list";
-// import { useState } from "react";
-// import { Text, View } from "react-native";
-// import { SafeAreaView } from "react-native-safe-area-context";
+import { useGetCurrentDateTime } from "@/hooks/use-get-current-date-time";
+import { usePallet } from "@/hooks/use-pallet";
+import DateSelector from "@/pages/task-viewer/date-selector";
+import TaskList from "@/pages/task-viewer/task-list";
+import { useState } from "react";
+import { Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-// export default function CalendarScreen() {
-//   const { date, day, month } = useGetCurrentDateTime();
-//   const [selectedDate, setSelectedDate] = useState(new Date());
-//   const pallet = usePallet();
-//   return (
-//     <SafeAreaView style={{ flex: 1, padding: 10, backgroundColor: "#fff" }}>
-//       <View>
-//         <Text style={{ fontSize: 34, fontWeight: "700" }}>
-//           {month}
-//           <Text
-//             style={{ color: pallet.shade1, fontSize: 38, fontWeight: "800" }}
-//           >
-//             {" "}
-//             {date}
-//           </Text>
-//         </Text>
-//       </View>
-//       <DateSelector
-//         selectedDate={selectedDate}
-//         setSelectedDate={setSelectedDate}
-//       />
-//       <TaskList selectedDate={selectedDate} />
-//     </SafeAreaView>
-//   );
-// }
+export default function CalendarScreen() {
+  const { date, day, month } = useGetCurrentDateTime();
+  const [selectedDate, setSelectedDate] = useState(new Date());
+  const pallet = usePallet();
+  return (
+    <SafeAreaView style={{ flex: 1, padding: 10, backgroundColor: "#fff" }}>
+      <View>
+        <Text style={{ fontSize: 34, fontWeight: "700" }}>
+          {month}
+          <Text
+            style={{ color: pallet.shade1, fontSize: 38, fontWeight: "800" }}
+          >
+            {" "}
+            {date}
+          </Text>
+        </Text>
+      </View>
+      <DateSelector
+        selectedDate={selectedDate}
+        setSelectedDate={setSelectedDate}
+      />
+      <TaskList selectedDate={selectedDate} />
+    </SafeAreaView>
+  );
+}
 
 // cal skeleton
 
@@ -777,355 +777,355 @@
 
 // dashboard TBD
 
-import CategoryClock from "@/components/category-clock";
-import Heatmap from "@/components/charts/heat-map";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import AnimatedProgressRing from "@/components/ui/progress-ring";
-import { Text } from "@/components/ui/text";
-import { usePallet } from "@/hooks/use-pallet";
-import GoalCard from "@/pages/Dashboard/components/goals-card";
-import HabbitCard from "@/pages/Dashboard/components/habbit-card";
-import QuickActions from "@/pages/Dashboard/components/quick-actions";
-import { useUser } from "@clerk/clerk-expo";
-import { Image } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
-import { StatusBar } from "expo-status-bar";
-import { Bell, Timer } from "lucide-react-native";
-import React, { useState } from "react";
-import { ScrollView, TouchableOpacity, View } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+// import CategoryClock from "@/components/category-clock";
+// import Heatmap from "@/components/charts/heat-map";
+// import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+// import AnimatedProgressRing from "@/components/ui/progress-ring";
+// import { Text } from "@/components/ui/text";
+// import { usePallet } from "@/hooks/use-pallet";
+// import GoalCard from "@/pages/Dashboard/components/goals-card";
+// import HabbitCard from "@/pages/Dashboard/components/habbit-card";
+// import QuickActions from "@/pages/Dashboard/components/quick-actions";
+// import { useUser } from "@clerk/clerk-expo";
+// import { Image } from "expo-image";
+// import { LinearGradient } from "expo-linear-gradient";
+// import { StatusBar } from "expo-status-bar";
+// import { Bell, Timer } from "lucide-react-native";
+// import React, { useState } from "react";
+// import { ScrollView, TouchableOpacity, View } from "react-native";
+// import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function CalendarScreen() {
-  const insets = useSafeAreaInsets();
-  const [selectedPeriod, setSelectedPeriod] = useState("Week");
+// export default function CalendarScreen() {
+//   const insets = useSafeAreaInsets();
+//   const [selectedPeriod, setSelectedPeriod] = useState("Week");
 
-  const periods = ["Day", "Week", "Month", "Quarter"];
-  const pallet = usePallet();
-  const { user } = useUser();
+//   const periods = ["Day", "Week", "Month", "Quarter"];
+//   const pallet = usePallet();
+//   const { user } = useUser();
 
-  return (
-    <View style={{ flex: 1, backgroundColor: "#fafafa" }}>
-      <StatusBar style="dark" />
+//   return (
+//     <View style={{ flex: 1, backgroundColor: "#fafafa" }}>
+//       <StatusBar style="dark" />
 
-      <ScrollView
-        style={{ flex: 1 }}
-        contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header with stunning gradient */}
-        <LinearGradient
-          // colors={["#667eea", "#764ba2", "#f093fb"]}
-          colors={[pallet.shade1, pallet.shade3, pallet.shade3]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={{
-            paddingTop: insets.top + 4,
-            paddingHorizontal: 16,
-            paddingBottom: 40,
-          }}
-        >
-          {/* Top Bar */}
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: 24,
-            }}
-          >
-            <View>
-              <Text
-                style={{
-                  fontSize: 16,
-                  color: "rgba(255,255,255,0.8)",
-                  fontWeight: "500",
-                }}
-              >
-                Good morning
-              </Text>
-              <Text
-                style={{
-                  fontSize: 24,
-                  color: "#ffffff",
-                  fontWeight: "bold",
-                  marginTop: 4,
-                }}
-              >
-                {user?.username?.toUpperCase()}
-              </Text>
-            </View>
-            <View style={{ flexDirection: "row", gap: 12 }}>
-              <TouchableOpacity
-                style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 22,
-                  backgroundColor: "rgba(255,255,255,0.2)",
-                  justifyContent: "center",
-                  alignItems: "center",
-                }}
-              >
-                <Bell size={20} color="#ffffff" />
-              </TouchableOpacity>
-              <Avatar>
-                <AvatarImage
-                  source={{
-                    uri:
-                      user?.imageUrl ||
-                      `https://avatars.githubusercontent.com/u/99088394?v=4`,
-                  }}
-                />
-                <AvatarFallback>{user?.username?.[0]}</AvatarFallback>
-              </Avatar>
-            </View>
-          </View>
+//       <ScrollView
+//         style={{ flex: 1 }}
+//         contentContainerStyle={{ paddingBottom: insets.bottom + 100 }}
+//         showsVerticalScrollIndicator={false}
+//       >
+//         {/* Header with stunning gradient */}
+//         <LinearGradient
+//           // colors={["#667eea", "#764ba2", "#f093fb"]}
+//           colors={[pallet.shade1, pallet.shade3, pallet.shade3]}
+//           start={{ x: 0, y: 0 }}
+//           end={{ x: 1, y: 1 }}
+//           style={{
+//             paddingTop: insets.top + 4,
+//             paddingHorizontal: 16,
+//             paddingBottom: 40,
+//           }}
+//         >
+//           {/* Top Bar */}
+//           <View
+//             style={{
+//               flexDirection: "row",
+//               justifyContent: "space-between",
+//               alignItems: "center",
+//               marginBottom: 24,
+//             }}
+//           >
+//             <View>
+//               <Text
+//                 style={{
+//                   fontSize: 16,
+//                   color: "rgba(255,255,255,0.8)",
+//                   fontWeight: "500",
+//                 }}
+//               >
+//                 Good morning
+//               </Text>
+//               <Text
+//                 style={{
+//                   fontSize: 24,
+//                   color: "#ffffff",
+//                   fontWeight: "bold",
+//                   marginTop: 4,
+//                 }}
+//               >
+//                 {user?.username?.toUpperCase()}
+//               </Text>
+//             </View>
+//             <View style={{ flexDirection: "row", gap: 12 }}>
+//               <TouchableOpacity
+//                 style={{
+//                   width: 44,
+//                   height: 44,
+//                   borderRadius: 22,
+//                   backgroundColor: "rgba(255,255,255,0.2)",
+//                   justifyContent: "center",
+//                   alignItems: "center",
+//                 }}
+//               >
+//                 <Bell size={20} color="#ffffff" />
+//               </TouchableOpacity>
+//               <Avatar>
+//                 <AvatarImage
+//                   source={{
+//                     uri:
+//                       user?.imageUrl ||
+//                       `https://avatars.githubusercontent.com/u/99088394?v=4`,
+//                   }}
+//                 />
+//                 <AvatarFallback>{user?.username?.[0]}</AvatarFallback>
+//               </Avatar>
+//             </View>
+//           </View>
 
-          {/* Main Stats */}
-          <View
-            style={{
-              backgroundColor: "rgba(255,255,255,0.15)",
-              borderRadius: 24,
-              padding: 24,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <View style={{ width: 200 }}>
-              <Text
-                style={{
-                  fontSize: 22,
-                  fontWeight: "bold",
-                  color: "#ffffff",
-                  marginLeft: 2,
-                }}
-              >
-                30 Days Streak
-              </Text>
-              <Heatmap />
-            </View>
-            <View style={{ alignItems: "center" }}>
-              {/* <View
-                style={{
-                  width: 60,
-                  height: 60,
-                  borderRadius: 30,
-                  backgroundColor: "rgba(255, 255, 255, 0.2)",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginBottom: 8,
-                }}
-              >
-                <Zap size={28} color="#ffffff" />
-              </View> */}
-              <View
-                style={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={require("@/assets/images/flame.png")}
-                  style={{
-                    width: 66,
-                    height: 92,
-                  }}
-                  resizeMode="contain"
-                />
-                <View
-                  style={{
-                    width: 56,
-                    height: 72,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    position: "absolute",
-                    bottom: -9,
-                    left: "50%",
-                    transform: [{ translateX: -33 }],
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 32,
-                      fontWeight: "bold",
-                      color: "#fff",
-                      textShadowColor: "#d17b2c",
-                      textShadowOffset: { width: 0, height: 2 },
-                      textShadowRadius: 6,
-                    }}
-                  >
-                    {30}
-                  </Text>
-                </View>
-              </View>
-              <Text style={{ fontSize: 12, color: "rgba(255,255,255,0.8)" }}>
-                Productivity
-              </Text>
-            </View>
-          </View>
-        </LinearGradient>
+//           {/* Main Stats */}
+//           <View
+//             style={{
+//               backgroundColor: "rgba(255,255,255,0.15)",
+//               borderRadius: 24,
+//               padding: 24,
+//               flexDirection: "row",
+//               alignItems: "center",
+//               justifyContent: "space-between",
+//             }}
+//           >
+//             <View style={{ width: 200 }}>
+//               <Text
+//                 style={{
+//                   fontSize: 22,
+//                   fontWeight: "bold",
+//                   color: "#ffffff",
+//                   marginLeft: 2,
+//                 }}
+//               >
+//                 30 Days Streak
+//               </Text>
+//               <Heatmap />
+//             </View>
+//             <View style={{ alignItems: "center" }}>
+//               {/* <View
+//                 style={{
+//                   width: 60,
+//                   height: 60,
+//                   borderRadius: 30,
+//                   backgroundColor: "rgba(255, 255, 255, 0.2)",
+//                   justifyContent: "center",
+//                   alignItems: "center",
+//                   marginBottom: 8,
+//                 }}
+//               >
+//                 <Zap size={28} color="#ffffff" />
+//               </View> */}
+//               <View
+//                 style={{
+//                   alignItems: "center",
+//                   justifyContent: "center",
+//                 }}
+//               >
+//                 <Image
+//                   source={require("@/assets/images/flame.png")}
+//                   style={{
+//                     width: 66,
+//                     height: 92,
+//                   }}
+//                   resizeMode="contain"
+//                 />
+//                 <View
+//                   style={{
+//                     width: 56,
+//                     height: 72,
+//                     justifyContent: "center",
+//                     alignItems: "center",
+//                     position: "absolute",
+//                     bottom: -9,
+//                     left: "50%",
+//                     transform: [{ translateX: -33 }],
+//                   }}
+//                 >
+//                   <Text
+//                     style={{
+//                       fontSize: 32,
+//                       fontWeight: "bold",
+//                       color: "#fff",
+//                       textShadowColor: "#d17b2c",
+//                       textShadowOffset: { width: 0, height: 2 },
+//                       textShadowRadius: 6,
+//                     }}
+//                   >
+//                     {30}
+//                   </Text>
+//                 </View>
+//               </View>
+//               <Text style={{ fontSize: 12, color: "rgba(255,255,255,0.8)" }}>
+//                 Productivity
+//               </Text>
+//             </View>
+//           </View>
+//         </LinearGradient>
 
-        {/* Progress Circle Section */}
-        <View style={{ flex: 1, gap: 24, paddingHorizontal: 24 }}>
-          <View style={{ marginTop: -20, marginBottom: 30 }}>
-            <View
-              style={{
-                backgroundColor: "#ffffff",
-                borderRadius: 28,
-                padding: 32,
-                alignItems: "center",
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 12 },
-                shadowOpacity: 0.15,
-                shadowRadius: 24,
-                elevation: 12,
-              }}
-            >
-              <AnimatedProgressRing
-                percentage={87}
-                size={180}
-                strokeWidth={14}
-              />
-              <View
-                style={{
-                  flexDirection: "row",
-                  marginTop: 24,
-                  gap: 16,
-                }}
-              >
-                <View style={{ alignItems: "center" }}>
-                  <Text variant="heading" style={{ color: pallet.shade1 }}>
-                    15
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: "#64748b",
-                      fontWeight: "500",
-                    }}
-                  >
-                    Tasks Completed
-                  </Text>
-                </View>
+//         {/* Progress Circle Section */}
+//         <View style={{ flex: 1, gap: 24, paddingHorizontal: 24 }}>
+//           <View style={{ marginTop: -20, marginBottom: 30 }}>
+//             <View
+//               style={{
+//                 backgroundColor: "#ffffff",
+//                 borderRadius: 28,
+//                 padding: 32,
+//                 alignItems: "center",
+//                 shadowColor: "#000",
+//                 shadowOffset: { width: 0, height: 12 },
+//                 shadowOpacity: 0.15,
+//                 shadowRadius: 24,
+//                 elevation: 12,
+//               }}
+//             >
+//               <AnimatedProgressRing
+//                 percentage={87}
+//                 size={180}
+//                 strokeWidth={14}
+//               />
+//               <View
+//                 style={{
+//                   flexDirection: "row",
+//                   marginTop: 24,
+//                   gap: 16,
+//                 }}
+//               >
+//                 <View style={{ alignItems: "center" }}>
+//                   <Text variant="heading" style={{ color: pallet.shade1 }}>
+//                     15
+//                   </Text>
+//                   <Text
+//                     style={{
+//                       fontSize: 12,
+//                       color: "#64748b",
+//                       fontWeight: "500",
+//                     }}
+//                   >
+//                     Tasks Completed
+//                   </Text>
+//                 </View>
 
-                <View style={{ alignItems: "center" }}>
-                  <Text variant="heading" style={{ color: "#9aa2adff" }}>
-                    04
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 12,
-                      color: "#64748b",
-                      fontWeight: "500",
-                    }}
-                  >
-                    Remaining Tasks
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </View>
+//                 <View style={{ alignItems: "center" }}>
+//                   <Text variant="heading" style={{ color: "#9aa2adff" }}>
+//                     04
+//                   </Text>
+//                   <Text
+//                     style={{
+//                       fontSize: 12,
+//                       color: "#64748b",
+//                       fontWeight: "500",
+//                     }}
+//                   >
+//                     Remaining Tasks
+//                   </Text>
+//                 </View>
+//               </View>
+//             </View>
+//           </View>
 
-          <CategoryClock />
+//           <CategoryClock />
 
-          {/* habbit */}
-          <HabbitCard />
+//           {/* habbit */}
+//           <HabbitCard />
 
-          {/* {focus hours} */}
-          <View
-            style={{
-              backgroundColor: "#fff",
-              borderRadius: 16,
-              padding: 20,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.1,
-              shadowRadius: 3,
-              elevation: 2,
-            }}
-          >
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginBottom: 16,
-              }}
-            >
-              <Timer size={24} color={pallet.shade1} />
-              <Text
-                style={{
-                  fontSize: 18,
-                  fontWeight: "700",
-                  color: "#1E293B",
-                  marginLeft: 8,
-                }}
-              >
-                Focus Time
-              </Text>
-            </View>
+//           {/* {focus hours} */}
+//           <View
+//             style={{
+//               backgroundColor: "#fff",
+//               borderRadius: 16,
+//               padding: 20,
+//               shadowColor: "#000",
+//               shadowOffset: { width: 0, height: 1 },
+//               shadowOpacity: 0.1,
+//               shadowRadius: 3,
+//               elevation: 2,
+//             }}
+//           >
+//             <View
+//               style={{
+//                 flexDirection: "row",
+//                 alignItems: "center",
+//                 marginBottom: 16,
+//               }}
+//             >
+//               <Timer size={24} color={pallet.shade1} />
+//               <Text
+//                 style={{
+//                   fontSize: 18,
+//                   fontWeight: "700",
+//                   color: "#1E293B",
+//                   marginLeft: 8,
+//                 }}
+//               >
+//                 Focus Time
+//               </Text>
+//             </View>
 
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-around" }}
-            >
-              <View style={{ alignItems: "center" }}>
-                <Text
-                  style={{
-                    fontSize: 24,
-                    fontWeight: "800",
-                    color: pallet.shade1,
-                  }}
-                >
-                  15
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    color: "#64748B",
-                    marginTop: 4,
-                  }}
-                >
-                  Today
-                </Text>
-              </View>
+//             <View
+//               style={{ flexDirection: "row", justifyContent: "space-around" }}
+//             >
+//               <View style={{ alignItems: "center" }}>
+//                 <Text
+//                   style={{
+//                     fontSize: 24,
+//                     fontWeight: "800",
+//                     color: pallet.shade1,
+//                   }}
+//                 >
+//                   15
+//                 </Text>
+//                 <Text
+//                   style={{
+//                     fontSize: 14,
+//                     color: "#64748B",
+//                     marginTop: 4,
+//                   }}
+//                 >
+//                   Today
+//                 </Text>
+//               </View>
 
-              <View
-                style={{
-                  width: 1,
-                  backgroundColor: "#E2E8F0",
-                  marginHorizontal: 20,
-                }}
-              />
+//               <View
+//                 style={{
+//                   width: 1,
+//                   backgroundColor: "#E2E8F0",
+//                   marginHorizontal: 20,
+//                 }}
+//               />
 
-              <View style={{ alignItems: "center" }}>
-                <Text
-                  style={{
-                    fontSize: 24,
-                    fontWeight: "800",
-                    color: pallet.shade1,
-                  }}
-                >
-                  13
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 14,
-                    color: "#64748B",
-                    marginTop: 4,
-                  }}
-                >
-                  This Week
-                </Text>
-              </View>
-            </View>
-          </View>
+//               <View style={{ alignItems: "center" }}>
+//                 <Text
+//                   style={{
+//                     fontSize: 24,
+//                     fontWeight: "800",
+//                     color: pallet.shade1,
+//                   }}
+//                 >
+//                   13
+//                 </Text>
+//                 <Text
+//                   style={{
+//                     fontSize: 14,
+//                     color: "#64748B",
+//                     marginTop: 4,
+//                   }}
+//                 >
+//                   This Week
+//                 </Text>
+//               </View>
+//             </View>
+//           </View>
 
-          {/* goals */}
-          <GoalCard />
+//           {/* goals */}
+//           <GoalCard />
 
-          {/* Quick Actions */}
-          <QuickActions />
-        </View>
-      </ScrollView>
-    </View>
-  );
-}
+//           {/* Quick Actions */}
+//           <QuickActions />
+//         </View>
+//       </ScrollView>
+//     </View>
+//   );
+// }

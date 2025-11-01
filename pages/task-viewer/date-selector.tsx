@@ -1,18 +1,20 @@
+import { Text } from "@/components/ui/text";
 import { Colors } from "@/constants/theme";
+import { useGetCurrentDateTime } from "@/hooks/use-get-current-date-time";
 // import { useGetLastThirtyDays } from "@/hooks/use-get-last-thirty-days";
 import { usePallet } from "@/hooks/use-pallet";
 import { useTheme } from "@/hooks/use-theme";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useState } from "react";
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 
-const DateSelector = ({ selectedDate, setSelectedDate }: { selectedDate: Date, setSelectedDate: (arg: Date) => void }) => {
+const DateSelector = ({
+  selectedDate,
+  setSelectedDate,
+}: {
+  selectedDate: Date;
+  setSelectedDate: (arg: Date) => void;
+}) => {
   const pallet = usePallet();
   const theme = useTheme();
   const colorSet = theme ? Colors[theme] : Colors.light;
@@ -41,8 +43,10 @@ const DateSelector = ({ selectedDate, setSelectedDate }: { selectedDate: Date, s
 
   function toISODateOnly(date: Date) {
     // Converts Date to YYYY-MM-DD string
-    return date.toISOString().split('T')[0];
+    return date.toISOString().split("T")[0];
   }
+
+  const { day } = useGetCurrentDateTime();
 
   return (
     <View style={styles.weekRow}>
@@ -50,7 +54,11 @@ const DateSelector = ({ selectedDate, setSelectedDate }: { selectedDate: Date, s
         onPress={() => setWeekOffset(weekOffset - 1)}
         style={styles.arrowBtn}
       >
-        <Ionicons size={28} color={pallet.shade1} name={"chevron-back-circle"} />
+        <Ionicons
+          size={28}
+          color={pallet.shade1}
+          name={"chevron-back-circle"}
+        />
       </TouchableOpacity>
 
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -60,6 +68,12 @@ const DateSelector = ({ selectedDate, setSelectedDate }: { selectedDate: Date, s
               d.getDate() === selectedDate.getDate() &&
               d.getMonth() === selectedDate.getMonth() &&
               d.getFullYear() === selectedDate.getFullYear();
+
+            const today = new Date();
+            const isToday =
+              d.getDate() === today.getDate() &&
+              d.getMonth() === today.getMonth() &&
+              d.getFullYear() === today.getFullYear();
             return (
               <TouchableOpacity
                 key={d.toISOString()}
@@ -69,21 +83,43 @@ const DateSelector = ({ selectedDate, setSelectedDate }: { selectedDate: Date, s
                   setSelectedDate(new Date(isoDateString));
                   setWeekOffset(0);
                 }}
-                style={[
-                  styles.dayBox,
-                  isSelected && {
-                    borderColor: pallet.shade3,
-                    backgroundColor: pallet.shade4,
-                  },
-                ]}
+                style={[styles.dayBox]}
               >
-                <Text style={[styles.dayName, { color: colorSet.text }]}>
-                  {d.getDate()}
-                </Text>
+                <View
+                  style={[
+                    {
+                      height: 30,
+                      width: 30,
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginBottom: 4,
+                    },
+                    isSelected && {
+                      backgroundColor: pallet.shade2,
+
+                      borderRadius: 15,
+                    },
+                  ]}
+                >
+                  <Text
+                    variant="subtitle"
+                    style={[
+                      styles.dayName,
+                      isSelected
+                        ? { color: "#fff", textAlign: "center" }
+                        : isToday
+                        ? { color: pallet.shade2 }
+                        : {},
+                    ]}
+                  >
+                    {d.getDate()}
+                  </Text>
+                </View>
                 <Text
+                  variant="caption"
                   style={[
                     styles.dayNumber,
-                    { color: isSelected ? colorSet.tint : colorSet.icon },
+                    isToday && { color: pallet.shade2 },
                   ]}
                 >
                   {dayName}
@@ -98,7 +134,11 @@ const DateSelector = ({ selectedDate, setSelectedDate }: { selectedDate: Date, s
         onPress={() => setWeekOffset(weekOffset + 1)}
         style={styles.arrowBtn}
       >
-        <Ionicons size={28} color={pallet.shade1} name={"chevron-forward-circle"} />
+        <Ionicons
+          size={28}
+          color={pallet.shade1}
+          name={"chevron-forward-circle"}
+        />
       </TouchableOpacity>
     </View>
   );
@@ -113,7 +153,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flexDirection: "row",
-    gap: 10,
+    gap: 5,
     alignItems: "center",
   },
   arrowBtn: {
@@ -122,20 +162,19 @@ const styles = StyleSheet.create({
   },
   dayBox: {
     paddingVertical: 8,
-    paddingHorizontal: 10,
+    // paddingHorizontal: 10,
     borderWidth: 2,
     borderColor: "transparent",
     borderRadius: 16,
-    minWidth: 56,
+    minWidth: 34,
     alignItems: "center",
   },
   dayName: {
-    fontSize: 16,
-    marginBottom: 2,
+    fontSize: 14,
   },
   dayNumber: {
-    fontWeight: "700",
-    fontSize: 12,
+    fontWeight: "800",
+    fontSize: 10,
   },
   iconRow: {
     flexDirection: "row",
