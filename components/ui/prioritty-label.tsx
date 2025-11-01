@@ -20,7 +20,7 @@ const getPriorityColor = (priority) => {
     case 1:
       return { text: "#F97316", bg: "#FFF7ED" };
     default:
-      return { text: "#3B82F6", bg: "#EFF6FF" };
+      return { text: "#68b71fff", bg: "#e0f9e5ff" };
   }
 };
 

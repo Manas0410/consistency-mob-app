@@ -1,5 +1,6 @@
+import CategoryyLabel from "@/components/ui/category-label";
 import { Icon } from "@/components/ui/icon";
-import PriorityLabel from "@/components/ui/prioritty-label";
+import { default as PriorityLabel } from "@/components/ui/prioritty-label";
 import { ScrollView } from "@/components/ui/scroll-view";
 import { Spinner } from "@/components/ui/spinner";
 import { usePallet } from "@/hooks/use-pallet";
@@ -176,7 +177,13 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
                     item.isDone && { backgroundColor: pallet.shade4 },
                   ]}
                 >
-                  <PriorityLabel priority={item.prioritty} />
+                  <View style={{ flexDirection: "row", gap: 8 }}>
+                    <PriorityLabel priority={item.priority} />
+                    {item?.category && (
+                      <CategoryyLabel category={"asdfghjkl"} />
+                    )}
+                  </View>
+
                   <Text
                     style={[
                       styles.taskTitle,
