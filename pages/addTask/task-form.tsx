@@ -123,6 +123,9 @@ export default function TaskForm() {
         <AddPriority
           category={task.category}
           onClose={() => setOpenCategory(false)}
+          onSelect={(data) => {
+            handleChange("category", data);
+          }}
         />
       ) : (
         <View style={styles.container}>

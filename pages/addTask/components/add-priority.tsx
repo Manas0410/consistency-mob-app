@@ -10,7 +10,7 @@ import { StyleSheet, TouchableOpacity } from "react-native";
 
 const categories = ["asdfg", "asdfgh", "tyui", "wertyui", "qwertyui"];
 
-const AddPriority = ({ category, onClose }) => {
+const AddPriority = ({ category, onClose, onSelect }) => {
   const [value, setValue] = useState(category);
   const pallet = usePallet();
   return (
@@ -39,11 +39,16 @@ const AddPriority = ({ category, onClose }) => {
             elevation: 4,
           }}
           value={value}
-          //   onChangeText={setSearchQuery}
+          onChangeText={setValue}
           placeholder="Add category"
         />
 
-        <Button style={styles.secondaryButton}>
+        <Button
+          style={styles.secondaryButton}
+          onPress={() => {
+            onSelect(value);
+          }}
+        >
           <Plus size={20} color="#6B7280" />
         </Button>
       </View>
