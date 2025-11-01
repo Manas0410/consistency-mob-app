@@ -154,16 +154,6 @@ export default function TeamManagement() {
     }
   };
 
-  // ...same sample data from your code:
-  // users, setUsers, joinRequests, setJoinRequests, refreshing, setRefreshing
-  // ...same handlers as original code
-
-  // handlers, formatting, getRoleIcon, getRoleColor, etc.
-
-  // (All handlers, sample data, helpers are unchanged from your version above...)
-
-  // Place these as in your provided code, then use components:
-
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
   const { teamid } = useLocalSearchParams();

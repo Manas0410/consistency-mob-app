@@ -10,8 +10,9 @@ import { useUser } from "@clerk/clerk-expo";
 import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
 import { Calendar, LogOut, Users } from "lucide-react-native";
 import React from "react";
-import { StyleSheet, View } from "react-native";
+import { Alert, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { exitTeam } from "./API/api-calls";
 
 function TeamDashboard() {
   // Example stats
@@ -62,9 +63,13 @@ function TeamDashboard() {
             >
               Team Stats
             </Text>
-            <Text style={styles.count}>
-              {totalCount} <Text variant="caption">Tasks</Text>
-            </Text>{" "}
+            <View
+              style={{ flexDirection: "row", alignItems: "baseline", gap: 4 }}
+            >
+              <Text style={styles.count}>{totalCount}</Text>
+              <Text variant="caption">Tasks</Text>
+            </View>
+
             <Text style={styles.monthProgress}>
               Task Completion{" "}
               <Text style={{ color: "#17c964", fontWeight: "bold" }}>
@@ -172,11 +177,23 @@ function TeamDashboard() {
             </Button>
             <Button
               variant="destructive"
-              style={{
-                borderRadius: 12,
-              }}
+              style={{ borderRadius: 12 }}
               icon={LogOut}
-              onPress={() => {}}
+              onPress={() => {
+                Alert.alert(
+                  "Confirm Exit",
+                  "Are you sure you want to exit the team?",
+                  [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                      text: "Exit",
+                      style: "destructive",
+                      onPress: () => exitTeam(teamid),
+                    },
+                  ],
+                  { cancelable: false }
+                );
+              }}
             >
               Exit Team
             </Button>

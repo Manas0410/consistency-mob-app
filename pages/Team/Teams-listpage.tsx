@@ -295,7 +295,8 @@ const TeamsListing = ({ rerender }) => {
       </View>
 
       {/* Stats Cards */}
-      <View style={styles.statsContainer}>
+
+      <ScrollView horizontal style={styles.statsContainer}>
         <View style={styles.statCard}>
           <View style={styles.statIconContainer}>
             <Users size={20} color="#3B82F6" />
@@ -317,9 +318,6 @@ const TeamsListing = ({ rerender }) => {
           </Text>
           <Text style={styles.statLabel}>Tasks Assigned</Text>
         </View>
-      </View>
-
-      <View style={styles.statsContainer}>
         <View style={styles.statCard}>
           <View
             style={[styles.statIconContainer, { backgroundColor: "#F0FDF4" }]}
@@ -339,7 +337,7 @@ const TeamsListing = ({ rerender }) => {
           <Text style={styles.statNumber}>{getTotalTasksCompleted()}</Text>
           <Text style={styles.statLabel}>Completed</Text>
         </View>
-      </View>
+      </ScrollView>
 
       {/* Section Title */}
       <View style={styles.sectionHeader}>
@@ -350,23 +348,32 @@ const TeamsListing = ({ rerender }) => {
       </View>
 
       {/* Action Buttons */}
-      <View style={styles.actionButtonsContainer}>
-        <Input
-          variant="outline"
-          containerStyle={{
-            flex: 1,
-            borderRadius: 12,
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 8,
-            elevation: 4,
-          }}
-          value={searchQuery}
-          onChangeText={setSearchQuery}
-          placeholder="Search Teams"
-        />
+      <Input
+        icon={Search}
+        rightComponent={
+          searchQuery && (
+            <X
+              onPress={() => {
+                setSearchQuery("");
+              }}
+            />
+          )
+        }
+        variant="outline"
+        containerStyle={{
+          flex: 1,
+          borderRadius: 12,
+          shadowOffset: { width: 0, height: 4 },
+          shadowOpacity: 0.3,
+          shadowRadius: 8,
+          elevation: 4,
+        }}
+        value={searchQuery}
+        onChangeText={setSearchQuery}
+        placeholder="Search Teams"
+      />
 
-        <View style={styles.secondaryButton}>
+      {/* <View style={styles.secondaryButton}>
           {searchQuery.length > 0 ? (
             <X
               size={20}
@@ -378,8 +385,7 @@ const TeamsListing = ({ rerender }) => {
           ) : (
             <Search size={20} color="#6B7280" />
           )}
-        </View>
-      </View>
+        </View> */}
     </View>
   );
 
@@ -478,15 +484,18 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     gap: 12,
     marginBottom: 24,
+    display: "flex",
   },
   statCard: {
     flex: 1,
     backgroundColor: "#F8FAFC",
     borderRadius: 16,
-    padding: 16,
+    padding: 10,
     alignItems: "center",
     borderWidth: 1,
     borderColor: "#E2E8F0",
+    marginHorizontal: 4,
+    width: 130,
   },
   statIconContainer: {
     width: 40,
@@ -498,13 +507,13 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   statNumber: {
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: "800",
     color: "#1E293B",
     marginBottom: 4,
   },
   statLabel: {
-    fontSize: 12,
+    fontSize: 10,
     color: "#64748B",
     fontWeight: "600",
     textTransform: "uppercase",

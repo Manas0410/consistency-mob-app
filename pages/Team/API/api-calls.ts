@@ -194,6 +194,7 @@ export const acceptTeamRequest = async (teamId, requestUserId) => {
     return { success: false, data: { message: "error" } };
   }
 };
+
 export const rejectTeamRequest = async (teamId, requestUserId) => {
   try {
     const response = await apicall.post("/team/accept-invite", {
@@ -202,6 +203,48 @@ export const rejectTeamRequest = async (teamId, requestUserId) => {
     });
     if (response.status !== 200)
       throw new Error(`Failed to delete team: ${response.statusText}`);
+    return { success: true, data: response.data?.members };
+  } catch (error) {
+    console.error("Error deleting team:", error);
+    return { success: false, data: { message: "error" } };
+  }
+};
+
+export const removeFromTeam = async (teamId, removeUserId) => {
+  try {
+    const response = await apicall.post("/team/remove-member", {
+      teamId,
+      removeUserId,
+    });
+    if (response.status !== 200)
+      throw new Error(`Failed to  removee user: ${response.statusText}`);
+    return { success: true, data: response.data?.members };
+  } catch (error) {
+    console.error("Error deleting team:", error);
+    return { success: false, data: { message: "error" } };
+  }
+};
+export const makeAdmin = async (teamId, targetUserId) => {
+  try {
+    const response = await apicall.post("/team/make-admin", {
+      teamId,
+      targetUserId,
+    });
+    if (response.status !== 200)
+      throw new Error(`Failed to  removee user: ${response.statusText}`);
+    return { success: true, data: response.data?.members };
+  } catch (error) {
+    console.error("Error deleting team:", error);
+    return { success: false, data: { message: "error" } };
+  }
+};
+export const exitTeam = async (teamId) => {
+  try {
+    const response = await apicall.post("/team/remove-member", {
+      teamId,
+    });
+    if (response.status !== 200)
+      throw new Error(`Failed to  removee user: ${response.statusText}`);
     return { success: true, data: response.data?.members };
   } catch (error) {
     console.error("Error deleting team:", error);
