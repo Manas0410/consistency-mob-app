@@ -204,8 +204,8 @@ export default function TaskForm() {
                   containerStyle={{ flex: 1, marginRight: 12 }}
                   labelWidth={80}
                   label="Hours"
-                  placeholder=""
                   keyboardType="numeric"
+                  placeholder=""
                   value={String(task.duration.hours)}
                   onChangeText={(text) =>
                     handleChange("duration", {

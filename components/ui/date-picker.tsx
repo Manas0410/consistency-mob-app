@@ -443,7 +443,7 @@ export function DatePicker(props: DatePickerProps) {
           backgroundColor: mutedColor,
         }}
       >
-        <ChevronLeft size={20} color={textColor} />
+        <ChevronLeft size={16} color={textColor} />
       </TouchableOpacity>
 
       <View
@@ -469,7 +469,7 @@ export function DatePicker(props: DatePickerProps) {
             backgroundColor: mutedColor,
           }}
         >
-          <Text variant="subtitle" style={{ marginRight: 4 }}>
+          <Text variant="subtitle" style={{ marginRight: 4, fontSize: 12 }}>
             {MONTHS[calendarData.month]}
           </Text>
           <ChevronDown size={16} color={textColor} />
@@ -488,7 +488,7 @@ export function DatePicker(props: DatePickerProps) {
             backgroundColor: mutedColor,
           }}
         >
-          <Text variant="subtitle" style={{ marginRight: 4 }}>
+          <Text variant="subtitle" style={{ marginRight: 4, fontSize: 12 }}>
             {calendarData.year}
           </Text>
           <ChevronDown size={16} color={textColor} />
@@ -503,7 +503,7 @@ export function DatePicker(props: DatePickerProps) {
           backgroundColor: mutedColor,
         }}
       >
-        <ChevronRight size={20} color={textColor} />
+        <ChevronRight size={16} color={textColor} />
       </TouchableOpacity>
     </View>
   );
@@ -768,7 +768,7 @@ export function DatePicker(props: DatePickerProps) {
                       style={{
                         color: isSelected ? primaryForegroundColor : textColor,
                         fontWeight: isSelected ? "600" : "400",
-                        fontSize: FONT_SIZE,
+                        fontSize: 14,
                       }}
                     >
                       {hour.toString().padStart(2, "0")}
@@ -814,7 +814,7 @@ export function DatePicker(props: DatePickerProps) {
                           ? primaryForegroundColor
                           : textColor,
                       fontWeight: minute === selectedMinutes ? "600" : "400",
-                      fontSize: FONT_SIZE,
+                      fontSize: 14,
                     }}
                   >
                     {minute.toString().padStart(2, "0")}
@@ -917,7 +917,7 @@ export function DatePicker(props: DatePickerProps) {
                     ? primaryForegroundColor
                     : textColor,
                 fontWeight: index === calendarData.month ? "600" : "400",
-                fontSize: FONT_SIZE,
+                fontSize: 16,
               }}
             >
               {month}
@@ -981,18 +981,40 @@ export function DatePicker(props: DatePickerProps) {
   };
 
   const getBottomSheetTitle = () => {
-    if (showMonthPicker) return "Select Month";
-    if (showYearPicker) return "Select Year";
+    const title = showMonthPicker
+      ? "Select Month"
+      : showYearPicker
+      ? "Select Year"
+      : mode === "datetime"
+      ? viewMode === "date"
+        ? "Select Date"
+        : "Select Time"
+      : mode === "time"
+      ? "Select Time"
+      : mode === "range"
+      ? "Select Range"
+      : "Select Date";
 
-    if (mode === "datetime") {
-      return viewMode === "date" ? "Select Date" : "Select Time";
+    // Show back button only if mode is datetime and viewMode is time
+    if (mode === "datetime" && viewMode === "time") {
+      return (
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "flex-start",
+            gap: 8,
+          }}
+        >
+          <TouchableOpacity onPress={() => setViewMode("date")}>
+            <ChevronLeft size={20} />
+          </TouchableOpacity>
+          <Text>{title}</Text>
+        </View>
+      );
     }
 
-    if (mode === "time") return "Select Time";
-
-    if (mode === "range") return "Select Range";
-
-    return "Select Date";
+    return <Text>{title}</Text>;
   };
 
   const handleOpenPicker = () => {
@@ -1113,11 +1135,16 @@ export function DatePicker(props: DatePickerProps) {
                 gap: 8,
               }}
             >
-              <Button variant="outline" onPress={resetToToday}>
+              <Button
+                style={{}}
+                textStyle={{ fontSize: 12 }}
+                variant="outline"
+                onPress={resetToToday}
+              >
                 Today
               </Button>
-
               <Button
+                textStyle={{ fontSize: 12 }}
                 variant="outline"
                 onPress={() => {
                   close();
@@ -1131,11 +1158,18 @@ export function DatePicker(props: DatePickerProps) {
             </View>
 
             {mode === "datetime" && viewMode === "date" ? (
-              <Button onPress={() => setViewMode("time")} style={{ flex: 1 }}>
+              <Button
+                onPress={() => setViewMode("time")}
+                style={{ flex: 1, padding: 10 }}
+              >
                 Next
               </Button>
             ) : (
-              <Button onPress={handleConfirm} style={{ flex: 1 }}>
+              <Button
+                textStyle={{ fontSize: 12 }}
+                onPress={handleConfirm}
+                style={{ flex: 1, padding: 2 }}
+              >
                 Done
               </Button>
             )}
