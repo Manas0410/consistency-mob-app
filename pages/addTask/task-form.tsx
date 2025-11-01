@@ -48,7 +48,7 @@ export default function TaskForm() {
 
   const [showError, setShowError] = useState(false);
   const [step, setStep] = useState(1);
-  const [openPriority, setOpenPriority] = useState(false);
+  const [openCategory, setOpenCategory] = useState(false);
 
   const taskNameError =
     showError && task.taskName.trim() === "" ? "Task name is required." : "";
@@ -119,8 +119,11 @@ export default function TaskForm() {
       }}
       snapPoints={[0.65, 0.9, 0.5]}
     >
-      {openPriority ? (
-        <AddPriority />
+      {openCategory ? (
+        <AddPriority
+          category={task.category}
+          onClose={() => setOpenCategory(false)}
+        />
       ) : (
         <View style={styles.container}>
           {step === 1 ? (
@@ -150,14 +153,20 @@ export default function TaskForm() {
                 onChange={(val) => handleChange("priority", val)}
               />
               {task.category ? (
-                <Badge variant="outline">
-                  <Text>
-                    {" "}
-                    <SquarePen size={16} /> Category : {task.category}{" "}
-                  </Text>{" "}
-                </Badge>
+                <TouchableOpacity onPress={() => setOpenCategory(true)}>
+                  <Badge variant="outline">
+                    <Text>
+                      {" "}
+                      <SquarePen size={16} /> Category : {task.category}{" "}
+                    </Text>{" "}
+                  </Badge>
+                </TouchableOpacity>
               ) : (
-                <Button variant="secondary" icon={Plus}>
+                <Button
+                  onPress={() => setOpenCategory(true)}
+                  variant="secondary"
+                  icon={Plus}
+                >
                   Category
                 </Button>
               )}

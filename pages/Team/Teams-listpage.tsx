@@ -351,15 +351,6 @@ const TeamsListing = ({ rerender }) => {
 
       {/* Action Buttons */}
       <View style={styles.actionButtonsContainer}>
-        {/* <TouchableOpacity
-          style={styles.primaryButton}
-          onPress={() =>
-            Alert.alert("Create Team", "Team creation feature coming soon!")
-          }
-        >
-          <Plus size={20} color="#fff" />
-          <Text style={styles.primaryButtonText}>Create Team</Text>
-        </TouchableOpacity> */}
         <Input
           variant="outline"
           containerStyle={{
