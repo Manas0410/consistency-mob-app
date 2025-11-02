@@ -197,7 +197,10 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
               </View>
               {/* Status check pill */}
               <View style={styles.statusCol}>
-                <StatusChangeCheckbox isChecked={item.isDone} />
+                <StatusChangeCheckbox
+                  isChecked={item.isDone}
+                  taskId={item?._id}
+                />
               </View>
             </View>
           )
@@ -211,6 +214,7 @@ const styles = StyleSheet.create({
   container: {
     paddingVertical: 24,
     paddingHorizontal: 12,
+    marginBottom: 250,
   },
   row: {
     flexDirection: "row",
