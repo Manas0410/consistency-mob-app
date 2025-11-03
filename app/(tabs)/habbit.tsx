@@ -51,7 +51,7 @@ const Habbit = () => {
     TaskStartDateTime: addMinutes(new Date(), 15),
     duration: { hours: 0, minutes: 30 },
     priority: 0,
-    frequency: [0],
+    frequency: [8],
     category: "Habbit",
     isHabbit: true,
   });
@@ -64,7 +64,24 @@ const Habbit = () => {
   };
 
   const inputRef = useRef(null);
-  const formSectionRef = useRef(null);
+  const [targetY, setTargetY] = useState(0);
+  const scrollRef = useRef(null);
+
+  const scrollToTarget = () => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTo({ y: targetY, animated: true });
+    }
+  };
+
+  const addAccordian = (habbit, description) => {
+    try {
+      handleChange("taskName", habbit);
+      handleChange("taskDescription", description);
+      scrollToTarget();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   const getAIHabbits = async () => {
     try {
@@ -121,7 +138,7 @@ const Habbit = () => {
   return (
     <SafeAreaView style={{ flex: 1, padding: 10, backgroundColor: "#fff" }}>
       <BackHeader title="Add Habbits" />
-      <ScrollView>
+      <ScrollView ref={scrollRef}>
         <Text variant="subtitle" style={{ marginVertical: 20 }}>
           Slect from pre defined categories
         </Text>
@@ -145,6 +162,7 @@ const Habbit = () => {
                 <View style={{ padding: 16 }}>
                   {habits.map(({ habitName, habitDescription }) => (
                     <HabbitAccordian
+                      addAccordian={addAccordian}
                       habitName={habitName}
                       habitDescription={habitDescription}
                     />
@@ -179,6 +197,7 @@ const Habbit = () => {
               <View>
                 {AIGeneratedHabbits.map(({ habbitName, habbitDescription }) => (
                   <HabbitAccordian
+                    addAccordian={addAccordian}
                     habitName={habbitName}
                     habitDescription={habbitDescription}
                   />
@@ -204,7 +223,10 @@ const Habbit = () => {
         <Text variant="subtitle" style={{ marginVertical: 20 }}>
           Enter Habbits manually
         </Text>
-        <View style={{ gap: 6, marginBottom: 350 }} ref={formSectionRef}>
+        <View
+          style={{ gap: 6, marginBottom: 350 }}
+          onLayout={(e) => setTargetY(e.nativeEvent.layout.y)}
+        >
           <Input
             label="Habbit"
             placeholder="Enter Habbit"

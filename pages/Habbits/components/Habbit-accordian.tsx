@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { Plus } from "lucide-react-native";
 
-const HabbitAccordian = ({ habitName, habitDescription }) => {
+const HabbitAccordian = ({ habitName, habitDescription, addAccordian }) => {
   return (
     <Accordion key={habitName} type="single" collapsible>
       <AccordionItem value="features">
@@ -24,6 +24,7 @@ const HabbitAccordian = ({ habitName, habitDescription }) => {
             }}
             textStyle={{ fontSize: 12 }}
             icon={Plus}
+            onPress={() => addAccordian(habitName, habitDescription)}
           >
             Add
           </Button>
