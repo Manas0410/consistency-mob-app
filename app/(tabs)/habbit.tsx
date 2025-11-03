@@ -1,18 +1,42 @@
 import BackHeader from "@/components/ui/back-header";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
+import { Picker } from "@/components/ui/picker";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Text } from "@/components/ui/text";
+import { useToast } from "@/components/ui/toast";
 import { View } from "@/components/ui/view";
+import { TaskData } from "@/constants/types";
 import { defaultHabbits } from "@/dummy/defaultHabbits";
 import { usePallet } from "@/hooks/use-pallet";
+import { addTask } from "@/pages/addTask/API/addTask";
 import { createHabbit } from "@/pages/Habbits/API/callAPI";
 import HabbitAccordian from "@/pages/Habbits/components/Habbit-accordian";
-import { ArrowBigRight, Brain } from "lucide-react-native";
+import { addMinutes } from "date-fns";
+import {
+  ArrowBigRight,
+  Brain,
+  Goal,
+  Plus,
+  ScrollText,
+} from "lucide-react-native";
 import { useRef, useState } from "react";
 import { ScrollView } from "react-native-gesture-handler";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+const options = [
+  //   { label: "Once", value: 0 },
+  { label: "Every Sunday", value: 1 },
+  { label: "Every Monday", value: 2 },
+  { label: "Every Tuesday", value: 3 },
+  { label: "Every Wednesday", value: 4 },
+  { label: "Every Thursday", value: 5 },
+  { label: "Every Friday", value: 6 },
+  { label: "Every Saturday", value: 7 },
+  { label: "Everyday", value: 8 },
+];
 
 const Habbit = () => {
   const [selectedTab, setSelectedTab] = useState<string>("Health");
@@ -21,6 +45,23 @@ const Habbit = () => {
   const [AIGeneratedHabbits, setAIGeneratedHabbits] = useState([]);
   const [AIloading, setAILoading] = useState(false);
   const [HabbitPrompt, setHabbitPrompt] = useState("");
+  const [task, setTask] = useState<TaskData>({
+    taskName: "",
+    taskDescription: "",
+    TaskStartDateTime: addMinutes(new Date(), 15),
+    duration: { hours: 0, minutes: 30 },
+    priority: 0,
+    frequency: [0],
+    category: "Habbit",
+    isHabbit: true,
+  });
+  const [showError, setShowError] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const { success, error } = useToast();
+
+  const handleChange = (field: keyof TaskData, value: any) => {
+    setTask((prev) => ({ ...prev, [field]: value }));
+  };
 
   const inputRef = useRef(null);
   const getAIHabbits = async () => {
@@ -39,7 +80,41 @@ const Habbit = () => {
       setAILoading(false);
     }
   };
-  console.log(AIGeneratedHabbits, "qwertyuiop");
+
+  const onSubmit = async () => {
+    if (task.taskName.trim() === "") {
+      setShowError(true);
+    }
+    try {
+      setLoading(true);
+      const response = await addTask(task);
+      if (response.success) {
+        success(
+          "Habbit added successfully!",
+          "you can track them from tasks page!"
+        );
+        setTask({
+          taskName: "",
+          taskDescription: "",
+          TaskStartDateTime: addMinutes(new Date(), 15),
+          duration: { hours: 0, minutes: 30 },
+          priority: 0,
+          frequency: [0],
+          category: "",
+        });
+      } else {
+        error("Failed to add Habbit.");
+      }
+    } catch (err) {
+      console.log(err);
+      error("Failed to add Habbit.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const taskNameError =
+    showError && task.taskName.trim() === "" ? "Task name is required." : "";
 
   return (
     <SafeAreaView style={{ flex: 1, padding: 10, backgroundColor: "#fff" }}>
@@ -127,6 +202,50 @@ const Habbit = () => {
         <Text variant="subtitle" style={{ marginVertical: 20 }}>
           Enter Habbits manually
         </Text>
+        <View style={{ gap: 6, marginBottom: 350 }}>
+          <Input
+            label="Task"
+            placeholder="Enter Habbit"
+            icon={Goal}
+            value={task.taskName}
+            onChangeText={(text) => handleChange("taskName", text)}
+            error={taskNameError}
+            variant="outline"
+          />
+          <Input
+            type="textarea"
+            label="Description"
+            placeholder="Enter Habbit description"
+            icon={ScrollText}
+            value={task.taskDescription}
+            onChangeText={(text) => handleChange("taskDescription", text)}
+            variant="outline"
+          />
+          <DatePicker
+            label="12-Hour Time"
+            mode="time"
+            value={task.TaskStartDateTime}
+            onChange={(date) => handleChange("TaskStartDateTime", date)}
+            placeholder="Select time"
+            timeFormat="12"
+          />
+          <Picker
+            variant="outline"
+            label="Select Frequency"
+            multiple
+            values={task.frequency}
+            options={options}
+            onValuesChange={(val) => handleChange("frequency", val)}
+          />
+          <Button
+            icon={Plus}
+            loading={loading}
+            variant="success"
+            onPress={onSubmit}
+          >
+            Add Task
+          </Button>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
