@@ -180,7 +180,7 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
                   <View style={{ flexDirection: "row", gap: 8 }}>
                     <PriorityLabel priority={item.priority} />
                     {item?.category && (
-                      <CategoryyLabel category={"asdfghjkl"} />
+                      <CategoryyLabel category={item?.category} />
                     )}
                   </View>
 

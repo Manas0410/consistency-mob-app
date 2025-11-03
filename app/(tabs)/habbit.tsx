@@ -64,6 +64,8 @@ const Habbit = () => {
   };
 
   const inputRef = useRef(null);
+  const formSectionRef = useRef(null);
+
   const getAIHabbits = async () => {
     try {
       if (inputRef.current) {
@@ -202,9 +204,9 @@ const Habbit = () => {
         <Text variant="subtitle" style={{ marginVertical: 20 }}>
           Enter Habbits manually
         </Text>
-        <View style={{ gap: 6, marginBottom: 350 }}>
+        <View style={{ gap: 6, marginBottom: 350 }} ref={formSectionRef}>
           <Input
-            label="Task"
+            label="Habbit"
             placeholder="Enter Habbit"
             icon={Goal}
             value={task.taskName}
@@ -222,6 +224,7 @@ const Habbit = () => {
             variant="outline"
           />
           <DatePicker
+            variant="outline"
             label="12-Hour Time"
             mode="time"
             value={task.TaskStartDateTime}
