@@ -66,7 +66,7 @@ const BottomBar = () => {
           </TouchableOpacity>
         ))}
       </View>
-      {!["/team", "/TeamDetails"].includes(pathname) &&
+      {!["/team", "/TeamDetails", "/habbit"].includes(pathname) &&
         !pathname.endsWith("/TeamDetails") &&
         !pathname.endsWith("/teamTaskPage") &&
         !pathname.endsWith("/teamMembers") && (
