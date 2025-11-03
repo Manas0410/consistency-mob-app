@@ -10,10 +10,10 @@ import {
   Brain,
   Calendar,
   ChevronUp,
+  Goal,
   Home,
   PackagePlus,
   Plus,
-  Settings,
   UserPlus,
   Users,
   X,
@@ -27,7 +27,8 @@ const bottomBarOptions = [
   { name: "Tasks", icon: Calendar, url: "/calendar" },
   { name: "AI Chat", icon: Brain, url: "/ai-chat" },
   { name: "Team", icon: Users, url: "/team" },
-  { name: "Settings", icon: Settings, url: "/settings" },
+  // { name: "Settings", icon: Settings, url: "/settings" },
+  { name: "Habbit", icon: Goal, url: "/habbit" },
 ];
 
 const BottomBar = () => {

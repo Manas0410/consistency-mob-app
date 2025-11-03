@@ -167,6 +167,7 @@ export function Tabs({
         style={[
           {
             flexDirection: orientation === "horizontal" ? "column" : "row",
+            borderRadius: 10,
           },
           style,
         ]}
