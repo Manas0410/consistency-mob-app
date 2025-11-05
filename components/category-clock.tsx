@@ -346,8 +346,8 @@ export default function CategoryClock() {
                   <SvgText
                     x={labelPos.x}
                     y={labelPos.y - 6}
-                    fill="rgba(255, 255, 255, 0.9)"
-                    fontSize="11"
+                    fill="rgba(0, 0, 0, 0.9)"
+                    fontSize="13"
                     fontWeight="500"
                     textAnchor="middle"
                   >
@@ -400,7 +400,7 @@ export default function CategoryClock() {
             key={category}
             style={{
               flexDirection: "row",
-              alignItems: "center",
+              alignItems: "flex-start",
               marginBottom: 3,
               gap: 12,
             }}
@@ -418,7 +418,7 @@ export default function CategoryClock() {
               style={{
                 color: categoryColors[category]
                   ? categoryColors[category].replace("0.7", "1")
-                  : "rgba(255, 255, 255, 0.9)",
+                  : "rgba(82, 80, 80, 0.9)",
                 fontSize: 16,
                 fontWeight: "500",
                 textTransform: "uppercase",
