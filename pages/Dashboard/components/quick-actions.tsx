@@ -1,13 +1,20 @@
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
 import { useRouter } from "expo-router";
-import { Activity, ArrowRight, BarChart3, Calendar } from "lucide-react-native";
+import {
+  ArrowRight,
+  Calendar,
+  Goal,
+  PlaneTakeoff,
+  Sparkles,
+  Users,
+} from "lucide-react-native";
 import { TouchableOpacity } from "react-native";
 
 const quickActionsData = (router) => [
   {
     title: "Track tasks",
-    subtitle: "Set up a new project with team assignments",
+    subtitle: "Track your daily tasks",
     icon: Calendar,
     color: "#3b82f6",
     bgColor: "#dbeafe",
@@ -15,27 +22,35 @@ const quickActionsData = (router) => [
   },
   {
     title: "Ask AI",
-    subtitle: "View detailed analytics and reports",
-    icon: BarChart3,
+    subtitle: "need mativation ?",
+    icon: Sparkles,
     color: "#3b82f6",
     bgColor: "#dbeafe",
-    onPress: () => router.push("/team-performance"),
+    onPress: () => router.push("/ai-chat"),
   },
   {
-    title: "Schedule Meeting",
-    subtitle: "Organize team sync and project reviews",
-    icon: Calendar,
+    title: "AI Planner",
+    subtitle: "Get your tasks plan via AI",
+    icon: PlaneTakeoff,
     color: "#3b82f6",
     bgColor: "#dbeafe",
-    onPress: () => router.push("/schedule-meeting"),
+    onPress: () => router.push("/ai-chat"),
   },
   {
-    title: "Assign Tasks",
-    subtitle: "Distribute work among team members",
-    icon: Activity,
+    title: "Manage your teams",
+    subtitle: "Manage your team and wwork with your fellows",
+    icon: Users,
     color: "#3b82f6",
     bgColor: "#dbeafe",
-    onPress: () => router.push("/assign-tasks"),
+    onPress: () => router.push("/team"),
+  },
+  {
+    title: "Create Habits",
+    subtitle: "turn your goals into habits",
+    icon: Goal,
+    color: "#3b82f6",
+    bgColor: "#dbeafe",
+    onPress: () => router.push("/habbit"),
   },
 ];
 
