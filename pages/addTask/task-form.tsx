@@ -210,7 +210,7 @@ export default function TaskForm() {
                   onChangeText={(text) =>
                     handleChange("duration", {
                       ...task.duration,
-                      hours: Number(text),
+                      hours: Number(text) > 24 ? 24 : Number(text),
                     })
                   }
                 />
@@ -224,7 +224,7 @@ export default function TaskForm() {
                   onChangeText={(text) =>
                     handleChange("duration", {
                       ...task.duration,
-                      minutes: Number(text),
+                      minutes: Number(text) > 60 ? 60 : Number(text),
                     })
                   }
                 />

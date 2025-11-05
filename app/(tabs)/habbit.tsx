@@ -139,7 +139,7 @@ const Habbit = () => {
       <BackHeader title="Add Habbits" />
       <ScrollView
         ref={scrollRef}
-        style={{ padding: 10, backgroundColor: "#f5f3f3ff" }}
+        style={{ paddingHorizontal: 20, backgroundColor: "#f5f3f3ff" }}
       >
         <Text variant="title" style={{ marginVertical: 20 }}>
           {GenerateAIenabled
