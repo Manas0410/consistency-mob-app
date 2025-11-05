@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Input } from "@/components/ui/input";
 import { Picker } from "@/components/ui/picker";
-import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Text } from "@/components/ui/text";
 import { useToast } from "@/components/ui/toast";
@@ -16,7 +15,6 @@ import { createHabbit } from "@/pages/Habbits/API/callAPI";
 import HabbitAccordian from "@/pages/Habbits/components/Habbit-accordian";
 import { addMinutes } from "date-fns";
 import {
-  ArrowBigRight,
   Goal,
   ListTodo,
   Plus,
@@ -29,6 +27,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 const options = [
   //   { label: "Once", value: 0 },
+  { label: "Everyday", value: 8 },
   { label: "Every Sunday", value: 1 },
   { label: "Every Monday", value: 2 },
   { label: "Every Tuesday", value: 3 },
@@ -36,7 +35,6 @@ const options = [
   { label: "Every Thursday", value: 5 },
   { label: "Every Friday", value: 6 },
   { label: "Every Saturday", value: 7 },
-  { label: "Everyday", value: 8 },
 ];
 
 const Habbit = () => {
@@ -137,11 +135,16 @@ const Habbit = () => {
     showError && task.taskName.trim() === "" ? "Task name is required." : "";
 
   return (
-    <SafeAreaView style={{ flex: 1, padding: 10, backgroundColor: "#eee" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
       <BackHeader title="Add Habbits" />
-      <ScrollView ref={scrollRef}>
+      <ScrollView
+        ref={scrollRef}
+        style={{ padding: 10, backgroundColor: "#f5f3f3ff" }}
+      >
         <Text variant="title" style={{ marginVertical: 20 }}>
-          Slect from pre-defined categories
+          {GenerateAIenabled
+            ? "Tell your goal and generate habbits with AI"
+            : "Slect from pre-defined categories"}
         </Text>
 
         {!GenerateAIenabled ? (
@@ -157,7 +160,7 @@ const Habbit = () => {
                   value={key}
                   style={{
                     borderRadius: 30,
-                    backgroundColor: "#eee",
+                    backgroundColor: "#dcdbdbff",
                     marginHorizontal: 2,
                   }}
                   activeStyle={{ backgroundColor: "#000" }}
@@ -194,12 +197,13 @@ const Habbit = () => {
               onChangeText={setHabbitPrompt}
             />
             <Button
-              icon={ArrowBigRight}
+              icon={Sparkles}
               style={{
-                backgroundColor: pallet.shade1,
-                borderRadius: 10,
+                borderRadius: 30,
                 marginVertical: 10,
+                backgroundColor: "#fbd8adff",
               }}
+              textStyle={{ color: "#F97316" }}
               loading={AIloading}
               onPress={getAIHabbits}
             >
@@ -218,25 +222,25 @@ const Habbit = () => {
             )}
           </View>
         )}
-        <Separator style={{ marginVertical: 16 }} />
         <Button
           icon={GenerateAIenabled ? ListTodo : Sparkles}
           style={{
-            backgroundColor: pallet.shade1,
+            marginVertical: 16,
             borderRadius: 10,
+            backgroundColor: "#d8e7fbff",
           }}
+          textStyle={{ color: "#3B82F6" }}
           onPress={() => {
             setGenerateAIEnabled((p) => !p);
           }}
         >
           {GenerateAIenabled ? "SELECT FROM LIST" : "GENERATE HABBITS WITH AI"}
         </Button>
-        <Separator style={{ marginVertical: 16 }} />
-        <Text variant="subtitle" style={{ marginVertical: 20 }}>
+        <Text variant="title" style={{ marginVertical: 20 }}>
           Enter Habbits manually
         </Text>
         <View
-          style={{ gap: 6, marginBottom: 350 }}
+          style={{ gap: 10, marginBottom: 350 }}
           onLayout={(e) => setTargetY(e.nativeEvent.layout.y)}
         >
           <Input
@@ -247,6 +251,7 @@ const Habbit = () => {
             onChangeText={(text) => handleChange("taskName", text)}
             error={taskNameError}
             variant="outline"
+            containerStyle={{ backgroundColor: "#fff", borderRadius: 12 }}
           />
           <Input
             type="textarea"
@@ -256,6 +261,7 @@ const Habbit = () => {
             value={task.taskDescription}
             onChangeText={(text) => handleChange("taskDescription", text)}
             variant="outline"
+            containerStyle={{ backgroundColor: "#fff", borderRadius: 12 }}
           />
           <DatePicker
             variant="outline"
@@ -265,6 +271,7 @@ const Habbit = () => {
             onChange={(date) => handleChange("TaskStartDateTime", date)}
             placeholder="Select time"
             timeFormat="12"
+            style={{ backgroundColor: "#fff", borderRadius: 12 }}
           />
           <Picker
             variant="outline"
@@ -273,6 +280,7 @@ const Habbit = () => {
             values={task.frequency}
             options={options}
             onValuesChange={(val) => handleChange("frequency", val)}
+            style={{ backgroundColor: "#fff", borderRadius: 12 }}
           />
           <Button
             icon={Plus}

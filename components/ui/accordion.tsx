@@ -129,6 +129,7 @@ export function AccordionTrigger({ children }: AccordionTriggerProps) {
         alignItems: "center",
         justifyContent: "space-between",
         paddingVertical: 6,
+        paddingHorizontal: 10,
       }}
       onPress={context.toggle}
       activeOpacity={0.8}
