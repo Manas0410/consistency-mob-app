@@ -17,10 +17,11 @@ import HabbitAccordian from "@/pages/Habbits/components/Habbit-accordian";
 import { addMinutes } from "date-fns";
 import {
   ArrowBigRight,
-  Brain,
   Goal,
+  ListTodo,
   Plus,
   ScrollText,
+  Sparkles,
 } from "lucide-react-native";
 import { useRef, useState } from "react";
 import { ScrollView } from "react-native-gesture-handler";
@@ -136,11 +137,11 @@ const Habbit = () => {
     showError && task.taskName.trim() === "" ? "Task name is required." : "";
 
   return (
-    <SafeAreaView style={{ flex: 1, padding: 10, backgroundColor: "#fff" }}>
+    <SafeAreaView style={{ flex: 1, padding: 10, backgroundColor: "#eee" }}>
       <BackHeader title="Add Habbits" />
       <ScrollView ref={scrollRef}>
-        <Text variant="subtitle" style={{ marginVertical: 20 }}>
-          Slect from pre defined categories
+        <Text variant="title" style={{ marginVertical: 20 }}>
+          Slect from pre-defined categories
         </Text>
 
         {!GenerateAIenabled ? (
@@ -149,9 +150,19 @@ const Habbit = () => {
             style={{ borderRadius: 10 }}
             onValueChange={(value) => setSelectedTab(value)}
           >
-            <TabsList>
+            <TabsList style={{ backgroundColor: "transparent" }}>
               {Object.keys(defaultHabbits).map((key) => (
-                <TabsTrigger key={key} value={key} style={{ borderRadius: 30 }}>
+                <TabsTrigger
+                  key={key}
+                  value={key}
+                  style={{
+                    borderRadius: 30,
+                    backgroundColor: "#eee",
+                    marginHorizontal: 2,
+                  }}
+                  activeStyle={{ backgroundColor: "#000" }}
+                  activeTextStyle={{ color: "#fff" }}
+                >
                   {key}
                 </TabsTrigger>
               ))}
@@ -159,9 +170,10 @@ const Habbit = () => {
 
             {Object.entries(defaultHabbits).map(([key, habits]) => (
               <TabsContent key={key} value={key}>
-                <View style={{ padding: 16 }}>
+                <View style={{}}>
                   {habits.map(({ habitName, habitDescription }) => (
                     <HabbitAccordian
+                      key={habitName}
                       addAccordian={addAccordian}
                       habitName={habitName}
                       habitDescription={habitDescription}
@@ -208,7 +220,7 @@ const Habbit = () => {
         )}
         <Separator style={{ marginVertical: 16 }} />
         <Button
-          icon={Brain}
+          icon={GenerateAIenabled ? ListTodo : Sparkles}
           style={{
             backgroundColor: pallet.shade1,
             borderRadius: 10,

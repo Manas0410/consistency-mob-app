@@ -3,7 +3,7 @@ import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
 import { ChevronRight } from "lucide-react-native";
 import React, { createContext, useContext, useState } from "react";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, ViewStyle } from "react-native";
 
 // Context for accordion state
 interface AccordionContextType {
@@ -23,6 +23,7 @@ interface AccordionProps {
   value?: string | string[];
   onValueChange?: (value: string | string[]) => void;
   children: React.ReactNode;
+  style?: ViewStyle;
 }
 
 export function Accordion({
@@ -32,6 +33,7 @@ export function Accordion({
   value: controlledValue,
   onValueChange,
   children,
+  style = {},
 }: AccordionProps) {
   const [internalValue, setInternalValue] = useState<string | string[]>(
     defaultValue || (type === "multiple" ? [] : "")
@@ -55,7 +57,7 @@ export function Accordion({
         onValueChange: handleValueChange,
       }}
     >
-      <View style={{ width: "100%" }}>{children}</View>
+      <View style={{ width: "100%", ...style }}>{children}</View>
     </AccordionContext.Provider>
   );
 }

@@ -61,6 +61,8 @@ interface TabsTriggerProps {
   disabled?: boolean;
   style?: ViewStyle;
   textStyle?: TextStyle;
+  activeStyle?: ViewStyle;
+  activeTextStyle?: TextStyle;
 }
 
 interface TabsContentProps {
@@ -403,6 +405,8 @@ export function TabsTrigger({
   disabled = false,
   style,
   textStyle,
+  activeStyle,
+  activeTextStyle,
 }: TabsTriggerProps) {
   const { activeTab, setActiveTab, orientation, registerTab, unregisterTab } =
     useTabsContext();
@@ -430,20 +434,24 @@ export function TabsTrigger({
     alignItems: "center",
     justifyContent: "center",
     minHeight: HEIGHT - 8,
-    backgroundColor: isActive ? backgroundColor : "transparent",
     opacity: disabled ? 0.5 : 1,
     flex: orientation === "horizontal" ? 1 : undefined,
     marginBottom: orientation === "vertical" ? 4 : 0,
     borderRadius: 8,
     ...style,
+    backgroundColor: isActive
+      ? activeStyle?.backgroundColor ?? backgroundColor
+      : style?.backgroundColor ?? "transparent",
   };
 
   const triggerTextStyle: TextStyle = {
     fontSize: FONT_SIZE,
     fontWeight: "500",
-    color: isActive ? primaryColor : mutedForegroundColor,
     textAlign: "center",
     ...textStyle,
+    color: isActive
+      ? activeTextStyle?.color ?? primaryColor
+      : textStyle?.color ?? mutedForegroundColor,
   };
 
   return (
