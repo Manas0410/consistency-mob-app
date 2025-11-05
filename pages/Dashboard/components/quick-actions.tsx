@@ -1,13 +1,43 @@
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
-import {
-  Activity,
-  ArrowRight,
-  BarChart3,
-  Calendar,
-  Plus,
-} from "lucide-react-native";
+import { useRouter } from "expo-router";
+import { Activity, ArrowRight, BarChart3, Calendar } from "lucide-react-native";
 import { TouchableOpacity } from "react-native";
+
+const quickActionsData = (router) => [
+  {
+    title: "Track tasks",
+    subtitle: "Set up a new project with team assignments",
+    icon: Calendar,
+    color: "#3b82f6",
+    bgColor: "#dbeafe",
+    onPress: () => router.push("/create-project"),
+  },
+  {
+    title: "Ask AI",
+    subtitle: "View detailed analytics and reports",
+    icon: BarChart3,
+    color: "#3b82f6",
+    bgColor: "#dbeafe",
+    onPress: () => router.push("/team-performance"),
+  },
+  {
+    title: "Schedule Meeting",
+    subtitle: "Organize team sync and project reviews",
+    icon: Calendar,
+    color: "#3b82f6",
+    bgColor: "#dbeafe",
+    onPress: () => router.push("/schedule-meeting"),
+  },
+  {
+    title: "Assign Tasks",
+    subtitle: "Distribute work among team members",
+    icon: Activity,
+    color: "#3b82f6",
+    bgColor: "#dbeafe",
+    onPress: () => router.push("/assign-tasks"),
+  },
+];
 
 const QuickActionCard = ({
   title,
@@ -33,6 +63,7 @@ const QuickActionCard = ({
       elevation: 4,
     }}
   >
+    {" "}
     <View
       style={{
         width: 52,
@@ -44,9 +75,11 @@ const QuickActionCard = ({
         marginRight: 16,
       }}
     >
-      <Icon size={24} color={color} />
-    </View>
+      {" "}
+      <Icon size={24} color={color} />{" "}
+    </View>{" "}
     <View style={{ flex: 1 }}>
+      {" "}
       <Text
         style={{
           fontSize: 16,
@@ -55,15 +88,18 @@ const QuickActionCard = ({
           marginBottom: 2,
         }}
       >
-        {title}
-      </Text>
-      <Text style={{ fontSize: 13, color: "#64748b" }}>{subtitle}</Text>
-    </View>
-    <ArrowRight size={20} color="#94a3b8" />
+        {" "}
+        {title}{" "}
+      </Text>{" "}
+      <Text style={{ fontSize: 13, color: "#64748b" }}>{subtitle}</Text>{" "}
+    </View>{" "}
+    <ArrowRight size={20} color="#94a3b8" />{" "}
   </TouchableOpacity>
 );
 
 const QuickActions = () => {
+  const router = useRouter();
+
   return (
     <View style={{ marginBottom: 32 }}>
       <Text
@@ -77,37 +113,17 @@ const QuickActions = () => {
         Quick Actions
       </Text>
 
-      <QuickActionCard
-        title="Create New Project"
-        subtitle="Set up a new project with team assignments"
-        icon={Plus}
-        color="#10b981"
-        bgColor="#dcfce7"
-      />
-
-      <QuickActionCard
-        title="Team Performance"
-        subtitle="View detailed analytics and reports"
-        icon={BarChart3}
-        color="#3b82f6"
-        bgColor="#dbeafe"
-      />
-
-      <QuickActionCard
-        title="Schedule Meeting"
-        subtitle="Organize team sync and project reviews"
-        icon={Calendar}
-        color="#f59e0b"
-        bgColor="#fef3c7"
-      />
-
-      <QuickActionCard
-        title="Assign Tasks"
-        subtitle="Distribute work among team members"
-        icon={Activity}
-        color="#8b5cf6"
-        bgColor="#f3e8ff"
-      />
+      {quickActionsData(router).map((action, index) => (
+        <QuickActionCard
+          key={index}
+          title={action.title}
+          subtitle={action.subtitle}
+          icon={action.icon}
+          color={action.color}
+          bgColor={action.bgColor}
+          onPress={action.onPress}
+        />
+      ))}
     </View>
   );
 };

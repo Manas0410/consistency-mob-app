@@ -15,3 +15,25 @@ export const createHabbit = async (
     return { success: false, data: { message: "error" } };
   }
 };
+
+export const getHabbit = async (date: any) => {
+  try {
+    const response = await apicall.post("/task/getHabits", { date });
+
+    if (response.status !== 200) {
+      throw new Error(`Failed to get tasks: ${response.statusText}`);
+    }
+
+    return {
+      success: true,
+      data: response.data.habits, // assuming your API returns { tasks: [...] }
+      // data: tasks,
+    };
+  } catch (error) {
+    console.error("Error fetching habbit:", error);
+    return {
+      success: false,
+      data: { message: "error" },
+    };
+  }
+};
