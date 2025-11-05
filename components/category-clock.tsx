@@ -1,7 +1,8 @@
 import { Text } from "@/components/ui/text";
 import { useGetCurrentDateTime } from "@/hooks/use-get-current-date-time";
 import { usePallet } from "@/hooks/use-pallet";
-import { useMemo, useState } from "react";
+import { getCategorywiseTasks } from "@/pages/task-viewer/API/getTasks";
+import { useEffect, useMemo, useState } from "react";
 import { Dimensions, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Svg, {
@@ -26,7 +27,7 @@ const sampleData = [
   },
   {
     startTime: 0,
-    endTime: 3,
+    endTime: 3.5,
     categoryName: "Meeting",
     color: "rgba(78, 205, 196, 0.7)",
   },
@@ -69,7 +70,22 @@ let isDark = false;
 
 export default function CategoryClock() {
   const insets = useSafeAreaInsets();
-  const [data] = useState(sampleData);
+  const [data, setData] = useState([]);
+
+  const fetchCategorywise = async () => {
+    try {
+      const res = await getCategorywiseTasks(new Date());
+      if (res.success) {
+        setData(res.data);
+      }
+    } catch (er) {
+      console.log(er);
+    }
+  };
+
+  useEffect(() => {
+    fetchCategorywise();
+  }, []);
 
   const chartSize = screenWidth * 0.85;
   const centerX = chartSize / 2;

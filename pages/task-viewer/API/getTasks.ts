@@ -86,3 +86,25 @@ export const getTasksByDate = async (date: any) => {
     };
   }
 };
+
+export const getCategorywiseTasks = async (date: any) => {
+  try {
+    const response = await apicall.post("/task/getCategoryWise", { date });
+
+    if (response.status !== 200) {
+      throw new Error(`Failed to get tasks: ${response.statusText}`);
+    }
+
+    return {
+      success: true,
+      data: response.data?.data, // assuming your API returns { tasks: [...] }
+      // data: tasks,
+    };
+  } catch (error) {
+    console.error("Error fetching tasks:", error);
+    return {
+      success: false,
+      data: { message: "error" },
+    };
+  }
+};

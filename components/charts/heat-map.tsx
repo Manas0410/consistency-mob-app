@@ -31,7 +31,7 @@ const dummyHeatmapData = [
   { 27: true },
   { 28: true },
   { 29: true },
-  { 30: false },
+  { 30: true },
 ];
 
 const Heatmap = ({ data = dummyHeatmapData }) => {
