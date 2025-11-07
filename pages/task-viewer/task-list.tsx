@@ -200,6 +200,7 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
                 <StatusChangeCheckbox
                   isChecked={item.isDone}
                   taskId={item?._id}
+                  selectedDate={selectedDate}
                 />
               </View>
             </View>

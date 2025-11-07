@@ -1,9 +1,10 @@
 import apicall from "@/constants/axios-config";
 
-export const editTasks = async (taskId: string, data: any) => {
+export const editTasks = async (taskId: string, date: Date, data: any) => {
   try {
     const response = await apicall.post("/task/edittasks", {
       taskId,
+      date,
       updateData: data,
     });
 

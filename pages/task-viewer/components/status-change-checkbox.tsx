@@ -8,9 +8,10 @@ import { editTasks } from "../API/editTasks";
 type Props = {
   isChecked: boolean;
   taskId: string;
+  selectedDate: Date;
 };
 
-const StatusChangeCheckbox = ({ isChecked, taskId }: Props) => {
+const StatusChangeCheckbox = ({ isChecked, taskId, selectedDate }: Props) => {
   const [checked, setChecked] = React.useState(isChecked);
   const [loading, setLoading] = React.useState(false);
 
@@ -19,7 +20,7 @@ const StatusChangeCheckbox = ({ isChecked, taskId }: Props) => {
       setLoading(true);
 
       // Simulate an API call
-      const res = await editTasks(taskId, { isDone: checked });
+      const res = await editTasks(taskId, selectedDate, { isDone: checked });
       if (res.success) {
         setChecked(checked);
       } else {
