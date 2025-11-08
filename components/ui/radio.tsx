@@ -1,4 +1,5 @@
 import { Text } from "@/components/ui/text";
+import { usePallet } from "@/hooks/use-pallet";
 import { useColor } from "@/hooks/useColor";
 import { BORDER_RADIUS, CORNERS, FONT_SIZE } from "@/theme/globals";
 import React from "react";
@@ -42,6 +43,7 @@ export function RadioButton({
   const borderColor = useColor({}, "border");
   const textColor = useColor({}, "text");
   const mutedColor = useColor({}, "textMuted");
+  const pallet = usePallet();
 
   const isDisabled = disabled || option.disabled;
 
@@ -50,7 +52,7 @@ export function RadioButton({
     height: BORDER_RADIUS,
     borderRadius: CORNERS,
     borderWidth: 1.5,
-    borderColor: selected ? primaryColor : borderColor,
+    borderColor: selected ? pallet.shade2 : borderColor,
     backgroundColor: "transparent",
     alignItems: "center",
     justifyContent: "center",
@@ -61,7 +63,7 @@ export function RadioButton({
     width: 16,
     height: 16,
     borderRadius: CORNERS,
-    backgroundColor: selected ? primaryColor : "transparent",
+    backgroundColor: selected ? pallet.shade1 : "transparent",
   };
 
   const containerStyle: ViewStyle = {

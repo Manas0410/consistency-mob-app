@@ -3,6 +3,7 @@ import { Icon } from "@/components/ui/icon";
 import { usePallet } from "@/hooks/use-pallet";
 import DateSelector from "@/pages/task-viewer/date-selector";
 import TaskList from "@/pages/task-viewer/task-list";
+import { SelectMode } from "@/pages/taskMode/components/select-mode-sheet";
 import { ChevronRight } from "lucide-react-native";
 import { useState } from "react";
 import { Text, View } from "react-native";
@@ -50,6 +51,7 @@ export default function CalendarScreen() {
       />
 
       <TaskList selectedDate={selectedDate} />
+      <SelectMode />
     </SafeAreaView>
   );
 }

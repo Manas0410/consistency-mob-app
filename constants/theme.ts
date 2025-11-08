@@ -36,6 +36,8 @@ export const Pallets = {
     shade2: "#0eafff",
     shade3: "#77d2ff",
     shade4: "#d8f1fc",
+    buttonBg: "#c4ddfbff",
+    ButtonText: "#3B82F6",
   },
 };
 
