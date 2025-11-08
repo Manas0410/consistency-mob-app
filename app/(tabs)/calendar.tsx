@@ -1,6 +1,9 @@
+import { DatePicker } from "@/components/ui/date-picker";
+import { Icon } from "@/components/ui/icon";
 import { usePallet } from "@/hooks/use-pallet";
 import DateSelector from "@/pages/task-viewer/date-selector";
 import TaskList from "@/pages/task-viewer/task-list";
+import { ChevronRight } from "lucide-react-native";
 import { useState } from "react";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -14,18 +17,33 @@ export default function CalendarScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1, padding: 10, backgroundColor: "#fff" }}>
-      <View>
-        <Text style={{ fontSize: 34, fontWeight: "700" }}>
-          {month}
-          <Text
-            style={{ color: pallet.shade1, fontSize: 38, fontWeight: "800" }}
-          >
-            {" "}
-            {date}
-          </Text>
-        </Text>
-      </View>
-
+      <DatePicker
+        value={selectedDate}
+        onChange={(date) => setSelectedDate(date)}
+        triggerchildren={
+          <View>
+            <Text style={{ fontSize: 34, fontWeight: "700" }}>
+              {month}
+              <Text
+                style={{
+                  color: pallet.shade1,
+                  fontSize: 38,
+                  fontWeight: "800",
+                }}
+              >
+                {" "}
+                {date}
+              </Text>
+              <Icon
+                name={ChevronRight}
+                color={pallet.shade1}
+                strokeWidth={5}
+                height={30}
+              />
+            </Text>
+          </View>
+        }
+      />
       <DateSelector
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}

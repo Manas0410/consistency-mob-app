@@ -16,7 +16,7 @@ import {
   ChevronRight,
   Clock,
 } from "lucide-react-native";
-import { useCallback, useMemo, useState } from "react";
+import { ReactElement, useCallback, useMemo, useState } from "react";
 import { TextStyle, TouchableOpacity, ViewStyle } from "react-native";
 
 export interface DateRange {
@@ -37,6 +37,7 @@ interface BaseDatePickerProps {
   variant?: "filled" | "outline" | "group";
   labelStyle?: TextStyle;
   errorStyle?: TextStyle;
+  triggerchildren?: ReactElement;
 }
 
 interface DatePickerPropsRange extends BaseDatePickerProps {
@@ -100,6 +101,7 @@ export function DatePicker(props: DatePickerProps) {
     variant = "filled",
     labelStyle,
     errorStyle,
+    triggerchildren = null,
   } = props;
 
   const mode = props.mode || "date";
@@ -1040,70 +1042,78 @@ export function DatePicker(props: DatePickerProps) {
   return (
     <>
       <TouchableOpacity
-        style={[triggerStyle, disabled && { opacity: 0.5 }, style]}
+        style={
+          triggerchildren
+            ? undefined
+            : [triggerStyle, disabled && { opacity: 0.5 }, style]
+        }
         onPress={handleOpenPicker}
         disabled={disabled}
       >
-        <View
-          style={{
-            flex: 1,
-            flexDirection: "row",
-            alignItems: "center",
-            gap: 8,
-          }}
-        >
+        {triggerchildren ? (
+          <>{triggerchildren}</>
+        ) : (
           <View
             style={{
-              width: label ? 120 : "auto",
+              flex: 1,
               flexDirection: "row",
               alignItems: "center",
               gap: 8,
             }}
           >
-            {mode === "time" ? (
-              <Icon name={Clock} size={20} strokeWidth={1} />
-            ) : mode === "datetime" ? (
-              <Icon name={CalendarClock} size={20} strokeWidth={1} />
-            ) : mode === "range" ? (
-              <Icon name={CalendarRange} size={20} strokeWidth={1} />
-            ) : (
-              <Icon name={Calendar} size={20} strokeWidth={1} />
-            )}
-
-            {/* Label takes 1/3 of available width when present */}
-            {label && (
-              <View style={{ flex: 1 }}>
-                <Text
-                  variant="caption"
-                  numberOfLines={1}
-                  ellipsizeMode="tail"
-                  style={[
-                    {
-                      color: error ? errorColor : textMutedColor,
-                    },
-                    labelStyle,
-                  ]}
-                >
-                  {label}
-                </Text>
-              </View>
-            )}
-          </View>
-
-          {/* Text takes 2/3 of available width when label is present, or full width when no label */}
-          <View style={{ flex: 1 }}>
-            <Text
-              numberOfLines={1}
-              ellipsizeMode="tail"
+            <View
               style={{
-                color: value ? textColor : textMutedColor,
-                fontSize: FONT_SIZE,
+                width: label ? 120 : "auto",
+                flexDirection: "row",
+                alignItems: "center",
+                gap: 8,
               }}
             >
-              {formatDisplayValue()}
-            </Text>
+              {mode === "time" ? (
+                <Icon name={Clock} size={20} strokeWidth={1} />
+              ) : mode === "datetime" ? (
+                <Icon name={CalendarClock} size={20} strokeWidth={1} />
+              ) : mode === "range" ? (
+                <Icon name={CalendarRange} size={20} strokeWidth={1} />
+              ) : (
+                <Icon name={Calendar} size={20} strokeWidth={1} />
+              )}
+
+              {/* Label takes 1/3 of available width when present */}
+              {label && (
+                <View style={{ flex: 1 }}>
+                  <Text
+                    variant="caption"
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                    style={[
+                      {
+                        color: error ? errorColor : textMutedColor,
+                      },
+                      labelStyle,
+                    ]}
+                  >
+                    {label}
+                  </Text>
+                </View>
+              )}
+            </View>
+
+            {/* Text takes 2/3 of available width when label is present, or full width when no label */}
+            <View style={{ flex: 1 }}>
+              <Text
+                numberOfLines={1}
+                ellipsizeMode="tail"
+                style={{
+                  color: value ? textColor : textMutedColor,
+                  fontSize: FONT_SIZE,
+                }}
+              >
+                {formatDisplayValue()}
+              </Text>
+            </View>
           </View>
-        </View>
+        )}
       </TouchableOpacity>
 
       <BottomSheet
