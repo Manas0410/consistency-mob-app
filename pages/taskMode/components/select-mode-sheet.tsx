@@ -43,19 +43,24 @@ export const SelectMode = () => {
           onValueChange={setValue}
         />
 
-        <Button
-          style={{
-            marginTop: 30,
-            marginLeft: "auto",
-            backgroundColor: pallet.buttonBg,
-            borderRadius: 8,
-            width: 150,
-            height: 40,
-          }}
-          textStyle={{ color: pallet.ButtonText, fontSize: 16 }}
-        >
-          NEXT
-        </Button>
+        {value && (
+          <Button
+            style={{
+              marginTop: 30,
+              marginLeft: "auto",
+              backgroundColor: pallet.buttonBg,
+              borderRadius: 8,
+              width: 150,
+              height: 40,
+            }}
+            textStyle={{ color: pallet.ButtonText, fontSize: 16 }}
+            onPress={() => {
+              router.replace(`/calendar/${value}`);
+            }}
+          >
+            NEXT
+          </Button>
+        )}
       </BottomSheet>
     </View>
   );

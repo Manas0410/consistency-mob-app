@@ -72,6 +72,8 @@ const BottomBar = () => {
       </View>
       {!["/team", "/TeamDetails", "/habbit", "/calendar"].includes(pathname) &&
         !pathname.endsWith("/TeamDetails") &&
+        !pathname.endsWith("/pomodoro") &&
+        !pathname.endsWith("/focus") &&
         !pathname.endsWith("/teamTaskPage") &&
         !pathname.endsWith("/teamMembers") && (
           <TouchableOpacity
@@ -144,7 +146,7 @@ const BottomBar = () => {
         </TouchableOpacity>
       )}
 
-      {pathname.startsWith("/calendar") && (
+      {["/calendar"].includes(pathname) && (
         <>
           {isTeamsButtonExpanded ? (
             <View style={styles.buttonCnt}>
