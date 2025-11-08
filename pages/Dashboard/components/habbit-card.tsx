@@ -3,10 +3,10 @@ import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
 import { usePallet } from "@/hooks/use-pallet";
 import { getHabbit } from "@/pages/Habbits/API/callAPI";
+import StatusChangeCheckbox from "@/pages/task-viewer/components/status-change-checkbox";
 import { useRouter } from "expo-router";
-import { CheckCircle2, Goal, Plus } from "lucide-react-native";
+import { Goal, Plus } from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { TouchableOpacity } from "react-native";
 
 // const habbitData = [
 //   { id: 1, name: "Morning Exercise", completed: true, streak: 5 },
@@ -86,7 +86,7 @@ const HabbitCard = () => {
       ) : (
         <>
           {habbitData.map((habit, index) => (
-            <TouchableOpacity
+            <View
               key={habit.taskId}
               style={{
                 flexDirection: "row",
@@ -96,35 +96,26 @@ const HabbitCard = () => {
                 borderBottomColor: "#F1F5F9",
               }}
             >
-              <View
-                style={{
-                  width: 24,
-                  height: 24,
-                  borderRadius: 12,
-                  backgroundColor: habit.isDone ? "#10B981" : "#F1F5F9",
-                  borderWidth: habit.isDone ? 0 : 2,
-                  borderColor: "#D1D5DB",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  marginRight: 12,
-                }}
-              >
-                {habit.isDone && <CheckCircle2 size={16} color="#fff" />}
-              </View>
+              <StatusChangeCheckbox
+                isChecked={habit.isDone}
+                selectedDate={new Date()}
+                taskId={habit.taskId}
+              />
 
               <View style={{ flex: 1 }}>
                 <Text
                   style={{
                     fontSize: 16,
+                    marginLeft: 10,
                     fontWeight: "600",
                     color: habit.isDone ? "#374151" : "#6B7280",
-                    textDecorationLine: habit.isDone ? "line-through" : "none",
+                    // textDecorationLine: habit.isDone ? "line-through" : "none",
                   }}
                 >
                   {habit.taskName}
                 </Text>
               </View>
-            </TouchableOpacity>
+            </View>
           ))}
         </>
       )}
