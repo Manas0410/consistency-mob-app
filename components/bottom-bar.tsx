@@ -7,6 +7,7 @@ import { usePallet } from "@/hooks/use-pallet";
 import { useNavigation } from "@react-navigation/native";
 import { usePathname, useRouter } from "expo-router";
 import {
+  BrainCog,
   Calendar,
   ChevronUp,
   Goal,
@@ -67,7 +68,7 @@ const BottomBar = () => {
           </TouchableOpacity>
         ))}
       </View>
-      {!["/team", "/TeamDetails", "/habbit"].includes(pathname) &&
+      {!["/team", "/TeamDetails", "/habbit", "/calendar"].includes(pathname) &&
         !pathname.endsWith("/TeamDetails") &&
         !pathname.endsWith("/teamTaskPage") &&
         !pathname.endsWith("/teamMembers") && (
@@ -139,6 +140,46 @@ const BottomBar = () => {
         >
           <UserPlus color="white" size={34} />
         </TouchableOpacity>
+      )}
+
+      {pathname.startsWith("/calendar") && (
+        <>
+          {isTeamsButtonExpanded ? (
+            <View style={styles.buttonCnt}>
+              <TouchableOpacity
+                style={styles.BtnCntCross}
+                onPress={() => {
+                  setIsTeamsButtonExpanded(false);
+                }}
+              >
+                <X size={24} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.BtnCntBtn}
+                onPress={() => {
+                  AddTaskOpen();
+                }}
+              >
+                <Plus color="white" size={36} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.BtnCntBtn}
+                onPress={() => {
+                  // JoinTeamOpen();
+                }}
+              >
+                <BrainCog color="white" size={34} />
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View
+              style={styles.addButton}
+              onTouchEnd={() => setIsTeamsButtonExpanded(true)}
+            >
+              <ChevronUp />
+            </View>
+          )}
+        </>
       )}
     </View>
   );
