@@ -145,17 +145,7 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
                     style={[styles.dottedLine, { borderColor: pallet.shade3 }]}
                   />
                 )}
-                {/* <View
-                  style={[
-                    styles.iconCircle,
-                    {
-                      backgroundColor: item.isDone
-                        ? pallet.shade3
-                        : pallet.shade4,
-                    },
-                  ]}
-                > */}
-                {/* <Text style={styles.iconText}>🟡</Text> */}
+
                 <PeriodIcon startTime={item.taskStartDateTime} />
                 {/* </View> */}
                 {idx < timeline.length - 1 && (

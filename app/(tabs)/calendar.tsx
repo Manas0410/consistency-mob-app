@@ -1,4 +1,3 @@
-import { useGetCurrentDateTime } from "@/hooks/use-get-current-date-time";
 import { usePallet } from "@/hooks/use-pallet";
 import DateSelector from "@/pages/task-viewer/date-selector";
 import TaskList from "@/pages/task-viewer/task-list";
@@ -7,9 +6,12 @@ import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CalendarScreen() {
-  const { date, day, month } = useGetCurrentDateTime();
   const [selectedDate, setSelectedDate] = useState(new Date());
   const pallet = usePallet();
+
+  const month = selectedDate.toLocaleString("en-US", { month: "long" });
+  const date = selectedDate.getDate();
+
   return (
     <SafeAreaView style={{ flex: 1, padding: 10, backgroundColor: "#fff" }}>
       <View>
@@ -23,10 +25,12 @@ export default function CalendarScreen() {
           </Text>
         </Text>
       </View>
+
       <DateSelector
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
       />
+
       <TaskList selectedDate={selectedDate} />
     </SafeAreaView>
   );
