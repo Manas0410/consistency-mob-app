@@ -14,6 +14,7 @@ import {
   Home,
   PackagePlus,
   Plus,
+  Timer,
   UserPlus,
   Users,
   X,
@@ -29,6 +30,7 @@ const bottomBarOptions = [
   { name: "Team", icon: Users, url: "/team" },
   // { name: "Settings", icon: Settings, url: "/settings" },
   { name: "Habbit", icon: Goal, url: "/habbit" },
+  { name: "Focus", icon: Timer, url: "/focus-hour" },
 ];
 
 const BottomBar = () => {

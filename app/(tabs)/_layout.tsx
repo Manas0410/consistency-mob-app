@@ -23,6 +23,7 @@ export default function TabLayout() {
       <Stack.Screen name="settings" options={{ headerShown: false }} />
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="habbit" options={{ headerShown: false }} />
+      <Stack.Screen name="focus-hour" options={{ headerShown: false }} />
       <Stack.Screen
         name="[teamid]/TeamDetails"
         options={{ headerShown: false }}
