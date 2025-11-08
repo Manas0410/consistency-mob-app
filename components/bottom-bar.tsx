@@ -3,6 +3,7 @@ import { useAddTeamBottomSheet } from "@/contexts/add-team-context";
 import { useAddTeamMemberBottomSheet } from "@/contexts/add-team-member-context";
 import { useAddTeamTaskSheet } from "@/contexts/add-team-task-context";
 import { useJoinTeamBottomSheet } from "@/contexts/join-team-contex";
+import { useSelectModeBottomSheet } from "@/contexts/select-mode-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { useNavigation } from "@react-navigation/native";
 import { usePathname, useRouter } from "expo-router";
@@ -48,6 +49,7 @@ const BottomBar = () => {
   const { open: AddTaskOpen } = useAddTaskSheet();
   const { open: AddTeamTaskOpen } = useAddTeamTaskSheet();
   const { open: AddTeamMemberTaskOpen } = useAddTeamMemberBottomSheet();
+  const { open: SelectModeTaskOpen } = useSelectModeBottomSheet();
 
   return (
     <View style={[styles.container, { paddingBottom: insets.bottom }]}>
@@ -165,7 +167,7 @@ const BottomBar = () => {
               <TouchableOpacity
                 style={styles.BtnCntBtn}
                 onPress={() => {
-                  // JoinTeamOpen();
+                  SelectModeTaskOpen();
                 }}
               >
                 <BrainCog color="white" size={34} />
