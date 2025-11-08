@@ -94,41 +94,62 @@ export default function CategoryClock() {
   const innerRadius = chartSize * 0.25;
 
   // Memoize slot calculations for perf
-  const { emptySlots, totalHours, categorySummary } = useMemo(() => {
-    const occupiedSlots = new Set();
-    data.forEach((item) => {
-      rangeMod24(item.startTime, item.endTime).forEach((h) =>
-        occupiedSlots.add(h)
-      );
-    });
+  const { emptySlots, totalHours, totalMinutes, categorySummary } =
+    useMemo(() => {
+      const occupiedSlots = new Set();
+      data.forEach((item) => {
+        rangeMod24(item.startTime, item.endTime).forEach((h) =>
+          occupiedSlots.add(h)
+        );
+      });
 
-    const emptySlots = [];
-    for (let hour = 0; hour < 24; hour++) {
-      if (!occupiedSlots.has(hour)) {
-        emptySlots.push({
-          startTime: hour,
-          endTime: (hour + 1) % 24,
-          isEmpty: true,
-        });
+      const emptySlots = [];
+      for (let hour = 0; hour < 24; hour++) {
+        if (!occupiedSlots.has(hour)) {
+          emptySlots.push({
+            startTime: hour,
+            endTime: (hour + 1) % 24,
+            isEmpty: true,
+          });
+        }
       }
-    }
 
-    const totalHours = data.reduce((sum, item) => {
-      let duration = item.endTime - item.startTime;
-      if (duration < 0) duration += 24;
-      return sum + duration;
-    }, 0);
+      let totalMinutes = 0;
+      const categorySummary = {};
 
-    const categorySummary = data.reduce((summary, item) => {
-      let duration = item.endTime - item.startTime;
-      if (duration < 0) duration += 24;
-      if (!summary[item.categoryName]) summary[item.categoryName] = 0;
-      summary[item.categoryName] += duration;
-      return summary;
-    }, {});
+      data.forEach((item) => {
+        let duration = item.endTime - item.startTime;
+        if (duration < 0) duration += 24;
 
-    return { emptySlots, totalHours, categorySummary };
-  }, [data]);
+        // Convert fractional hours to minutes
+        const minutes = Math.round(duration * 60);
+        totalMinutes += minutes;
+
+        if (!categorySummary[item.categoryName])
+          categorySummary[item.categoryName] = 0;
+        categorySummary[item.categoryName] += minutes;
+      });
+
+      const totalHours = Math.floor(totalMinutes / 60);
+      const remainingMinutes = totalMinutes % 60;
+
+      // Convert category summary to hours+minutes format if needed
+      Object.keys(categorySummary).forEach((cat) => {
+        const mins = categorySummary[cat];
+        categorySummary[cat] = {
+          hours: Math.floor(mins / 60),
+          minutes: mins % 60,
+          totalMinutes: mins,
+        };
+      });
+
+      return {
+        emptySlots,
+        totalHours,
+        totalMinutes: remainingMinutes,
+        categorySummary,
+      };
+    }, [data]);
 
   // Create SVG arc path for segment
   const createArcPath = (startHour, endHour, innerR, outerR) => {
@@ -386,7 +407,7 @@ export default function CategoryClock() {
                 color: pallet.shade2,
               }}
             >
-              {totalHours}h 00m scheduled
+              {totalHours}h {totalMinutes}m scheduled
             </Text>
             {/* Category summary */}
           </View>
