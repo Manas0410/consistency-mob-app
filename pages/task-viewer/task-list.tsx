@@ -9,6 +9,7 @@ import { ClockPlus, FileText } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { getTasksByDate } from "./API/getTasks";
+import PeriodIcon from "./components/period-icon";
 import StatusChangeCheckbox from "./components/status-change-checkbox";
 
 const MIN_GAP_MINUTES = 120;
@@ -144,7 +145,7 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
                     style={[styles.dottedLine, { borderColor: pallet.shade3 }]}
                   />
                 )}
-                <View
+                {/* <View
                   style={[
                     styles.iconCircle,
                     {
@@ -153,9 +154,10 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
                         : pallet.shade4,
                     },
                   ]}
-                >
-                  <Text style={styles.iconText}>🟡</Text>
-                </View>
+                > */}
+                {/* <Text style={styles.iconText}>🟡</Text> */}
+                <PeriodIcon startTime={item.taskStartDateTime} />
+                {/* </View> */}
                 {idx < timeline.length - 1 && (
                   <View
                     style={[styles.dottedLine, { borderColor: pallet.shade3 }]}
@@ -234,9 +236,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     marginVertical: 2,
   },
-  iconText: {
-    fontSize: 28,
-  },
+
   dottedLine: {
     width: 2,
     height: 24,
