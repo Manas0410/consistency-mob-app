@@ -18,7 +18,7 @@ const quickActionsData = (router) => [
     icon: Calendar,
     color: "#3b82f6",
     bgColor: "#dbeafe",
-    onPress: () => router.push("/create-project"),
+    onPress: () => router.push("/calendar"),
   },
   {
     title: "Ask AI",
@@ -78,7 +78,6 @@ const QuickActionCard = ({
       elevation: 4,
     }}
   >
-    {" "}
     <View
       style={{
         width: 52,
@@ -90,11 +89,9 @@ const QuickActionCard = ({
         marginRight: 16,
       }}
     >
-      {" "}
-      <Icon size={24} color={color} />{" "}
-    </View>{" "}
+      <Icon size={24} color={color} />
+    </View>
     <View style={{ flex: 1 }}>
-      {" "}
       <Text
         style={{
           fontSize: 16,
@@ -105,10 +102,10 @@ const QuickActionCard = ({
       >
         {" "}
         {title}{" "}
-      </Text>{" "}
-      <Text style={{ fontSize: 13, color: "#64748b" }}>{subtitle}</Text>{" "}
-    </View>{" "}
-    <ArrowRight size={20} color="#94a3b8" />{" "}
+      </Text>
+      <Text style={{ fontSize: 13, color: "#64748b" }}>{subtitle}</Text>
+    </View>
+    <ArrowRight size={20} color="#94a3b8" />
   </TouchableOpacity>
 );
 
