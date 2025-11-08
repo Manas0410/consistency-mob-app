@@ -1,5 +1,7 @@
+import FocusHourScreen from "@/pages/taskMode/focus-hour";
+
 const Focus = () => {
-  return null;
+  return <FocusHourScreen />;
 };
 
 export default Focus;
