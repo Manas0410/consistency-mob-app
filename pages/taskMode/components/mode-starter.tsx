@@ -12,6 +12,7 @@ import { View } from "@/components/ui/view";
 import { useGetCurrentDayTask } from "@/contexts/todays-tasks-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { Apple, Plus, Target } from "lucide-react-native";
+import { useState } from "react";
 
 const modes = {
   pomodoro: {
@@ -29,6 +30,8 @@ const modes = {
 const ModeStarter = ({ mode }: { mode: "pomodoro" | "focus" }) => {
   const pallet = usePallet();
   const { currentDayTask } = useGetCurrentDayTask();
+  const [showTaskImport, setShowTaskImport] = useState(false);
+
   return (
     <View>
       <View
@@ -57,29 +60,39 @@ const ModeStarter = ({ mode }: { mode: "pomodoro" | "focus" }) => {
           width: "100%",
           backgroundColor: "transparent",
         }}
+        onPress={() => {
+          setShowTaskImport((p) => !p);
+        }}
       >
         <Plus color={pallet.shade1} />
         <Text style={{ color: pallet.shade1 }}>Import Tasks</Text>
       </Button>
-      <View>
-        {currentDayTask.map((item) => (
-          <Text
-            key={item.taskId}
-            variant="caption"
-            style={{ marginHorizontal: 6 }}
-          >
-            {item.taskName}
-          </Text>
-        ))}
-      </View>
-      <Text style={{ textAlign: "center" }} variant="caption">
-        OR
-      </Text>
-      <Text style={{ textAlign: "center" }} variant="subtitle">
-        Start with custom hour
-      </Text>
 
-      <FocusControls />
+      {showTaskImport ? (
+        <View>
+          {currentDayTask.map((item) => (
+            <Text
+              key={item.taskId}
+              variant="caption"
+              style={{ marginHorizontal: 6 }}
+            >
+              {item.taskName}
+            </Text>
+          ))}
+        </View>
+      ) : (
+        <View>
+          <Text style={{ textAlign: "center" }} variant="caption">
+            OR
+          </Text>
+          <Text style={{ textAlign: "center" }} variant="subtitle">
+            Start with custom hour
+          </Text>
+
+          <FocusControls />
+        </View>
+      )}
+
       <Accordion
         key={mode}
         type="single"
