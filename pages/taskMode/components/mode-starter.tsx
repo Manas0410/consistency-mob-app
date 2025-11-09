@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
+import { useGetCurrentDayTask } from "@/contexts/todays-tasks-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { Apple, Plus, Target } from "lucide-react-native";
 
@@ -27,6 +28,7 @@ const modes = {
 
 const ModeStarter = ({ mode }: { mode: "pomodoro" | "focus" }) => {
   const pallet = usePallet();
+  const { currentDayTask } = useGetCurrentDayTask();
   return (
     <View>
       <View
@@ -46,48 +48,30 @@ const ModeStarter = ({ mode }: { mode: "pomodoro" | "focus" }) => {
           color={pallet.ButtonText}
         />
       </View>
-      <Accordion key={"import"} type="single" collapsible>
-        <AccordionItem value={"mode"}>
-          <Button
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-              width: "100%",
-              backgroundColor: "transparent",
-            }}
+
+      <Button
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+          width: "100%",
+          backgroundColor: "transparent",
+        }}
+      >
+        <Plus color={pallet.shade1} />
+        <Text style={{ color: pallet.shade1 }}>Import Tasks</Text>
+      </Button>
+      <View>
+        {currentDayTask.map((item) => (
+          <Text
+            key={item.taskId}
+            variant="caption"
+            style={{ marginHorizontal: 6 }}
           >
-            <Plus color={pallet.shade1} />
-            <Text style={{ color: pallet.shade1 }}>Import Tasks</Text>
-          </Button>
-          <AccordionContent>
-            <Text
-              variant="caption"
-              style={{ marginHorizontal: 6, fontSize: 12 }}
-            >
-              abc
-            </Text>
-            <Text
-              variant="caption"
-              style={{ marginHorizontal: 6, fontSize: 12 }}
-            >
-              abc
-            </Text>
-            <Text
-              variant="caption"
-              style={{ marginHorizontal: 6, fontSize: 12 }}
-            >
-              abc
-            </Text>
-            <Text
-              variant="caption"
-              style={{ marginHorizontal: 6, fontSize: 12 }}
-            >
-              abc
-            </Text>
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+            {item.taskName}
+          </Text>
+        ))}
+      </View>
       <Text style={{ textAlign: "center" }} variant="caption">
         OR
       </Text>

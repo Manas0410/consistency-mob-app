@@ -116,6 +116,7 @@ import Heatmap from "@/components/charts/heat-map";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AnimatedProgressRing from "@/components/ui/progress-ring";
 import { Text } from "@/components/ui/text";
+import { useGetCurrentDayTask } from "@/contexts/todays-tasks-context";
 import { usePallet } from "@/hooks/use-pallet";
 import HabbitCard from "@/pages/Dashboard/components/habbit-card";
 import QuickActions from "@/pages/Dashboard/components/quick-actions";
@@ -144,10 +145,15 @@ export default function CalendarScreen() {
   const percentage =
     totalCount === 0 ? 0 : Math.round((completedCount / totalCount) * 100);
 
+  const { setCurrentDayTask } = useGetCurrentDayTask();
+
   useEffect(() => {
     const fetchTodayTasks = async () => {
       const res = await getTasksByDate(new Date());
-      if (res.success) setTodayTasks(res?.data);
+      if (res.success) {
+        setTodayTasks(res?.data);
+        setCurrentDayTask(res?.data);
+      }
     };
     fetchTodayTasks();
   }, []);
