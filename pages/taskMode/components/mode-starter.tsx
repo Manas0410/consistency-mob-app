@@ -5,6 +5,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
@@ -47,19 +48,18 @@ const ModeStarter = ({ mode }: { mode: "pomodoro" | "focus" }) => {
       </View>
       <Accordion key={"import"} type="single" collapsible>
         <AccordionItem value={"mode"}>
-          <AccordionTrigger showExpandIcon={false}>
-            <View
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                justifyContent: "center",
-                width: "100%",
-              }}
-            >
-              <Plus color={pallet.shade1} />
-              <Text style={{ color: pallet.shade1 }}>Import Tasks</Text>
-            </View>
-          </AccordionTrigger>
+          <Button
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "center",
+              width: "100%",
+              backgroundColor: "transparent",
+            }}
+          >
+            <Plus color={pallet.shade1} />
+            <Text style={{ color: pallet.shade1 }}>Import Tasks</Text>
+          </Button>
           <AccordionContent>
             <Text
               variant="caption"

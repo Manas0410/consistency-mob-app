@@ -31,7 +31,8 @@ interface FocusControlsProps {
 const FocusControls: React.FC<FocusControlsProps> = ({ onSessionComplete }) => {
   const pallet = usePallet();
   const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? "light"];
+  // const colors = Colors[colorScheme ?? "light"];
+  const colors = Colors["light"];
   const styles = createStyles(colors, pallet);
   const {
     currentSession,
