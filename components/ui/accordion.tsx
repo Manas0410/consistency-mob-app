@@ -114,9 +114,13 @@ const AccordionItemContext = createContext<AccordionItemContextType | null>(
 // AccordionTrigger component
 interface AccordionTriggerProps {
   children: React.ReactNode;
+  showExpandIcon?: Boolean;
 }
 
-export function AccordionTrigger({ children }: AccordionTriggerProps) {
+export function AccordionTrigger({
+  children,
+  showExpandIcon = true,
+}: AccordionTriggerProps) {
   const context = useContext(AccordionItemContext);
   if (!context) {
     throw new Error("AccordionTrigger must be used within an AccordionItem");
@@ -135,13 +139,15 @@ export function AccordionTrigger({ children }: AccordionTriggerProps) {
       activeOpacity={0.8}
     >
       <Text variant="subtitle">{children}</Text>
-      <Icon
-        name={ChevronRight}
-        size={18}
-        style={{
-          transform: [{ rotate: context.isOpen ? "90deg" : "0deg" }],
-        }}
-      />
+      {showExpandIcon && (
+        <Icon
+          name={ChevronRight}
+          size={18}
+          style={{
+            transform: [{ rotate: context.isOpen ? "90deg" : "0deg" }],
+          }}
+        />
+      )}
     </TouchableOpacity>
   );
 }
