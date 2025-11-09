@@ -56,6 +56,7 @@ export const SelectMode = () => {
             textStyle={{ color: pallet.ButtonText, fontSize: 16 }}
             onPress={() => {
               router.replace(`/calendar/${value}`);
+              close();
             }}
           >
             NEXT

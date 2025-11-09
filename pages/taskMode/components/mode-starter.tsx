@@ -4,9 +4,11 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
 import { usePallet } from "@/hooks/use-pallet";
+import { Apple, Target } from "lucide-react-native";
 
 const modes = {
   pomodoro: {
@@ -50,6 +52,23 @@ const ModeStarter = ({ mode }: { mode: "pomodoro" | "focus" }) => {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
+      <View
+        style={{
+          backgroundColor: pallet.buttonBg,
+          height: 50,
+          width: 50,
+          borderRadius: 25,
+          alignItems: "center",
+          justifyContent: "center",
+          marginHorizontal: "auto",
+          marginVertical: 20,
+        }}
+      >
+        <Icon
+          name={mode === "pomodoro" ? Apple : Target}
+          color={pallet.ButtonText}
+        />
+      </View>
     </View>
   );
 };
