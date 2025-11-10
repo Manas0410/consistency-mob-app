@@ -19,6 +19,7 @@ export default function TabLayout() {
     <Stack>
       <Stack.Screen name="pomodoro" options={{ headerShown: false }} />
       <Stack.Screen name="focus" options={{ headerShown: false }} />
+      <Stack.Screen name="index" options={{ headerShown: false }} />
     </Stack>
   );
 }
