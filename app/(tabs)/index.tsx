@@ -125,7 +125,7 @@ import { useUser } from "@clerk/clerk-expo";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
-import { Bell, Timer } from "lucide-react-native";
+import { Bell } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -376,7 +376,7 @@ export default function CalendarScreen() {
           <HabbitCard />
 
           {/* {focus hours} */}
-          <View
+          {/* <View
             style={{
               backgroundColor: "#fff",
               borderRadius: 16,
@@ -461,7 +461,7 @@ export default function CalendarScreen() {
                 </Text>
               </View>
             </View>
-          </View>
+          </View> */}
 
           {/* goals */}
           {/* <GoalCard /> */}
