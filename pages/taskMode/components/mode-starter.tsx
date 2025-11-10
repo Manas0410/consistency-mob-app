@@ -7,12 +7,13 @@ import {
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
+import { RadioGroup } from "@/components/ui/radio";
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
 import { useGetCurrentDayTask } from "@/contexts/todays-tasks-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { Apple, Plus, Target } from "lucide-react-native";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 const modes = {
   pomodoro: {
@@ -31,9 +32,34 @@ const ModeStarter = ({ mode }: { mode: "pomodoro" | "focus" }) => {
   const pallet = usePallet();
   const { currentDayTask } = useGetCurrentDayTask();
   const [showTaskImport, setShowTaskImport] = useState(false);
+  const [SelectedCustomTask, setselectedCustomTask] = useState(null);
+  const [value, setValue] = useState("");
+
+  const incompleteTasks = useMemo(
+    () => currentDayTask.filter((t) => !t?.isDone),
+    [currentDayTask]
+  );
+
+  const radioTasksOptions = useMemo(
+    () =>
+      incompleteTasks.map((t) => ({
+        label: t.taskName ?? "Untitled",
+        value: String(t._id),
+      })),
+    [incompleteTasks]
+  );
+
+  const customTaskMap = useMemo(
+    () => Object.fromEntries(incompleteTasks.map((t) => [String(t._id), t])),
+    [incompleteTasks]
+  );
+
+  useEffect(() => {
+    setselectedCustomTask(customTaskMap?.[value]);
+  }, [value]);
 
   return (
-    <View>
+    <View style={{ marginBottom: 350 }}>
       <View
         style={{
           backgroundColor: pallet.buttonBg,
@@ -62,23 +88,34 @@ const ModeStarter = ({ mode }: { mode: "pomodoro" | "focus" }) => {
         }}
         onPress={() => {
           setShowTaskImport((p) => !p);
+          setselectedCustomTask(null);
+          setValue("");
         }}
       >
         <Plus color={pallet.shade1} />
-        <Text style={{ color: pallet.shade1 }}>Import Tasks</Text>
+        <Text style={{ color: pallet.shade1 }}>
+          {showTaskImport ? "Add custom duration" : `Import Tasks`}
+        </Text>
       </Button>
 
       {showTaskImport ? (
         <View>
-          {currentDayTask.map((item) => (
+          {!incompleteTasks.length ? (
             <Text
-              key={item.taskId}
               variant="caption"
-              style={{ marginHorizontal: 6 }}
+              style={{ textAlign: "center", marginVertical: 20 }}
             >
-              {item.taskName}
+              No Incomplete tasks for today !
             </Text>
-          ))}
+          ) : (
+            <View style={{ marginBottom: 50 }}>
+              <RadioGroup
+                options={radioTasksOptions}
+                value={value}
+                onValueChange={setValue}
+              />
+            </View>
+          )}
         </View>
       ) : (
         <View>
