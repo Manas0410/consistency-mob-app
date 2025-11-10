@@ -55,7 +55,7 @@ export const SelectMode = () => {
             }}
             textStyle={{ color: pallet.ButtonText, fontSize: 16 }}
             onPress={() => {
-              router.replace(`/calendar/mode`);
+              router.replace(`/calendar/mode/pomodoro`);
               close();
             }}
           >

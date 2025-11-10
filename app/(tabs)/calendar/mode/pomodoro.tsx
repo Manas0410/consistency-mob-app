@@ -1,14 +1,21 @@
-import BackHeader from "@/components/ui/back-header";
-import { View } from "@/components/ui/view";
-import { SafeAreaView } from "react-native-safe-area-context";
+import PomodoroModeScreen from "@/pages/taskMode/Pomodor-timer";
 
 const PomoDoro = () => {
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
-      <SafeAreaView>
-        <BackHeader title="Pomodoro Mode" />
-      </SafeAreaView>
-    </View>
+    // <View style={{ flex: 1, backgroundColor: "#fff" }}>
+    //   <SafeAreaView>
+    //     <BackHeader title="Pomodoro Mode" />
+    <PomodoroModeScreen
+      taskName="Write project report"
+      totalMinutes={120} // e.g. 10 | 30 | 60 | 120 | 480
+      workMinutes={25} // optional, defaults shown
+      shortBreakMinutes={5}
+      longBreakMinutes={15}
+      cyclesBeforeLongBreak={4}
+      autoStartNext
+    />
+    //   </SafeAreaView>
+    // </View>
   );
 };
 
