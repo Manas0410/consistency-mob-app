@@ -4,7 +4,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { addHours, differenceInMinutes, format, parseISO } from "date-fns";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { ClockPlus, FileText, Flag, Users } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -60,6 +60,7 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
   const [loading, setLoading] = useState(false);
   const { currentTeamData } = useCurrentTeamData();
   const { teamid } = useLocalSearchParams();
+  const router = useRouter();
 
   const loadTasks = async () => {
     try {
@@ -179,7 +180,10 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
                 )}
               </View>
               {/* Task details */}
-              <View style={styles.detailsCol}>
+              <TouchableOpacity
+                onPress={() => router.replace(`/${teamid}/taskDescriptionTeam`)}
+                style={styles.detailsCol}
+              >
                 <Text style={styles.timeText}>
                   {getTimeStr(item.taskStartDateTime)} -{" "}
                   {getTimeStr(item.endTime)}{" "}
@@ -234,7 +238,7 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
                     </View>
                   ) : null}
                 </View>
-              </View>
+              </TouchableOpacity>
               {/* Status check pill */}
               <View style={styles.statusCol}>
                 <TeamStatusChangeCheckbox
