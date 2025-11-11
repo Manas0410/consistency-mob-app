@@ -13,6 +13,8 @@ import {
   TextInput,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import BackHeader from "./ui/back-header";
 
 // ----- Types ---------------------------------------------------------------
 
@@ -49,6 +51,7 @@ type TeamTask = {
   duration: { hours: number; minutes: number };
   priority: 0 | 1 | 2 | 3;
   frequency: number[];
+  category?: string; // ← optional category for team task as well
   createdAt?: string;
   updatedAt?: string;
 };
@@ -58,7 +61,7 @@ type TaskUnion = PersonalTask | TeamTask;
 type Props = {
   task: TaskUnion;
   loading?: boolean;
-  onEdit: (updated: TaskUnion) => void; // will get same shape back
+  onEdit: (updated: TaskUnion) => void; // returns the same shape back
   onCancel?: () => void;
 };
 
@@ -102,6 +105,7 @@ const TaskDetails: React.FC<Props> = ({ task, loading, onEdit, onCancel }) => {
   // local editable fields
   const [name, setName] = useState(task.taskName ?? "");
   const [desc, setDesc] = useState(task.taskDescription ?? "");
+  const [category, setCategory] = useState(task.category ?? ""); // ← NEW
   const [startISO, setStartISO] = useState(task.taskStartDateTime);
   const [endISO, setEndISO] = useState(task.endTime);
   const [isDone, setIsDone] = useState(!!task.isDone);
@@ -117,11 +121,12 @@ const TaskDetails: React.FC<Props> = ({ task, loading, onEdit, onCancel }) => {
   const headerBadge = team ? "Team Task" : "My Task";
 
   const save = () => {
-    // return the SAME SHAPE we got
+    // return the SAME SHAPE we got (plus category if it wasn't present)
     const base = {
       ...task,
       taskName: name.trim(),
       taskDescription: desc,
+      category: category.trim() || undefined, // keep undefined if empty
       taskStartDateTime: new Date(startISO).toISOString(),
       endTime: new Date(endISO).toISOString(),
       isDone,
@@ -144,191 +149,217 @@ const TaskDetails: React.FC<Props> = ({ task, loading, onEdit, onCancel }) => {
   };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#F7F8FA" }}>
-      {loading ? (
-        <View style={styles.centerFill}>
-          <Spinner variant="bars" size="default" />
-        </View>
-      ) : (
-        <ScrollView contentContainerStyle={styles.container}>
-          {/* Header */}
-          <View style={styles.header}>
-            <Text style={styles.title} numberOfLines={2}>
-              {name || "Untitled Task"}
-            </Text>
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{headerBadge}</Text>
+    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+      <SafeAreaView>
+        <BackHeader title="Task description" />
+        <View style={{ backgroundColor: "#F7F8FA" }}>
+          {loading ? (
+            <View style={styles.centerFill}>
+              <Spinner variant="bars" size="default" />
             </View>
-          </View>
+          ) : (
+            <ScrollView contentContainerStyle={styles.container}>
+              {/* Header */}
+              <View style={styles.header}>
+                <Text style={styles.title} numberOfLines={2}>
+                  {name || "Untitled Task"}
+                </Text>
+                <View style={styles.badge}>
+                  <Text style={styles.badgeText}>{headerBadge}</Text>
+                </View>
+              </View>
 
-          {/* Priority */}
-          <View style={styles.card}>
-            <Text style={styles.label}>Priority</Text>
-            <View style={styles.segment}>
-              {[0, 1, 2].map((p) => (
-                <Pressable
-                  key={p}
-                  onPress={() => setPriority(p)}
-                  style={[
-                    styles.segmentItem,
-                    priority === p && styles.segmentActive,
-                  ]}
-                >
-                  <Icon
-                    name={Flag}
-                    size={16}
-                    color={
-                      priority === p ? "#fff" : PRIORITY[p as 0 | 1 | 2].color
-                    }
-                  />
-                  <Text
-                    style={[
-                      styles.segmentText,
-                      {
-                        color:
+              {/* Priority */}
+              <View style={styles.card}>
+                <Text style={styles.label}>Priority</Text>
+                <View style={styles.segment}>
+                  {[0, 1, 2].map((p) => (
+                    <Pressable
+                      key={p}
+                      onPress={() => setPriority(p)}
+                      style={[
+                        styles.segmentItem,
+                        priority === p && styles.segmentActive,
+                      ]}
+                    >
+                      <Icon
+                        name={Flag}
+                        size={16}
+                        color={
                           priority === p
                             ? "#fff"
-                            : PRIORITY[p as 0 | 1 | 2].color,
-                      },
-                    ]}
-                  >
-                    {PRIORITY[p as 0 | 1 | 2].label}
-                  </Text>
-                </Pressable>
-              ))}
-            </View>
-          </View>
-
-          {/* Status */}
-          <View style={styles.cardRow}>
-            <Text style={styles.label}>Status</Text>
-            <View
-              style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
-            >
-              <Icon
-                name={CheckCircle}
-                size={18}
-                color={isDone ? "#16A34A" : "#94A3B8"}
-              />
-              <Text style={{ color: "#0F172A", fontWeight: "600" }}>
-                {isDone ? "Completed" : "Pending"}
-              </Text>
-              <Switch value={isDone} onValueChange={setIsDone} />
-            </View>
-          </View>
-
-          {/* Time & Duration */}
-          <View style={styles.card}>
-            <Text style={styles.label}>When</Text>
-            <View style={styles.row}>
-              <Icon name={Calendar} size={18} color="#64748B" />
-              <Text style={styles.subtle}>
-                {fmtDate(startISO)} • {fmtTime(startISO)} – {fmtTime(endISO)}
-              </Text>
-            </View>
-
-            <View style={[styles.row, { marginTop: 6 }]}>
-              <Icon name={Clock} size={18} color="#64748B" />
-              <Text style={styles.subtle}>
-                Duration:{" "}
-                <Text style={{ color: "#0F172A", fontWeight: "700" }}>
-                  {duration.hours ? `${duration.hours}h ` : ""}
-                  {duration.minutes ? `${duration.minutes}m` : "0m"}
-                </Text>
-              </Text>
-            </View>
-
-            {/* Simple ISO editors (replace with a datetime picker if you want) */}
-            <View style={{ marginTop: 12, gap: 8 }}>
-              <Text style={styles.inputLabel}>Start (ISO)</Text>
-              <TextInput
-                placeholder="YYYY-MM-DDTHH:mm:ss.sssZ"
-                value={startISO}
-                onChangeText={setStartISO}
-                style={styles.input}
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-              <Text style={styles.inputLabel}>End (ISO)</Text>
-              <TextInput
-                placeholder="YYYY-MM-DDTHH:mm:ss.sssZ"
-                value={endISO}
-                onChangeText={setEndISO}
-                style={styles.input}
-                autoCapitalize="none"
-                autoCorrect={false}
-              />
-            </View>
-          </View>
-
-          {/* Assignees (team only) */}
-          {team && (
-            <View style={styles.card}>
-              <Text style={styles.label}>Assignees</Text>
-              {(task as TeamTask).assignees?.length ? (
-                <View
-                  style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
-                >
-                  {(task as TeamTask).assignees.map((a) => (
-                    <View key={a.userId} style={styles.pill}>
-                      <Icon name={Users} size={14} color="#2563EB" />
-                      <Text style={[styles.pillText, { color: "#2563EB" }]}>
-                        {a.userName}
+                            : PRIORITY[p as 0 | 1 | 2].color
+                        }
+                      />
+                      <Text
+                        style={[
+                          styles.segmentText,
+                          {
+                            color:
+                              priority === p
+                                ? "#fff"
+                                : PRIORITY[p as 0 | 1 | 2].color,
+                          },
+                        ]}
+                      >
+                        {PRIORITY[p as 0 | 1 | 2].label}
                       </Text>
-                    </View>
+                    </Pressable>
                   ))}
                 </View>
-              ) : (
-                <Text style={styles.subtle}>No assignees</Text>
+              </View>
+
+              {/* Status */}
+              <View style={styles.cardRow}>
+                <Text style={styles.label}>Status</Text>
+                <View
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 10,
+                  }}
+                >
+                  <Icon
+                    name={CheckCircle}
+                    size={18}
+                    color={isDone ? "#16A34A" : "#94A3B8"}
+                  />
+                  <Text style={{ color: "#0F172A", fontWeight: "600" }}>
+                    {isDone ? "Completed" : "Pending"}
+                  </Text>
+                  <Switch value={isDone} onValueChange={setIsDone} />
+                </View>
+              </View>
+
+              {/* Time & Duration */}
+              <View style={styles.card}>
+                <Text style={styles.label}>When</Text>
+                <View style={styles.row}>
+                  <Icon name={Calendar} size={18} color="#64748B" />
+                  <Text style={styles.subtle}>
+                    {fmtDate(startISO)} • {fmtTime(startISO)} –{" "}
+                    {fmtTime(endISO)}
+                  </Text>
+                </View>
+
+                <View style={[styles.row, { marginTop: 6 }]}>
+                  <Icon name={Clock} size={18} color="#64748B" />
+                  <Text style={styles.subtle}>
+                    Duration:{" "}
+                    <Text style={{ color: "#0F172A", fontWeight: "700" }}>
+                      {duration.hours ? `${duration.hours}h ` : ""}
+                      {duration.minutes ? `${duration.minutes}m` : "0m"}
+                    </Text>
+                  </Text>
+                </View>
+
+                {/* ISO editors (swap with DateTime pickers if you like) */}
+                <View style={{ marginTop: 12, gap: 8 }}>
+                  <Text style={styles.inputLabel}>Start (ISO)</Text>
+                  <TextInput
+                    placeholder="YYYY-MM-DDTHH:mm:ss.sssZ"
+                    value={startISO}
+                    onChangeText={setStartISO}
+                    style={styles.input}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                  <Text style={styles.inputLabel}>End (ISO)</Text>
+                  <TextInput
+                    placeholder="YYYY-MM-DDTHH:mm:ss.sssZ"
+                    value={endISO}
+                    onChangeText={setEndISO}
+                    style={styles.input}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                  />
+                </View>
+              </View>
+
+              {/* Assignees (team only) */}
+              {team && (
+                <View style={styles.card}>
+                  <Text style={styles.label}>Assignees</Text>
+                  {(task as TeamTask).assignees?.length ? (
+                    <View
+                      style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
+                    >
+                      {(task as TeamTask).assignees.map((a) => (
+                        <View key={a.userId} style={styles.pill}>
+                          <Icon name={Users} size={14} color="#2563EB" />
+                          <Text style={[styles.pillText, { color: "#2563EB" }]}>
+                            {a.userName}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  ) : (
+                    <Text style={styles.subtle}>No assignees</Text>
+                  )}
+                </View>
               )}
-            </View>
+
+              {/* Basic fields */}
+              <View style={styles.card}>
+                <Text style={styles.inputLabel}>Task name</Text>
+                <TextInput
+                  placeholder="Enter task name"
+                  value={name}
+                  onChangeText={setName}
+                  style={styles.input}
+                />
+
+                {/* Category (both personal & team) */}
+                <Text style={[styles.inputLabel, { marginTop: 10 }]}>
+                  Category
+                </Text>
+                <TextInput
+                  placeholder="e.g., Work, Personal, Sales"
+                  value={category}
+                  onChangeText={setCategory}
+                  style={styles.input}
+                />
+
+                <Text style={[styles.inputLabel, { marginTop: 10 }]}>
+                  Description
+                </Text>
+                <TextInput
+                  placeholder="Add a short description"
+                  value={desc}
+                  onChangeText={setDesc}
+                  style={[styles.input, { height: 90 }]}
+                  multiline
+                />
+              </View>
+
+              {/* Footer buttons */}
+              <View style={styles.footer}>
+                {onCancel ? (
+                  <Button
+                    variant="default"
+                    style={[styles.btn, { backgroundColor: "#E5E7EB" }]}
+                    textStyle={{ color: "#111827", fontWeight: "700" }}
+                    onPress={onCancel}
+                  >
+                    Cancel
+                  </Button>
+                ) : null}
+                <Button
+                  variant="default"
+                  style={[
+                    styles.btn,
+                    { backgroundColor: "#2563EB", marginBottom: 350 },
+                  ]}
+                  textStyle={{ color: "#fff", fontWeight: "700" }}
+                  onPress={save}
+                >
+                  Save Changes
+                </Button>
+              </View>
+            </ScrollView>
           )}
-
-          {/* Basic fields */}
-          <View style={styles.card}>
-            <Text style={styles.inputLabel}>Task name</Text>
-            <TextInput
-              placeholder="Enter task name"
-              value={name}
-              onChangeText={setName}
-              style={styles.input}
-            />
-
-            <Text style={[styles.inputLabel, { marginTop: 10 }]}>
-              Description
-            </Text>
-            <TextInput
-              placeholder="Add a short description"
-              value={desc}
-              onChangeText={setDesc}
-              style={[styles.input, { height: 90 }]}
-              multiline
-            />
-          </View>
-
-          {/* Footer buttons */}
-          <View style={styles.footer}>
-            {onCancel ? (
-              <Button
-                variant="default"
-                style={[styles.btn, { backgroundColor: "#E5E7EB" }]}
-                textStyle={{ color: "#111827", fontWeight: "700" }}
-                onPress={onCancel}
-              >
-                Cancel
-              </Button>
-            ) : null}
-            <Button
-              variant="default"
-              style={[styles.btn, { backgroundColor: "#2563EB" }]}
-              textStyle={{ color: "#fff", fontWeight: "700" }}
-              onPress={save}
-            >
-              Save Changes
-            </Button>
-          </View>
-        </ScrollView>
-      )}
+        </View>
+      </SafeAreaView>
     </View>
   );
 };
