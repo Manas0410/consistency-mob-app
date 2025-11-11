@@ -241,13 +241,13 @@ export default function TeamTaskForm() {
                 timeFormat="12"
               />
             </View>
-            <Picker
+            {/* <Picker
               label="Select Frequency"
               multiple
               values={task.frequency}
               options={options}
               onValuesChange={(val) => handleChange("frequency", val)}
-            />
+            /> */}
             <Button
               icon={Plus}
               loading={loading}

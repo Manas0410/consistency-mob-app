@@ -8,8 +8,9 @@ import { useLocalSearchParams } from "expo-router";
 import { ClockPlus, FileText, Flag, Users } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import StatusChangeCheckbox from "../task-viewer/components/status-change-checkbox";
+import PeriodIcon from "../task-viewer/components/period-icon";
 import { getTeamTasks } from "./API/api-calls";
+import TeamStatusChangeCheckbox from "./components/team-status-change-checkbox";
 
 const MIN_GAP_MINUTES = 120;
 
@@ -170,18 +171,7 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
                     style={[styles.dottedLine, { borderColor: pallet.shade3 }]}
                   />
                 )}
-                <View
-                  style={[
-                    styles.iconCircle,
-                    {
-                      backgroundColor: item.isDone
-                        ? pallet.shade3
-                        : pallet.shade4,
-                    },
-                  ]}
-                >
-                  <Text style={styles.iconText}>🟡</Text>
-                </View>
+                <PeriodIcon startTime={item.taskStartDateTime} />
                 {idx < timeline.length - 1 && (
                   <View
                     style={[styles.dottedLine, { borderColor: pallet.shade3 }]}
@@ -231,17 +221,27 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
                     {item.taskName}
                   </Text>
                   {item.taskDescription && <Icon name={FileText} size={18} />}
-                  {item?.assignees && item?.assignees?.length && (
-                    <Text>
+                  {item?.assignees?.length ? (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 6,
+                      }}
+                    >
                       <Icon name={Users} size={18} />
-                      {item?.assignees?.length} Assignees
-                    </Text>
-                  )}
+                      <Text>{item.assignees.length} Assignees</Text>
+                    </View>
+                  ) : null}
                 </View>
               </View>
               {/* Status check pill */}
               <View style={styles.statusCol}>
-                <StatusChangeCheckbox isChecked={item.isDone} />
+                <TeamStatusChangeCheckbox
+                  isChecked={item.isDone}
+                  teamId={teamid}
+                  taskId={item?._id}
+                />
               </View>
             </View>
           )
