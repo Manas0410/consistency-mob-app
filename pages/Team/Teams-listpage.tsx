@@ -34,13 +34,24 @@ const TeamsHeader = React.memo(function TeamsHeader({
   searchQuery,
   setSearchQuery,
   searching,
+  totals,
 }: {
   Teams: any[];
   searchQuery: string;
   setSearchQuery: (s: string) => void;
   searching: boolean;
+  totals: {
+    totalTasks: number;
+    assignedToMe: number;
+    completedByMe: number;
+    remainingForMe: number;
+  };
 }) {
   const pallet = usePallet();
+  const { totalTasks = 0, assignedToMe = 0, completedByMe = 0 } = totals ?? {};
+  const assignedFraction =
+    totalTasks > 0 ? `${assignedToMe}/${totalTasks}` : String(assignedToMe);
+
   return (
     <View style={styles.headerContainer}>
       <View style={styles.welcomeSection}>
@@ -52,6 +63,7 @@ const TeamsHeader = React.memo(function TeamsHeader({
         style={styles.statsContainer}
         showsHorizontalScrollIndicator={false}
       >
+        {/* Teams count */}
         <View style={styles.statCard}>
           <View style={styles.statIconContainer}>
             <Users size={20} color="#3B82F6" />
@@ -60,23 +72,25 @@ const TeamsHeader = React.memo(function TeamsHeader({
           <Text style={styles.statLabel}>Teams</Text>
         </View>
 
+        {/* Assigned to me */}
         <View style={styles.statCard}>
           <View
             style={[styles.statIconContainer, { backgroundColor: "#F0FDF4" }]}
           >
             <TrendingUp size={20} color="#F59E0B" />
           </View>
-          <Text style={styles.statNumber}>—</Text>
+          <Text style={styles.statNumber}>{assignedFraction}</Text>
           <Text style={styles.statLabel}>Tasks Assigned</Text>
         </View>
 
+        {/* Completed by me */}
         <View style={styles.statCard}>
           <View
             style={[styles.statIconContainer, { backgroundColor: "#EFF6FF" }]}
           >
             <TrendingUp size={20} color="#10B981" />
           </View>
-          <Text style={styles.statNumber}>—</Text>
+          <Text style={styles.statNumber}>{completedByMe}</Text>
           <Text style={styles.statLabel}>Completed</Text>
         </View>
       </ScrollView>
@@ -185,6 +199,36 @@ const TeamsListing = ({ rerender }: { rerender?: any }) => {
     }
   };
 
+  // -------- Aggregate totals for header (scoped to current user) ----------
+  const { totalTasks, assignedToMe, completedByMe, remainingForMe } =
+    useMemo(() => {
+      let totalTasks = 0;
+      let assignedToMe = 0;
+      let completedByMe = 0;
+
+      for (const team of Teams ?? []) {
+        const tasks = team?.tasks ?? [];
+        totalTasks += tasks.length;
+
+        for (const t of tasks) {
+          const mine = (t?.assignees ?? []).some(
+            (a: any) => a.userId === userId
+          );
+          if (mine) {
+            assignedToMe += 1;
+            if (t?.isDone) completedByMe += 1;
+          }
+        }
+      }
+
+      return {
+        totalTasks,
+        assignedToMe,
+        completedByMe,
+        remainingForMe: Math.max(0, assignedToMe - completedByMe),
+      };
+    }, [Teams, userId]);
+
   const formatDate = (dateString: string) => {
     const d = new Date(dateString);
     return d.toLocaleDateString("en-US", {
@@ -291,9 +335,18 @@ const TeamsListing = ({ rerender }: { rerender?: any }) => {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
         searching={searching}
+        totals={{ totalTasks, assignedToMe, completedByMe, remainingForMe }}
       />
     ),
-    [Teams, searchQuery, searching]
+    [
+      Teams,
+      searchQuery,
+      searching,
+      totalTasks,
+      assignedToMe,
+      completedByMe,
+      remainingForMe,
+    ]
   );
 
   return (
@@ -325,7 +378,7 @@ const TeamsListing = ({ rerender }: { rerender?: any }) => {
         {initialLoading && (
           <View style={styles.initialOverlay}>
             <Spinner variant="bars" size="default" color={pallet.shade1} />
-            <Text style={{}}>Loading your teams...</Text>
+            <Text>Loading your teams...</Text>
           </View>
         )}
       </View>

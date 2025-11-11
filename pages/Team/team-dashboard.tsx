@@ -111,13 +111,13 @@ function TeamDashboard() {
             <Tabs defaultValue="team">
               <TabsList
                 style={{
-                  width: 180,
+                  width: 137,
                   borderRadius: 10,
                   margin: "auto",
                   height: 40,
                 }}
               >
-                <TabsTrigger style={{ borderRadius: 200 }} value="team">
+                <TabsTrigger style={{ borderRadius: 20 }} value="team">
                   <Text>Team</Text>
                 </TabsTrigger>
                 <TabsTrigger style={{ borderRadius: 20 }} value="me">
