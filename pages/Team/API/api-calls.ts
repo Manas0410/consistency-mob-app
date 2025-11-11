@@ -251,3 +251,17 @@ export const exitTeam = async (teamId) => {
     return { success: false, data: { message: "error" } };
   }
 };
+
+export const DeleteTeam = async (teamId) => {
+  try {
+    const response = await apicall.post("/team/delete", {
+      teamId,
+    });
+    if (response.status !== 200)
+      throw new Error(`Failed to  removee user: ${response.statusText}`);
+    return { success: true, data: response.data?.members };
+  } catch (error) {
+    console.error("Error deleting team:", error);
+    return { success: false, data: { message: "error" } };
+  }
+};

@@ -326,28 +326,25 @@ const TeamsListing = ({ rerender }) => {
           </View>
         </View>
       ) : (
-        <ScrollView>
-          {renderHeader()}
-          <FlatList
-            style={styles.listContainer}
-            // ListHeaderComponent={renderHeader}
-            ListEmptyComponent={renderEmptyState}
-            ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
-            data={Teams}
-            keyExtractor={(item) => item._id}
-            renderItem={renderTeamCard}
-            contentContainerStyle={styles.listContent}
-            showsVerticalScrollIndicator={false}
-            refreshControl={
-              <RefreshControl
-                refreshing={refreshing}
-                onRefresh={onRefresh}
-                colors={["#3B82F6"]}
-                tintColor="#3B82F6"
-              />
-            }
-          />
-        </ScrollView>
+        <FlatList
+          style={styles.listContainer}
+          ListHeaderComponent={renderHeader}
+          ListEmptyComponent={renderEmptyState}
+          ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
+          data={Teams}
+          keyExtractor={(item) => item._id}
+          renderItem={renderTeamCard}
+          contentContainerStyle={styles.listContent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              colors={["#3B82F6"]}
+              tintColor="#3B82F6"
+            />
+          }
+        />
       )}
     </SafeAreaView>
   );

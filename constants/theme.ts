@@ -38,6 +38,8 @@ export const Pallets = {
     shade4: "#d8f1fc",
     buttonBg: "#c4ddfbff",
     ButtonText: "#3B82F6",
+    errorText: "#EF4444",
+    errorBg: "#fad3d3ff",
   },
 };
 

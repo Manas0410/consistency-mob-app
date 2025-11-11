@@ -8,11 +8,11 @@ import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { useUser } from "@clerk/clerk-expo";
 import { useLocalSearchParams, usePathname, useRouter } from "expo-router";
-import { Calendar, LogOut, Users } from "lucide-react-native";
-import React from "react";
+import { Calendar, LogOut, Trash2, Users } from "lucide-react-native";
+import React, { useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { exitTeam } from "./API/api-calls";
+import { DeleteTeam, exitTeam } from "./API/api-calls";
 
 function TeamDashboard() {
   // Example stats
@@ -49,6 +49,19 @@ function TeamDashboard() {
   ];
 
   const pallet = usePallet();
+  const [deleteLoading, setDeleteLoading] = useState(false);
+
+  const handleDelete = async () => {
+    try {
+      setDeleteLoading(true);
+      const del = await DeleteTeam(teamid);
+      if (del.success) router.replace("/team");
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -158,9 +171,11 @@ function TeamDashboard() {
           <View style={styles.actionRow}>
             <Button
               variant="default"
-              style={{ borderRadius: 12, backgroundColor: pallet.shade1 }}
+              style={{ borderRadius: 12, backgroundColor: pallet.buttonBg }}
+              textStyle={{ color: pallet.ButtonText }}
               icon={Calendar}
               onPress={() => router.replace(`/${teamid}/teamTaskPage`)}
+              disabled={deleteLoading}
             >
               View Tasks
             </Button>
@@ -168,16 +183,19 @@ function TeamDashboard() {
               variant="default"
               style={{
                 borderRadius: 12,
-                backgroundColor: pallet.shade1,
+                backgroundColor: pallet.buttonBg,
               }}
+              textStyle={{ color: pallet.ButtonText }}
               icon={Users}
               onPress={() => router.replace(`/${teamid}/teamMembers`)}
+              disabled={deleteLoading}
             >
               Manage Members
             </Button>
             <Button
               variant="destructive"
-              style={{ borderRadius: 12 }}
+              style={{ borderRadius: 12, backgroundColor: pallet.errorBg }}
+              textStyle={{ color: pallet.errorText }}
               icon={LogOut}
               onPress={() => {
                 Alert.alert(
@@ -194,8 +212,34 @@ function TeamDashboard() {
                   { cancelable: false }
                 );
               }}
+              disabled={deleteLoading}
             >
               Exit Team
+            </Button>
+            <Button
+              variant="destructive"
+              style={{ borderRadius: 12, backgroundColor: pallet.errorBg }}
+              textStyle={{ color: pallet.errorText }}
+              icon={Trash2}
+              onPress={() => {
+                Alert.alert(
+                  "Confirm Delete",
+                  "Are you sure you want to delete the team?",
+                  [
+                    { text: "Cancel", style: "cancel" },
+                    {
+                      text: "Delete",
+                      style: "destructive",
+                      onPress: () => handleDelete(),
+                    },
+                  ],
+                  { cancelable: false }
+                );
+              }}
+              loading={deleteLoading}
+              disabled={deleteLoading}
+            >
+              Delete Team
             </Button>
           </View>
         </ScrollView>
