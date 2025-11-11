@@ -19,7 +19,6 @@ export default function TabLayout() {
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
       <Stack.Screen name="mode" options={{ headerShown: false }} />
-      <Stack.Screen name="taskDescription" options={{ headerShown: false }} />
     </Stack>
   );
 }
