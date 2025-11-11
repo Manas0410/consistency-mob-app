@@ -5,6 +5,7 @@ import { ScrollView } from "@/components/ui/scroll-view";
 import { Spinner } from "@/components/ui/spinner";
 import { usePallet } from "@/hooks/use-pallet";
 import { addHours, differenceInMinutes, format, parseISO } from "date-fns";
+import { useRouter } from "expo-router";
 import { ClockPlus, FileText } from "lucide-react-native";
 import { useEffect, useState } from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
@@ -34,6 +35,7 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
   const pallet = usePallet();
   const [taskListData, setTaskListData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const loadTasks = async () => {
     try {
@@ -155,7 +157,12 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
                 )}
               </View>
               {/* Task details */}
-              <View style={styles.detailsCol}>
+              <TouchableOpacity
+                style={styles.detailsCol}
+                onPress={() =>
+                  router.replace("/(tabs)/calendar/taskDescription")
+                }
+              >
                 <Text style={styles.timeText}>
                   {getTimeStr(item.taskStartDateTime)} -{" "}
                   {getTimeStr(item.endTime)}{" "}
@@ -186,7 +193,7 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
                   </Text>
                   {item.taskDescription && <Icon name={FileText} size={18} />}
                 </View>
-              </View>
+              </TouchableOpacity>
               {/* Status check pill */}
               <View style={styles.statusCol}>
                 <StatusChangeCheckbox
