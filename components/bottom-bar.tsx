@@ -75,6 +75,7 @@ const BottomBar = () => {
         !pathname.endsWith("/pomodoro") &&
         !pathname.endsWith("/focus") &&
         !pathname.endsWith("/teamTaskPage") &&
+        !pathname.endsWith("/taskDescriptionTeam") &&
         !pathname.endsWith("/teamMembers") && (
           <TouchableOpacity
             style={styles.addButton}
@@ -97,14 +98,7 @@ const BottomBar = () => {
               >
                 <X size={24} />
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.BtnCntBtn}
-                onPress={() => {
-                  AddTeamOpen();
-                }}
-              >
-                <PackagePlus color="white" size={36} />
-              </TouchableOpacity>
+
               <TouchableOpacity
                 style={styles.BtnCntBtn}
                 onPress={() => {
@@ -112,6 +106,14 @@ const BottomBar = () => {
                 }}
               >
                 <UserPlus color="white" size={34} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.BtnCntBtn}
+                onPress={() => {
+                  AddTeamOpen();
+                }}
+              >
+                <PackagePlus color="white" size={36} />
               </TouchableOpacity>
             </View>
           ) : (

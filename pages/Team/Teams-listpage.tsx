@@ -1,21 +1,21 @@
-import BackHeader from "@/components/ui/back-header";
-import { Input } from "@/components/ui/input";
-import { ScrollView } from "@/components/ui/scroll-view"; // horizontal only
-import { Spinner } from "@/components/ui/spinner";
-import { useCurrentTeamData } from "@/contexts/team-data-context";
-import { usePallet } from "@/hooks/use-pallet";
-import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import {
   Calendar,
   ChevronRight,
+  Plus,
   Search,
   TrendingUp,
   Users,
   X,
 } from "lucide-react-native";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import {
   FlatList,
   StyleSheet,
@@ -24,9 +24,132 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getAllTeams } from "./API/api-calls";
 
-// ---------- Header (memoized element so it doesn't remount) ----------
+import BackHeader from "@/components/ui/back-header";
+import { Input } from "@/components/ui/input";
+import { ScrollView } from "@/components/ui/scroll-view";
+import { Spinner } from "@/components/ui/spinner";
+import { useAddTeamMemberBottomSheet } from "@/contexts/add-team-member-context";
+import { useCurrentTeamData } from "@/contexts/team-data-context";
+import { usePallet } from "@/hooks/use-pallet";
+import { useUser } from "@clerk/clerk-expo";
+
+import { getAllTeams } from "./API/api-calls";
+import { AddTeamMember } from "./components/add-member";
+
+/* -------------------------- TeamCard (child) ------------------------- */
+/* Hooks are fine inside this component because it's a proper React component. */
+const TeamCard: React.FC<{
+  item: any;
+  onPressCard: (item: any) => void;
+  onOpenAdd: (teamId: string) => void;
+}> = ({ item, onPressCard, onOpenAdd }) => {
+  const pallet = usePallet();
+
+  return (
+    <View style={styles.teamCard}>
+      <TouchableOpacity
+        onPress={() => onPressCard(item)}
+        activeOpacity={0.7}
+        style={{ flex: 1 }}
+      >
+        <View style={styles.teamCardHeader}>
+          <View style={styles.teamIconContainer}>
+            <Text style={styles.teamIcon}>
+              {(item?.teamName ?? "?").charAt(0).toUpperCase()}
+            </Text>
+          </View>
+          <View style={styles.teamInfo}>
+            <Text style={styles.teamName}>{item?.teamName}</Text>
+            <Text style={styles.teamDate}>
+              Created{" "}
+              {item?.createdAt
+                ? new Date(item.createdAt).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
+                  })
+                : "-"}
+            </Text>
+          </View>
+          <ChevronRight size={20} color="#CBD5E1" />
+        </View>
+
+        <View style={styles.teamStats}>
+          <View style={styles.statItem}>
+            <Users size={16} color="#6B7280" />
+            <Text style={styles.statText}>
+              {item?.members?.length || 0} member
+              {(item?.members?.length || 0) !== 1 ? "s" : ""}
+            </Text>
+          </View>
+          <View style={styles.statItem}>
+            <Calendar size={16} color="#6B7280" />
+            <Text style={styles.statText}>
+              {item?.tasks?.length || 0} task
+              {(item?.tasks?.length || 0) !== 1 ? "s" : ""}
+            </Text>
+          </View>
+        </View>
+
+        <View style={styles.memberAvatars}>
+          {item?.members?.slice(0, 4).map((member: any, index: number) => (
+            <View
+              key={member?.userId ?? index}
+              style={[styles.memberAvatar, { marginLeft: index > 0 ? -8 : 0 }]}
+            >
+              <Text style={styles.memberAvatarText}>
+                {(member?.userName ?? "?").charAt(0).toUpperCase()}
+              </Text>
+            </View>
+          ))}
+          {(item?.members?.length || 0) > 4 && (
+            <View
+              style={[
+                styles.memberAvatar,
+                styles.moreMembers,
+                { marginLeft: -8 },
+              ]}
+            >
+              <Text style={styles.moreMembersText}>
+                +{(item?.members?.length || 0) - 4}
+              </Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
+
+      <View
+        style={{
+          paddingHorizontal: 16,
+          paddingBottom: 16,
+          alignItems: "flex-end",
+        }}
+      >
+        <TouchableOpacity
+          onPress={() => onOpenAdd(item?._id)}
+          style={{
+            backgroundColor: pallet.buttonBg,
+            width: 150,
+            borderRadius: 8,
+            height: 36,
+            alignItems: "center",
+            justifyContent: "center",
+            flexDirection: "row",
+            gap: 8,
+          }}
+        >
+          <Plus color={pallet.shade1} />
+          <Text style={{ color: pallet.ButtonText, fontSize: 12 }}>
+            Add member
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
+
+/* ----------------------- TeamsHeader (memoized) ----------------------- */
 const TeamsHeader = React.memo(function TeamsHeader({
   Teams,
   searchQuery,
@@ -61,7 +184,6 @@ const TeamsHeader = React.memo(function TeamsHeader({
         style={styles.statsContainer}
         showsHorizontalScrollIndicator={false}
       >
-        {/* Teams count */}
         <View style={styles.statCard}>
           <View style={styles.statIconContainer}>
             <Users size={20} color="#3B82F6" />
@@ -70,7 +192,6 @@ const TeamsHeader = React.memo(function TeamsHeader({
           <Text style={styles.statLabel}>Teams</Text>
         </View>
 
-        {/* Assigned to me */}
         <View style={styles.statCard}>
           <View
             style={[styles.statIconContainer, { backgroundColor: "#F0FDF4" }]}
@@ -81,7 +202,6 @@ const TeamsHeader = React.memo(function TeamsHeader({
           <Text style={styles.statLabel}>Tasks Assigned</Text>
         </View>
 
-        {/* Completed by me */}
         <View style={styles.statCard}>
           <View
             style={[styles.statIconContainer, { backgroundColor: "#EFF6FF" }]}
@@ -128,8 +248,8 @@ const TeamsHeader = React.memo(function TeamsHeader({
   );
 });
 
-// ---------------- Main Screen ----------------
-const TeamsListing = ({ rerender }: { rerender?: any }) => {
+/* ------------------------ Main TeamsListing --------------------------- */
+const TeamsListing: React.FC<{ rerender?: any }> = ({ rerender }) => {
   const router = useRouter();
   const pallet = usePallet();
   const { setCurrentTeamData } = useCurrentTeamData();
@@ -137,24 +257,30 @@ const TeamsListing = ({ rerender }: { rerender?: any }) => {
   const userId = user?.id;
 
   const [Teams, setTeams] = useState<any[]>([]);
-  const [initialLoading, setInitialLoading] = useState(true); // only for first load
+  const [initialLoading, setInitialLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [searching, setSearching] = useState(false); // light inline indicator
+  const [searching, setSearching] = useState(false);
 
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
-  const fetchTeams = async (q: string) => {
-    const res = await getAllTeams(q);
-    if (res?.success) {
-      // @ts-ignore
-      setTeams(res.data ?? []);
-    } else {
+  const [selectedTeamId, setSelectedTeamId] = useState<string | null>(null);
+  const { open } = useAddTeamMemberBottomSheet();
+
+  const fetchTeams = useCallback(async (q: string) => {
+    try {
+      const res = await getAllTeams(q);
+      if (res?.success) {
+        setTeams(res.data ?? []);
+      } else {
+        setTeams([]);
+      }
+    } catch (err) {
+      console.error("fetchTeams error", err);
       setTeams([]);
     }
-  };
+  }, []);
 
-  // Initial load (once)
   useEffect(() => {
     (async () => {
       try {
@@ -163,15 +289,14 @@ const TeamsListing = ({ rerender }: { rerender?: any }) => {
         setInitialLoading(false);
       }
     })();
-  }, []);
+  }, [fetchTeams]);
 
-  // Rerender trigger (does not flip initial loader)
   useEffect(() => {
-    if (rerender) fetchTeams(searchQuery);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rerender]);
+    if (rerender) {
+      fetchTeams(searchQuery);
+    }
+  }, [rerender, fetchTeams, searchQuery]);
 
-  // Debounced search without full-screen loader
   useEffect(() => {
     setSearching(true);
     if (debounceRef.current) clearTimeout(debounceRef.current);
@@ -185,19 +310,18 @@ const TeamsListing = ({ rerender }: { rerender?: any }) => {
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchQuery]);
+  }, [searchQuery, fetchTeams]);
 
-  const onRefresh = async () => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
     try {
       await fetchTeams(searchQuery);
     } finally {
       setRefreshing(false);
     }
-  };
+  }, [fetchTeams, searchQuery]);
 
-  // -------- Aggregate totals for header (scoped to current user) ----------
+  // totals for header
   const { totalTasks, assignedToMe, completedByMe, remainingForMe } =
     useMemo(() => {
       let totalTasks = 0;
@@ -227,98 +351,6 @@ const TeamsListing = ({ rerender }: { rerender?: any }) => {
       };
     }, [Teams, userId]);
 
-  const formatDate = (dateString: string) => {
-    const d = new Date(dateString);
-    return d.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
-
-  const renderTeamCard = ({ item }: { item: any }) => (
-    <TouchableOpacity
-      style={styles.teamCard}
-      onPress={() => {
-        setCurrentTeamData(item);
-        router.push(`/${item?._id}/TeamDetails` as any);
-      }}
-      activeOpacity={0.7}
-    >
-      <View style={styles.teamCardHeader}>
-        <View style={styles.teamIconContainer}>
-          <Text style={styles.teamIcon}>
-            {(item?.teamName ?? "?").charAt(0).toUpperCase()}
-          </Text>
-        </View>
-        <View style={styles.teamInfo}>
-          <Text style={styles.teamName}>{item?.teamName}</Text>
-          <Text style={styles.teamDate}>
-            Created {formatDate(item?.createdAt)}
-          </Text>
-        </View>
-        <ChevronRight size={20} color="#CBD5E1" />
-      </View>
-
-      <View style={styles.teamStats}>
-        <View style={styles.statItem}>
-          <Users size={16} color="#6B7280" />
-          <Text style={styles.statText}>
-            {item?.members?.length || 0} member
-            {(item?.members?.length || 0) !== 1 ? "s" : ""}
-          </Text>
-        </View>
-        <View style={styles.statItem}>
-          <Calendar size={16} color="#6B7280" />
-          <Text style={styles.statText}>
-            {item?.tasks?.length || 0} task
-            {(item?.tasks?.length || 0) !== 1 ? "s" : ""}
-          </Text>
-        </View>
-      </View>
-
-      <View style={styles.memberAvatars}>
-        {item?.members?.slice(0, 4).map((member: any, index: number) => (
-          <View
-            key={member?.userId ?? index}
-            style={[styles.memberAvatar, { marginLeft: index > 0 ? -8 : 0 }]}
-          >
-            <Text style={styles.memberAvatarText}>
-              {(member?.userName ?? "?").charAt(0).toUpperCase()}
-            </Text>
-          </View>
-        ))}
-        {(item?.members?.length || 0) > 4 && (
-          <View
-            style={[
-              styles.memberAvatar,
-              styles.moreMembers,
-              { marginLeft: -8 },
-            ]}
-          >
-            <Text style={styles.moreMembersText}>
-              +{(item?.members?.length || 0) - 4}
-            </Text>
-          </View>
-        )}
-      </View>
-    </TouchableOpacity>
-  );
-
-  const renderEmptyState = () => (
-    <View style={styles.emptyStateContainer}>
-      <View style={styles.emptyStateIcon}>
-        <Users size={48} color="#D1D5DB" />
-      </View>
-      <Text style={styles.emptyStateTitle}>No teams yet</Text>
-      <Text style={styles.emptyStateSubtitle}>
-        Create your first team to start collaborating with others
-      </Text>
-
-      <Text style={styles.emptyStateButtonText}>Create Your First Team</Text>
-    </View>
-  );
-
   const headerEl = useMemo(
     () => (
       <TeamsHeader
@@ -340,18 +372,52 @@ const TeamsListing = ({ rerender }: { rerender?: any }) => {
     ]
   );
 
+  const handleOpenAdd = (teamId: string) => {
+    setSelectedTeamId(teamId);
+    open(); // opens bottom sheet; AddTeamMember must read teamid prop or context accordingly
+  };
+
+  const handlePressCard = (item: any) => {
+    setCurrentTeamData(item);
+    router.push(`/${item?._id}/TeamDetails`);
+  };
+
+  const renderEmptyState = () => (
+    <View style={styles.emptyStateContainer}>
+      <View style={styles.emptyStateIcon}>
+        <Users size={48} color="#D1D5DB" />
+      </View>
+      <Text style={styles.emptyStateTitle}>No teams yet</Text>
+      <Text style={styles.emptyStateSubtitle}>
+        Create your first team to start collaborating with others
+      </Text>
+
+      <View style={{ marginTop: 12 }}>
+        <Text style={styles.emptyStateButtonText}>Create Your First Team</Text>
+      </View>
+    </View>
+  );
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar style="dark" />
       <BackHeader title="Teams" />
 
-      {/* Always render the list; show initial loader as overlay only */}
+      {/* single AddTeamMember instance at parent-level (pass selectedTeamId) */}
+      <AddTeamMember teamid={selectedTeamId} />
+
       <View style={{ flex: 1 }}>
         <FlatList
           style={styles.listContainer}
           data={Teams}
           keyExtractor={(item: any) => String(item?._id)}
-          renderItem={renderTeamCard}
+          renderItem={({ item }) => (
+            <TeamCard
+              item={item}
+              onPressCard={handlePressCard}
+              onOpenAdd={handleOpenAdd}
+            />
+          )}
           ListHeaderComponent={headerEl}
           ListEmptyComponent={!initialLoading ? renderEmptyState : null}
           ItemSeparatorComponent={() => <View style={styles.itemSeparator} />}
@@ -444,7 +510,7 @@ const styles = StyleSheet.create({
   teamCard: {
     backgroundColor: "#fff",
     borderRadius: 16,
-    padding: 20,
+    padding: 0,
     borderWidth: 1,
     borderColor: "#E2E8F0",
     shadowColor: "#1E293B",
@@ -453,12 +519,14 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 1,
     marginHorizontal: 20,
-    marginBottom: 0,
+    marginBottom: 12,
+    overflow: "hidden",
   },
   teamCardHeader: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 16,
+    padding: 20,
+    paddingBottom: 8,
   },
   teamIconContainer: {
     width: 48,
@@ -478,10 +546,21 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   teamDate: { fontSize: 14, color: "#64748B", fontWeight: "500" },
-  teamStats: { flexDirection: "row", gap: 20, marginBottom: 16 },
+  teamStats: {
+    flexDirection: "row",
+    gap: 20,
+    paddingHorizontal: 20,
+    paddingTop: 6,
+    paddingBottom: 12,
+  },
   statItem: { flexDirection: "row", alignItems: "center", gap: 6 },
   statText: { fontSize: 14, color: "#6B7280", fontWeight: "500" },
-  memberAvatars: { flexDirection: "row", alignItems: "center" },
+  memberAvatars: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 20,
+    paddingBottom: 12,
+  },
   memberAvatar: {
     width: 32,
     height: 32,
@@ -524,26 +603,13 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     marginBottom: 32,
   },
-  emptyStateButton: {
-    backgroundColor: "#3B82F6",
-    borderRadius: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 24,
-    flexDirection: "row",
-    alignItems: "center",
-    shadowColor: "#3B82F6",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
   emptyStateButtonText: {
     fontSize: 16,
     fontWeight: "600",
     marginLeft: 8,
+    color: "#3B82F6",
   },
 
-  // Initial overlay loader (only first load)
   initialOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: "rgba(248,250,252,0.9)",

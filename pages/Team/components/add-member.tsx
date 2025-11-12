@@ -3,14 +3,12 @@ import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
 import { useAddTeamMemberBottomSheet } from "@/contexts/add-team-member-context";
 import * as Clipboard from "expo-clipboard";
-import { useLocalSearchParams } from "expo-router";
 import { Copy } from "lucide-react-native"; // Lucide copy icon, install if needed
 import React, { useState } from "react";
 import { Alert, StyleSheet, TouchableOpacity } from "react-native";
 
-export function AddTeamMember() {
+export function AddTeamMember({ teamid }) {
   const { isVisible, close } = useAddTeamMemberBottomSheet();
-  const { teamid } = useLocalSearchParams();
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = async () => {

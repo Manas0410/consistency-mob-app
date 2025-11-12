@@ -11,8 +11,14 @@ import { useUser } from "@clerk/clerk-expo";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Crown, User, UserPlus } from "lucide-react-native";
-import React, { useEffect, useState } from "react";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  RefreshControl,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TeamManagement() {
@@ -43,25 +49,33 @@ export default function TeamManagement() {
 
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [isAdmin, setIsAdmin] = useState();
+  const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
+  const [refreshing, setRefreshing] = useState(false);
+
   const { teamid } = useLocalSearchParams();
   const user = useUser();
 
   const { currentTeamData } = useCurrentTeamData();
 
-  const fetchMembers = async () => {
+  // fetchMembers memoized
+  const fetchMembers = useCallback(async () => {
     try {
       setLoading(true);
-
       const res = await getTeamMembers(teamid);
-      if (res.success) {
-        setMembers(res.data);
+      if (res?.success) {
+        // expecting res.data to be an array of members (or object with members)
+        // if API returns { members: [...] } adjust accordingly
+        setMembers(res.data?.members ?? res.data ?? []);
+      } else {
+        setMembers([]);
       }
     } catch (err) {
+      console.error("fetchMembers error:", err);
+      setMembers([]);
     } finally {
       setLoading(false);
     }
-  };
+  }, [teamid]);
 
   useEffect(() => {
     if (!user.user?.id) return;
@@ -78,14 +92,37 @@ export default function TeamManagement() {
     setIsAdmin(currentMember?.role === "admin");
   }, [user.user?.id, currentTeamData?.members, members]);
 
+  // initial fetch
   useEffect(() => {
     fetchMembers();
-  }, [teamid]);
+  }, [fetchMembers, teamid]);
+
+  // onRefresh handler for pull-to-refresh
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await fetchMembers();
+
+      // OPTIONAL: if your currentTeamData context exposes a reload function, call it here.
+      // Example: if useCurrentTeamData() returns { reload: () => {...} }
+      // const ctx = useCurrentTeamData(); // already used above, but if reload exists call it
+      // if (typeof (ctx as any).reload === "function") {
+      //   await (ctx as any).reload();
+      // }
+
+      // If you want to re-evaluate admin flag after refresh, you can setMembers and let effect run.
+    } catch (err) {
+      console.error("Refresh failed", err);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [fetchMembers]);
 
   const pallet = usePallet();
   const { open } = useAddTeamMemberBottomSheet();
 
-  if (loading) {
+  if (loading && !refreshing) {
+    // show full-screen loader only on initial load (not during pull-to-refresh)
     return (
       <View
         style={{
@@ -111,31 +148,38 @@ export default function TeamManagement() {
       }}
     >
       <StatusBar style="dark" />
-      <AddTeamMember />
+      <AddTeamMember teamid={teamid} />
       <BackHeader title={currentTeamData?.teamName ?? "Team"} />
-
-      {/* Header (same as before) */}
-      {/* ...team stats cards... (same as before) */}
 
       <ScrollView
         style={{ flex: 1 }}
         showsVerticalScrollIndicator={false}
-        // refreshControl={
-        //   <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        // }
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={pallet.shade1}
+            colors={[pallet.shade1]}
+          />
+        }
       >
-        {/* Team Stats Cards here (same as your code) */}
+        {/* You can re-add your team stats cards here */}
 
-        {/* Join Requests */}
+        {/* Join Requests (visible to admins only) */}
         {isAdmin && (
-          <JoinRequests joinRequests={currentTeamData.joinRequests} />
+          <JoinRequests
+            joinRequests={currentTeamData.joinRequests ?? []}
+            onRefreshRequested={fetchMembers}
+          />
         )}
+
         {/* Team Members List */}
         <TeamMembersList
           users={members}
           getRoleIcon={getRoleIcon}
           getRoleColor={getRoleColor}
           isAdmin={isAdmin}
+          onRefreshRequested={fetchMembers}
         />
 
         {/* Invite New Member Button */}
