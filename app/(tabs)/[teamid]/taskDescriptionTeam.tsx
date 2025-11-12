@@ -1,5 +1,8 @@
 import TaskDetails from "@/components/task-description-page";
+import { useToast } from "@/components/ui/toast";
 import { useGetViewTask } from "@/contexts/selected-view-task-context";
+import { editTeamTask } from "@/pages/Team/API/api-calls";
+import { useLocalSearchParams, useRouter } from "expo-router";
 
 const personalTaskObject = {
   assignees: [
@@ -34,12 +37,31 @@ const personalTaskObject = {
 
 const TaskDescription = () => {
   const { viewTask } = useGetViewTask();
+  const { teamid } = useLocalSearchParams();
+  const router = useRouter();
+
+  const { success, error } = useToast();
+
+  const handleChange = async (updatedData) => {
+    try {
+      // Simulate an API call
+      const res = await editTeamTask(teamid, updatedData?._id, updatedData);
+      if (res.success) {
+        success("task updated successfully");
+      } else {
+        console.error("Error updating status:", res.data.message);
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+    } finally {
+    }
+  };
 
   return (
     <TaskDetails
       task={viewTask}
       onEdit={(updated) => {
-        // PUT /tasks/:id with `updated`
+        handleChange(updated);
       }}
     />
   );
