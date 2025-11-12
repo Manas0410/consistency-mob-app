@@ -76,6 +76,7 @@ export default function TeamTaskForm() {
 
   const [loading, setLoading] = useState(false);
   const { success, error } = useToast();
+  const { triggerRender } = useAddTeamTaskSheet();
 
   const onSubmit = async () => {
     if (task.taskName.trim() === "") {
@@ -98,6 +99,7 @@ export default function TeamTaskForm() {
           frequency: [0],
         });
         setStep(1);
+        triggerRender();
       } else {
         error("Failed to add task.");
       }

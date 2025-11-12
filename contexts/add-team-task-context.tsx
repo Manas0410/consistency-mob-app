@@ -12,6 +12,8 @@ type BottomSheetContextValue = {
   close: () => void;
   toggle: () => void;
   setVisible: (v: boolean) => void;
+  rederer: boolean;
+  triggerRender: () => void;
 };
 
 const AddTeamTaskContext = createContext<BottomSheetContextValue | undefined>(
@@ -24,14 +26,24 @@ export const AddTeamTaskBottomSheetProvider = ({
   children: ReactNode;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [rederer, setRenderer] = useState(false);
 
   const open = useCallback(() => setIsVisible(true), []);
   const close = useCallback(() => setIsVisible(false), []);
   const toggle = useCallback(() => setIsVisible((s) => !s), []);
+  const triggerRender = useCallback(() => setRenderer((s) => !s), []);
 
   return (
     <AddTeamTaskContext.Provider
-      value={{ isVisible, open, close, toggle, setVisible: setIsVisible }}
+      value={{
+        isVisible,
+        open,
+        close,
+        toggle,
+        setVisible: setIsVisible,
+        rederer,
+        triggerRender,
+      }}
     >
       {children}
     </AddTeamTaskContext.Provider>

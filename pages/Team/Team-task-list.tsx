@@ -1,6 +1,8 @@
 import { Icon } from "@/components/ui/icon";
 import { ScrollView } from "@/components/ui/scroll-view";
 import { Spinner } from "@/components/ui/spinner";
+import { useAddTeamTaskSheet } from "@/contexts/add-team-task-context";
+import { useGetViewTask } from "@/contexts/selected-view-task-context";
 import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { addHours, differenceInMinutes, format, parseISO } from "date-fns";
@@ -61,6 +63,7 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
   const { currentTeamData } = useCurrentTeamData();
   const { teamid } = useLocalSearchParams();
   const router = useRouter();
+  const { open, rederer } = useAddTeamTaskSheet();
 
   const loadTasks = async () => {
     try {
@@ -74,7 +77,7 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
 
   useEffect(() => {
     loadTasks();
-  }, [selectedDate]);
+  }, [selectedDate, rederer]);
 
   // Sort tasks by start time for correct timeline order
   const sortedTasks = [...taskListData].sort(
@@ -111,6 +114,7 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
       timeline.push({ ...sortedTasks[i], isGap: false });
     }
   }
+  const { setViewTask } = useGetViewTask();
 
   if (loading) {
     return (
@@ -127,6 +131,63 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
     );
   }
 
+  if (!taskListData.length) {
+    return (
+      <ScrollView
+        contentContainerStyle={[
+          styles.emptyContainer,
+          { backgroundColor: "#F8FAFC" },
+        ]}
+      >
+        <View
+          style={[
+            styles.emptyIllustration,
+            { backgroundColor: pallet.shade4 || "#EFF6FF" },
+          ]}
+        >
+          <Text style={styles.emptyEmoji}>📝</Text>
+        </View>
+        <Text style={styles.emptyTitle}>No tasks for today</Text>
+        <Text style={styles.emptySubtitle}>
+          Looks like you have a free day — add a task to plan your time or
+          import from your team.
+        </Text>
+
+        <View style={styles.emptyActionRow}>
+          <TouchableOpacity
+            style={[styles.primaryAction, { backgroundColor: pallet.shade1 }]}
+            onPress={() => {
+              open();
+            }}
+          >
+            <Text style={styles.primaryActionText}>+ Add Task</Text>
+          </TouchableOpacity>
+
+          {/* <TouchableOpacity
+            style={[styles.ghostAction, { borderColor: pallet.shade2 }]}
+            onPress={() => {
+              // maybe open suggestions / import
+              console.log("Import tapped");
+            }}
+          >
+            <Text style={[styles.ghostActionText, { color: pallet.shade2 }]}>
+              Import Tasks
+            </Text>
+          </TouchableOpacity> */}
+        </View>
+
+        {/* <View style={styles.tipsBox}>
+          <Text style={styles.tipsTitle}>Tips</Text>
+          <Text style={styles.tipsText}>
+            • Tap + Add Task to fill quick task details.
+          </Text>
+          <Text style={styles.tipsText}>
+            • Use the timeline to visualize long breaks and fill them.
+          </Text>
+        </View> */}
+      </ScrollView>
+    );
+  }
   return (
     <ScrollView>
       <View style={styles.container}>
@@ -146,7 +207,11 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
               </View>
               <View key={`gap-${idx}`} style={styles.gapBlock}>
                 <View
-                  style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
+                  style={{
+                    flexDirection: "row",
+                    alignItems: "center",
+                    gap: 6,
+                  }}
                 >
                   <Icon name={ClockPlus} size={18} />
                   <Text style={styles.gapMsg}>
@@ -181,7 +246,10 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
               </View>
               {/* Task details */}
               <TouchableOpacity
-                onPress={() => router.replace(`/${teamid}/taskDescriptionTeam`)}
+                onPress={() => {
+                  setViewTask(item);
+                  router.replace(`/${teamid}/taskDescriptionTeam`);
+                }}
                 style={styles.detailsCol}
               >
                 <Text style={styles.timeText}>
@@ -363,6 +431,52 @@ const styles = StyleSheet.create({
     fontSize: 12,
     letterSpacing: 0.1,
   },
+
+  emptyContainer: {
+    padding: 32,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  emptyIllustration: {
+    width: 120,
+    height: 120,
+    borderRadius: 24,
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 18,
+    elevation: 2,
+  },
+  emptyEmoji: { fontSize: 44 },
+  emptyTitle: {
+    fontSize: 20,
+    fontWeight: "800",
+    color: "#0F172A",
+    marginBottom: 6,
+  },
+  emptySubtitle: { color: "#64748B", textAlign: "center", marginBottom: 18 },
+  emptyActionRow: { flexDirection: "row", gap: 12, marginBottom: 18 },
+  primaryAction: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
+  },
+  primaryActionText: { color: "#fff", fontWeight: "700" },
+  ghostAction: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+  },
+  ghostActionText: { fontWeight: "700" },
+  tipsBox: {
+    marginTop: 8,
+    backgroundColor: "#fff",
+    padding: 12,
+    borderRadius: 12,
+    width: "100%",
+  },
+  tipsTitle: { fontWeight: "700", marginBottom: 6 },
+  tipsText: { color: "#64748B", fontSize: 13 },
 });
 
 export default TeamTaskList;
