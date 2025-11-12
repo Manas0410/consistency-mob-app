@@ -1,9 +1,17 @@
 import { Button } from "@/components/ui/button"; // or RN Pressable
 import { Icon } from "@/components/ui/icon"; // or swap with your icon impl
 import { Spinner } from "@/components/ui/spinner";
+import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { differenceInMinutes, format, isValid, parseISO } from "date-fns";
 import { useRouter } from "expo-router";
-import { Calendar, CheckCircle, Clock, Flag, Users } from "lucide-react-native";
+import {
+  Calendar,
+  CheckCircle,
+  Clock,
+  Edit,
+  Flag,
+  Users,
+} from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import {
   Pressable,
@@ -16,6 +24,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import BackHeader from "./ui/back-header";
+import { DatePicker } from "./ui/date-picker";
+import { Input } from "./ui/input";
+import { Picker } from "./ui/picker";
 
 // ----- Types ---------------------------------------------------------------
 
@@ -149,6 +160,28 @@ const TaskDetails: React.FC<Props> = ({ task, loading, onEdit, onCancel }) => {
       onEdit(updated);
     }
   };
+
+  const { currentTeamData } = useCurrentTeamData();
+  const [assigneeValues, setAssigneeValues] = useState(
+    (task as TeamTask).assignees.map((item) => item?.userId)
+  );
+
+  const assigneesOptions = currentTeamData?.members?.map((item) => {
+    return { ...item, ["label"]: item?.userName, ["value"]: item?.userId };
+  });
+
+  console.log(assigneesOptions, assigneeValues, (task as TeamTask).assignees);
+  // useEffect(() => {
+  //   if (assigneeValues && assigneesOptions) {
+  //     const selected = assigneesOptions
+  //       .filter((option) => assigneeValues.includes(option.value))
+  //       .map((option) => ({
+  //         userId: option.value,
+  //         userName: option.label,
+  //       }));
+  //     setTask((p) => ({ ...p, ["assignees"]: selected }));
+  //   }
+  // }, [assigneeValues]);
 
   if (!task) {
     return (
@@ -293,33 +326,67 @@ const TaskDetails: React.FC<Props> = ({ task, loading, onEdit, onCancel }) => {
                   <Icon name={Clock} size={18} color="#64748B" />
                   <Text style={styles.subtle}>
                     Duration:{" "}
-                    <Text style={{ color: "#0F172A", fontWeight: "700" }}>
+                    {/* <Text style={{ color: "#0F172A", fontWeight: "700" }}>
                       {duration.hours ? `${duration.hours}h ` : ""}
                       {duration.minutes ? `${duration.minutes}m` : "0m"}
-                    </Text>
+                    </Text> */}
                   </Text>
+                </View>
+
+                <View style={styles.row}>
+                  <Input
+                    containerStyle={{ flex: 1, marginRight: 12 }}
+                    labelWidth={80}
+                    label="Hours"
+                    placeholder=""
+                    keyboardType="numeric"
+                    value={String(task.duration.hours)}
+                    onChangeText={
+                      (text) => {}
+                      // handleChange("duration", {
+                      //   ...task.duration,
+                      //   hours: Number(text),
+                      // })
+                    }
+                    // style={styles.input}
+                  />
+                  <Input
+                    containerStyle={{ flex: 1 }}
+                    labelWidth={80}
+                    label="Minutes"
+                    placeholder=""
+                    keyboardType="numeric"
+                    value={String(task.duration.minutes)}
+                    onChangeText={
+                      (text) => {}
+                      // handleChange("duration", {
+                      //   ...task.duration,
+                      //   minutes: Number(text),
+                      // })
+                    }
+                  />
                 </View>
 
                 {/* ISO editors (swap with DateTime pickers if you like) */}
                 <View style={{ marginTop: 12, gap: 8 }}>
-                  <Text style={styles.inputLabel}>Start (ISO)</Text>
-                  <TextInput
+                  <Text style={styles.inputLabel}>Start </Text>
+                  <DatePicker
+                    label="Date & Time"
+                    mode="datetime"
+                    value={new Date(task.taskStartDateTime)}
+                    // onChange={(date) => handleChange("taskStartDateTime", date)}
+                    placeholder="Select date and time"
+                    timeFormat="12"
+                    style={styles.input}
+                  />
+                  {/* <TextInput
                     placeholder="YYYY-MM-DDTHH:mm:ss.sssZ"
                     value={startISO}
                     onChangeText={setStartISO}
                     style={styles.input}
                     autoCapitalize="none"
                     autoCorrect={false}
-                  />
-                  <Text style={styles.inputLabel}>End (ISO)</Text>
-                  <TextInput
-                    placeholder="YYYY-MM-DDTHH:mm:ss.sssZ"
-                    value={endISO}
-                    onChangeText={setEndISO}
-                    style={styles.input}
-                    autoCapitalize="none"
-                    autoCorrect={false}
-                  />
+                  /> */}
                 </View>
               </View>
 
@@ -347,6 +414,20 @@ const TaskDetails: React.FC<Props> = ({ task, loading, onEdit, onCancel }) => {
                   ) : (
                     <Text style={styles.subtle}>No assignees</Text>
                   )}
+
+                  <Picker
+                    label="Edit"
+                    icon={Edit}
+                    options={assigneesOptions}
+                    values={assigneeValues}
+                    // onValuesChange={setAssigneeValues}
+                    placeholder="Select assignees"
+                    searchable
+                    searchPlaceholder="Search members"
+                    modalTitle="Select Assignee"
+                    multiple
+                    style={styles.input}
+                  />
                 </View>
               )}
 
