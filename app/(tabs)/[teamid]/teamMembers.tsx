@@ -1,117 +1,3 @@
-// import { Text } from "@/components/ui/text";
-// import { View } from "@/components/ui/view";
-// import { getTeamMembers } from "@/pages/Team/API/api-calls";
-// import { AddTeamMember } from "@/pages/Team/components/add-member";
-// import { useLocalSearchParams } from "expo-router";
-// import { User } from "lucide-react-native"; // Lucide icon
-// import React, { useEffect, useState } from "react";
-// import { FlatList, StyleSheet, TouchableOpacity } from "react-native";
-// import { SafeAreaView } from "react-native-safe-area-context";
-
-// export default function ManageMembers() {
-//   const [members, setMembers] = useState([]);
-//   const [loading, setLoading] = useState(false);
-//   const { teamid } = useLocalSearchParams();
-
-//   const fetchMembers = async () => {
-//     try {
-//       setLoading(true);
-
-//       const res = await getTeamMembers(teamid);
-//       if (res.success) {
-//         setMembers(res.data);
-//       }
-//     } catch (err) {
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchMembers();
-//   }, [teamid]);
-
-//   const renderItem = ({ item }) => (
-//     <View style={styles.card}>
-//       <User size={24} color="#333" />
-//       <Text style={styles.userName}>{item.userName}</Text>
-//       {/* <Text style={styles.mail}>{item.mail}</Text> */}
-//     </View>
-//   );
-
-//   const renderAddCard = () => (
-//     <TouchableOpacity style={styles.addCard} onPress={() => {}}>
-//       <Text style={styles.addText}>+ Add Member</Text>
-//     </TouchableOpacity>
-//   );
-
-//   //   alert("Add Member")
-//   return (
-//     <View style={styles.container}>
-//       <SafeAreaView>
-//         <Text variant="heading">Team Members </Text>
-//         <FlatList
-//           data={members}
-//           keyExtractor={(item) => item.userId}
-//           showsHorizontalScrollIndicator={false}
-//           ListFooterComponent={renderAddCard}
-//           renderItem={renderItem}
-//           contentContainerStyle={{ paddingHorizontal: 20 }}
-//         />
-//         <AddTeamMember />
-//       </SafeAreaView>
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     paddingVertical: 20,
-//     backgroundColor: "#fff", // Light mode background
-//   },
-//   card: {
-//     backgroundColor: "#fff",
-//     borderRadius: 12,
-//     padding: 15,
-//     marginRight: 15,
-//     alignItems: "center",
-//     width: "auto",
-//     shadowColor: "#000",
-//     shadowOpacity: 0.1,
-//     shadowRadius: 6,
-//     shadowOffset: { width: 0, height: 2 },
-//     elevation: 4,
-//   },
-//   userName: {
-//     marginTop: 8,
-//     fontWeight: "600",
-//     fontSize: 16,
-//     color: "#222",
-//   },
-//   mail: {
-//     fontSize: 12,
-//     color: "#666",
-//     marginTop: 2,
-//     textAlign: "center",
-//   },
-//   addCard: {
-//     // width: 130,
-//     borderRadius: 12,
-//     borderWidth: 2,
-//     borderStyle: "dotted",
-//     borderColor: "#bbb",
-//     justifyContent: "center",
-//     alignItems: "center",
-//     padding: 15,
-//   },
-//   addText: {
-//     color: "#999",
-//     fontSize: 16,
-//     fontWeight: "600",
-//   },
-// });
-
 import BackHeader from "@/components/ui/back-header";
 import { Spinner } from "@/components/ui/spinner";
 import { useAddTeamMemberBottomSheet } from "@/contexts/add-team-member-context";
@@ -121,6 +7,7 @@ import { getTeamMembers } from "@/pages/Team/API/api-calls";
 import { AddTeamMember } from "@/pages/Team/components/add-member";
 import { JoinRequests } from "@/pages/Team/components/join-requests";
 import { TeamMembersList } from "@/pages/Team/components/member-list";
+import { useUser } from "@clerk/clerk-expo";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Crown, User, UserPlus } from "lucide-react-native";
@@ -156,7 +43,9 @@ export default function TeamManagement() {
 
   const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [isAdmin, setIsAdmin] = useState();
   const { teamid } = useLocalSearchParams();
+  const user = useUser();
 
   const { currentTeamData } = useCurrentTeamData();
 
@@ -173,6 +62,21 @@ export default function TeamManagement() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!user.user?.id) return;
+
+    // priority: use currentTeamData.members if available, else fallback to fetched list
+    const allMembers = currentTeamData?.members?.length
+      ? currentTeamData.members
+      : members;
+
+    const currentMember = allMembers?.find(
+      (m: any) => m.userId === user.user?.id
+    );
+
+    setIsAdmin(currentMember?.role === "admin");
+  }, [user.user?.id, currentTeamData?.members, members]);
 
   useEffect(() => {
     fetchMembers();
@@ -223,12 +127,15 @@ export default function TeamManagement() {
         {/* Team Stats Cards here (same as your code) */}
 
         {/* Join Requests */}
-        <JoinRequests joinRequests={currentTeamData.joinRequests} />
+        {isAdmin && (
+          <JoinRequests joinRequests={currentTeamData.joinRequests} />
+        )}
         {/* Team Members List */}
         <TeamMembersList
           users={members}
           getRoleIcon={getRoleIcon}
           getRoleColor={getRoleColor}
+          isAdmin={isAdmin}
         />
 
         {/* Invite New Member Button */}

@@ -10,7 +10,6 @@ import { StatusBar } from "expo-status-bar";
 import {
   Calendar,
   ChevronRight,
-  Plus,
   Search,
   TrendingUp,
   Users,
@@ -18,7 +17,6 @@ import {
 } from "lucide-react-native";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
-  Alert,
   FlatList,
   StyleSheet,
   Text,
@@ -316,15 +314,8 @@ const TeamsListing = ({ rerender }: { rerender?: any }) => {
       <Text style={styles.emptyStateSubtitle}>
         Create your first team to start collaborating with others
       </Text>
-      <TouchableOpacity
-        style={styles.emptyStateButton}
-        onPress={() =>
-          Alert.alert("Create Team", "Team creation feature coming soon!")
-        }
-      >
-        <Plus size={20} color="#fff" />
-        <Text style={styles.emptyStateButtonText}>Create Your First Team</Text>
-      </TouchableOpacity>
+
+      <Text style={styles.emptyStateButtonText}>Create Your First Team</Text>
     </View>
   );
 
@@ -547,7 +538,6 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   emptyStateButtonText: {
-    color: "#fff",
     fontSize: 16,
     fontWeight: "600",
     marginLeft: 8,

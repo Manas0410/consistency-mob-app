@@ -3,7 +3,7 @@ import { Trash2, UserStar } from "lucide-react-native";
 import { Alert, Text, TouchableOpacity, View } from "react-native";
 import { makeAdmin, removeFromTeam } from "../API/api-calls";
 
-export function TeamMembersList({ users, getRoleIcon, getRoleColor }) {
+export function TeamMembersList({ users, getRoleIcon, getRoleColor, isAdmin }) {
   const router = useRouter();
 
   if (!users.length) return null;
@@ -119,8 +119,9 @@ export function TeamMembersList({ users, getRoleIcon, getRoleColor }) {
               </Text>
             </View>
           </View>
-          {user.role !== "admin" && (
-            <View style={{ flexDirection: "row", gap: 6 }}>
+
+          <View style={{ flexDirection: "row", gap: 6 }}>
+            {user.role !== "admin" && isAdmin && (
               <TouchableOpacity
                 onPress={() => {
                   performAction("make-admin", user.userId);
@@ -133,7 +134,9 @@ export function TeamMembersList({ users, getRoleIcon, getRoleColor }) {
               >
                 <UserStar size={18} color="#f59e0b" />
               </TouchableOpacity>
+            )}
 
+            {isAdmin && (
               <TouchableOpacity
                 onPress={() => {
                   performAction("remove-user", user.userId);
@@ -146,8 +149,8 @@ export function TeamMembersList({ users, getRoleIcon, getRoleColor }) {
               >
                 <Trash2 size={18} color="#F87171" />
               </TouchableOpacity>
-            </View>
-          )}
+            )}
+          </View>
         </View>
       ))}
     </View>
