@@ -240,7 +240,7 @@ export const makeAdmin = async (teamId, targetUserId) => {
 };
 export const exitTeam = async (teamId) => {
   try {
-    const response = await apicall.post("/team/remove-member", {
+    const response = await apicall.post("/team/exit-team", {
       teamId,
     });
     if (response.status !== 200)
