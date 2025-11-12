@@ -1,4 +1,5 @@
 import TaskDetails from "@/components/task-description-page";
+import { useGetViewTask } from "@/contexts/selected-view-task-context";
 
 const personalTaskObject = {
   assignees: [
@@ -32,9 +33,11 @@ const personalTaskObject = {
 };
 
 const TaskDescription = () => {
+  const { viewTask } = useGetViewTask();
+
   return (
     <TaskDetails
-      task={personalTaskObject}
+      task={viewTask}
       onEdit={(updated) => {
         // PUT /tasks/:id with `updated`
       }}

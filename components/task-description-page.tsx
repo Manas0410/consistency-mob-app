@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"; // or RN Pressable
 import { Icon } from "@/components/ui/icon"; // or swap with your icon impl
 import { Spinner } from "@/components/ui/spinner";
 import { differenceInMinutes, format, isValid, parseISO } from "date-fns";
+import { useRouter } from "expo-router";
 import { Calendar, CheckCircle, Clock, Flag, Users } from "lucide-react-native";
 import React, { useMemo, useState } from "react";
 import {
@@ -101,6 +102,7 @@ function recomputeDuration(startISO: string, endISO: string) {
 
 const TaskDetails: React.FC<Props> = ({ task, loading, onEdit, onCancel }) => {
   const team = isTeamTask(task);
+  const router = useRouter();
 
   // local editable fields
   const [name, setName] = useState(task.taskName ?? "");
@@ -147,6 +149,51 @@ const TaskDetails: React.FC<Props> = ({ task, loading, onEdit, onCancel }) => {
       onEdit(updated);
     }
   };
+
+  if (!task) {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+        <BackHeader title="Task description" />
+        <View
+          style={{
+            flex: 1,
+            justifyContent: "center",
+            alignItems: "center",
+            padding: 24,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: "700",
+              marginBottom: 8,
+              color: "#0F172A",
+            }}
+          >
+            Task not found
+          </Text>
+          <Text
+            style={{ color: "#64748B", textAlign: "center", marginBottom: 20 }}
+          >
+            The task you are looking for doesn't exist or has been removed.
+          </Text>
+
+          <Button
+            variant="default"
+            onPress={() => {
+              // prefer parent-provided onCancel if available (keeps parent flow)
+              if (typeof onCancel === "function") return onCancel();
+              // fallback to navigation
+              router.back();
+            }}
+            style={{ paddingHorizontal: 24, borderRadius: 12 }}
+          >
+            Go Back
+          </Button>
+        </View>
+      </SafeAreaView>
+    );
+  }
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
@@ -282,7 +329,11 @@ const TaskDetails: React.FC<Props> = ({ task, loading, onEdit, onCancel }) => {
                   <Text style={styles.label}>Assignees</Text>
                   {(task as TeamTask).assignees?.length ? (
                     <View
-                      style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
+                      style={{
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        gap: 8,
+                      }}
                     >
                       {(task as TeamTask).assignees.map((a) => (
                         <View key={a.userId} style={styles.pill}>
