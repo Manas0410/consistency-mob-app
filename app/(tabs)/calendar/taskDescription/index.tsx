@@ -1,4 +1,8 @@
 import TaskDetails from "@/components/task-description-page";
+import { useToast } from "@/components/ui/toast";
+import { useGetViewTask } from "@/contexts/selected-view-task-context";
+import { editTasks } from "@/pages/task-viewer/API/editTasks";
+import { useRouter } from "expo-router";
 
 const personalTaskObject = {
   assignees: [
@@ -31,11 +35,30 @@ const personalTaskObject = {
 };
 
 const TaskDescription = () => {
+  const { viewTask } = useGetViewTask();
+  const router = useRouter();
+
+  const { success, error } = useToast();
+
+  const handleChange = async (updatedData) => {
+    try {
+      const res = await editTasks(updatedData?._id, new Date(), updatedData);
+      if (res.success) {
+        success("task updated successfully");
+        router.replace("/calendar");
+      } else {
+        console.error("Error updating status:", res.data.message);
+      }
+    } catch (error) {
+      console.error("Error updating status:", error);
+    } finally {
+    }
+  };
   return (
     <TaskDetails
-      task={personalTaskObject}
+      task={viewTask}
       onEdit={(updated) => {
-        // PUT /tasks/:id with `updated`
+        handleChange(updated);
       }}
     />
   );

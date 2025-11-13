@@ -3,6 +3,7 @@ import { Icon } from "@/components/ui/icon";
 import { default as PriorityLabel } from "@/components/ui/prioritty-label";
 import { ScrollView } from "@/components/ui/scroll-view";
 import { Spinner } from "@/components/ui/spinner";
+import { useGetViewTask } from "@/contexts/selected-view-task-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { addHours, differenceInMinutes, format, parseISO } from "date-fns";
 import { useRouter } from "expo-router";
@@ -87,6 +88,8 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
     }
   }
 
+  const { setViewTask } = useGetViewTask();
+
   if (loading) {
     return (
       <View
@@ -159,9 +162,10 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
               {/* Task details */}
               <TouchableOpacity
                 style={styles.detailsCol}
-                onPress={() =>
-                  router.replace("/(tabs)/calendar/taskDescription")
-                }
+                onPress={() => {
+                  setViewTask(item);
+                  router.replace("/(tabs)/calendar/taskDescription");
+                }}
               >
                 <Text style={styles.timeText}>
                   {getTimeStr(item.taskStartDateTime)} -{" "}
