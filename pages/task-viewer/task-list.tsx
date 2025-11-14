@@ -88,7 +88,7 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
     }
   }
 
-  const { setViewTask } = useGetViewTask();
+  const { setViewTask, setTaskSelectedForDate } = useGetViewTask();
 
   if (loading) {
     return (
@@ -164,6 +164,7 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
                 style={styles.detailsCol}
                 onPress={() => {
                   setViewTask(item);
+                  setTaskSelectedForDate(selectedDate);
                   router.replace("/(tabs)/calendar/taskDescription");
                 }}
               >

@@ -12,6 +12,7 @@ import {
   Clock,
   Edit,
   Flag,
+  Trash2,
   Users,
 } from "lucide-react-native";
 import React, { useEffect, useMemo, useState } from "react";
@@ -31,6 +32,7 @@ import BackHeader from "@/components/ui/back-header";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Spinner } from "@/components/ui/spinner";
+import { usePallet } from "@/hooks/use-pallet";
 import { DatePicker } from "./ui/date-picker"; // replace with your actual DatePicker
 import { Input } from "./ui/input"; // your Input component
 import { Picker } from "./ui/picker"; // replace with your actual Picker (multi-select)
@@ -129,11 +131,12 @@ const TaskDetails: React.FC<Props> = ({
   onCancel,
 }) => {
   const router = useRouter();
+  const pallet = usePallet();
   // early guard: if no task, show friendly fallback
   if (!task) {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
-        <BackHeader title="Task description" />
+        <BackHeader title="Task description"></BackHeader>
         <View style={styles.notFoundWrap}>
           <Text style={styles.notFoundTitle}>Task not found</Text>
           <Text style={styles.notFoundSubtitle}>
@@ -338,11 +341,19 @@ const TaskDetails: React.FC<Props> = ({
     onEdit(payload);
   };
 
+  const [isAdmin, setisAdmin] = useState(false);
+
   // UI
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <SafeAreaView>
-        <BackHeader title="Task description" />
+        <BackHeader title="Task description">
+          {team ? (
+            <>{isAdmin && <Icon name={Trash2} color={pallet.errorText} />}</>
+          ) : (
+            <Icon name={Trash2} color={pallet.errorText} />
+          )}
+        </BackHeader>
         <View style={{ backgroundColor: "#F7F8FA" }}>
           {loading ? (
             <View style={styles.centerFill}>

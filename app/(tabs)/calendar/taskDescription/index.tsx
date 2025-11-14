@@ -40,9 +40,15 @@ const TaskDescription = () => {
 
   const { success, error } = useToast();
 
+  const { TaskSelectedForDate } = useGetViewTask();
+
   const handleChange = async (updatedData) => {
     try {
-      const res = await editTasks(updatedData?._id, new Date(), updatedData);
+      const res = await editTasks(
+        updatedData?._id,
+        TaskSelectedForDate,
+        updatedData
+      );
       if (res.success) {
         success("task updated successfully");
         router.replace("/calendar");

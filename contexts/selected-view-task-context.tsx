@@ -10,6 +10,8 @@ import React, {
 type BottomSheetContextValue = {
   viewTask: any;
   setViewTask: Dispatch<SetStateAction<any>>;
+  TaskSelectedForDate: Date;
+  setTaskSelectedForDate: Dispatch<SetStateAction<any>>;
 };
 
 const ViewTaskContext = createContext<BottomSheetContextValue | undefined>(
@@ -18,9 +20,17 @@ const ViewTaskContext = createContext<BottomSheetContextValue | undefined>(
 
 export const ViewTaskProvider = ({ children }: { children: ReactNode }) => {
   const [viewTask, setViewTask] = useState<any>(null);
+  const [TaskSelectedForDate, setTaskSelectedForDate] = useState<any>(null);
 
   return (
-    <ViewTaskContext.Provider value={{ viewTask, setViewTask }}>
+    <ViewTaskContext.Provider
+      value={{
+        viewTask,
+        setViewTask,
+        TaskSelectedForDate,
+        setTaskSelectedForDate,
+      }}
+    >
       {children}
     </ViewTaskContext.Provider>
   );

@@ -114,7 +114,7 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
       timeline.push({ ...sortedTasks[i], isGap: false });
     }
   }
-  const { setViewTask } = useGetViewTask();
+  const { setViewTask, setTaskSelectedForDate } = useGetViewTask();
 
   if (loading) {
     return (
@@ -248,6 +248,8 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
               <TouchableOpacity
                 onPress={() => {
                   setViewTask(item);
+                  setTaskSelectedForDate(selectedDate);
+
                   router.replace(`/${teamid}/taskDescriptionTeam`);
                 }}
                 style={styles.detailsCol}
