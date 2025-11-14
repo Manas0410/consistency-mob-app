@@ -9,7 +9,7 @@ import { usePallet } from "@/hooks/use-pallet";
 import { useUser } from "@clerk/clerk-expo";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Calendar, LogOut, Trash2, Users } from "lucide-react-native";
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Alert, StyleSheet, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { DeleteTeam, exitTeam } from "./API/api-calls";
@@ -32,12 +32,6 @@ function TeamDashboard() {
   const members = useMemo(
     () => currentTeamData?.members ?? [],
     [currentTeamData]
-  );
-
-  // Admin check (delete button gate)
-  const isAdmin = useMemo(
-    () => members.some((m: any) => m.userId === userId && m.role === "admin"),
-    [members, userId]
   );
 
   // ---- TEAM totals ---------------------------------------------------------
@@ -79,6 +73,21 @@ function TeamDashboard() {
       setDeleteLoading(false);
     }
   };
+
+  const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
+
+  useEffect(() => {
+    if (!userId) return;
+
+    // priority: use currentTeamData.members if available, else fallback to fetched list
+    const allMembers = currentTeamData?.members?.length
+      ? currentTeamData.members
+      : members;
+
+    const currentMember = allMembers?.find((m: any) => m.userId === userId);
+
+    setIsAdmin(currentMember?.role === "admin");
+  }, [userId, currentTeamData?.members, members]);
 
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>

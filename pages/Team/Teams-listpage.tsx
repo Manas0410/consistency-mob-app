@@ -391,10 +391,6 @@ const TeamsListing: React.FC<{ rerender?: any }> = ({ rerender }) => {
       <Text style={styles.emptyStateSubtitle}>
         Create your first team to start collaborating with others
       </Text>
-
-      <View style={{ marginTop: 12 }}>
-        <Text style={styles.emptyStateButtonText}>Create Your First Team</Text>
-      </View>
     </View>
   );
 
