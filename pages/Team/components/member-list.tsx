@@ -1,3 +1,4 @@
+import { useUser } from "@clerk/clerk-expo";
 import { useLocalSearchParams } from "expo-router";
 import { Trash2, UserStar } from "lucide-react-native";
 import React, { useState } from "react";
@@ -24,6 +25,9 @@ export function TeamMembersList({
   isAdmin,
   onRefreshRequested,
 }: any) {
+  const user = useUser();
+  const loggedinId = user.user?.id;
+
   const { teamid } = useLocalSearchParams();
   const [actionLoading, setActionLoading] = useState<Record<string, boolean>>(
     {}
@@ -171,7 +175,7 @@ export function TeamMembersList({
                 </TouchableOpacity>
               )}
 
-              {isAdmin && (
+              {isAdmin && loggedinId !== user.userId && (
                 <TouchableOpacity
                   onPress={() => confirmAndPerform("remove-user", user.userId)}
                   disabled={loadingForUser}

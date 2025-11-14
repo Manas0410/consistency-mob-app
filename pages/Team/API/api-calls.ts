@@ -197,7 +197,7 @@ export const acceptTeamRequest = async (teamId, requestUserId) => {
 
 export const rejectTeamRequest = async (teamId, requestUserId) => {
   try {
-    const response = await apicall.post("/team/accept-invite", {
+    const response = await apicall.post("/team/reject-invite", {
       teamId,
       requestUserId,
     });
