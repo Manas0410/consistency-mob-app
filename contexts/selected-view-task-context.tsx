@@ -12,8 +12,6 @@ type BottomSheetContextValue = {
   setViewTask: Dispatch<SetStateAction<any>>;
   TaskSelectedForDate: Date;
   setTaskSelectedForDate: Dispatch<SetStateAction<any>>;
-  selectedWorkMode: "pomodoro" | "focus";
-  setSelectedWorkMode: Dispatch<SetStateAction<any>>;
 };
 
 const ViewTaskContext = createContext<BottomSheetContextValue | undefined>(
@@ -23,9 +21,6 @@ const ViewTaskContext = createContext<BottomSheetContextValue | undefined>(
 export const ViewTaskProvider = ({ children }: { children: ReactNode }) => {
   const [viewTask, setViewTask] = useState<any>(null);
   const [TaskSelectedForDate, setTaskSelectedForDate] = useState<any>(null);
-  const [selectedWorkMode, setSelectedWorkMode] = useState<
-    "pomodoro" | "focus"
-  >("pomodoro");
 
   return (
     <ViewTaskContext.Provider
@@ -34,8 +29,6 @@ export const ViewTaskProvider = ({ children }: { children: ReactNode }) => {
         setViewTask,
         TaskSelectedForDate,
         setTaskSelectedForDate,
-        selectedWorkMode,
-        setSelectedWorkMode,
       }}
     >
       {children}

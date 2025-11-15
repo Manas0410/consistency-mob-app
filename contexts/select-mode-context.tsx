@@ -1,6 +1,8 @@
 import React, {
   createContext,
+  Dispatch,
   ReactNode,
+  SetStateAction,
   useCallback,
   useContext,
   useState,
@@ -12,6 +14,8 @@ type BottomSheetContextValue = {
   close: () => void;
   toggle: () => void;
   setVisible: (v: boolean) => void;
+  selectedWorkMode: "pomodoro" | "focus";
+  setSelectedWorkMode: Dispatch<SetStateAction<any>>;
 };
 
 const SelectModeBottomSheetContext = createContext<
@@ -24,6 +28,9 @@ export const SelectModeBottomSheetProvider = ({
   children: ReactNode;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
+  const [selectedWorkMode, setSelectedWorkMode] = useState<
+    "pomodoro" | "focus"
+  >("pomodoro");
 
   const open = useCallback(() => setIsVisible(true), []);
   const close = useCallback(() => setIsVisible(false), []);
@@ -31,14 +38,22 @@ export const SelectModeBottomSheetProvider = ({
 
   return (
     <SelectModeBottomSheetContext.Provider
-      value={{ isVisible, open, close, toggle, setVisible: setIsVisible }}
+      value={{
+        isVisible,
+        open,
+        close,
+        toggle,
+        setVisible: setIsVisible,
+        selectedWorkMode,
+        setSelectedWorkMode,
+      }}
     >
       {children}
     </SelectModeBottomSheetContext.Provider>
   );
 };
 
-export const useSelectModeBottomSheet = () => {
+export const useSelectMode = () => {
   const ctx = useContext(SelectModeBottomSheetContext);
   if (!ctx)
     throw new Error("useBottomSheet must be used within BottomSheetProvider");

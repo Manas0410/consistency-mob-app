@@ -3,19 +3,16 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup } from "@/components/ui/radio";
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
-import { useSelectModeBottomSheet } from "@/contexts/select-mode-context";
-import { useGetViewTask } from "@/contexts/selected-view-task-context";
+import { useSelectMode } from "@/contexts/select-mode-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 
 export const SelectMode = () => {
-  const { isVisible, close } = useSelectModeBottomSheet();
   const [value, setValue] = useState("");
   const pallet = usePallet();
   const router = useRouter();
-
-  const { setSelectedWorkMode } = useGetViewTask();
+  const { setSelectedWorkMode, isVisible, close } = useSelectMode();
 
   return (
     <View>

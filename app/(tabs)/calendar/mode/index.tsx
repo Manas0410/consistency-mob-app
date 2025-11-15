@@ -1,12 +1,12 @@
 import BackHeader from "@/components/ui/back-header";
 import { ScrollView } from "@/components/ui/scroll-view";
 import { View } from "@/components/ui/view";
+import { useSelectMode } from "@/contexts/select-mode-context";
 import ModeStarter from "@/pages/taskMode/components/mode-starter";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const mode = "pomodoro";
-
 const PomoDoro = () => {
+  const { selectedWorkMode: mode } = useSelectMode();
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <SafeAreaView>
