@@ -48,6 +48,7 @@ export default function TeamManagement() {
   };
 
   const [members, setMembers] = useState([]);
+  const [joinRequests, setJoinRequests] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isAdmin, setIsAdmin] = useState<boolean | undefined>(undefined);
   const [refreshing, setRefreshing] = useState(false);
@@ -65,7 +66,8 @@ export default function TeamManagement() {
       if (res?.success) {
         // expecting res.data to be an array of members (or object with members)
         // if API returns { members: [...] } adjust accordingly
-        setMembers(res.data?.members ?? res.data ?? []);
+        setMembers(res.data?.members ?? []);
+        setJoinRequests(res.data?.joinRequests ?? []);
       } else {
         setMembers([]);
       }
@@ -168,7 +170,7 @@ export default function TeamManagement() {
         {/* Join Requests (visible to admins only) */}
         {isAdmin && (
           <JoinRequests
-            joinRequests={currentTeamData.joinRequests ?? []}
+            joinRequests={joinRequests ?? []}
             onRefreshRequested={fetchMembers}
           />
         )}

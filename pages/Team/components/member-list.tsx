@@ -11,13 +11,6 @@ import {
 } from "react-native";
 import { makeAdmin, removeFromTeam } from "../API/api-calls";
 
-/**
- * props:
- *  - users: array
- *  - getRoleIcon, getRoleColor
- *  - isAdmin: boolean
- *  - onRefreshRequested: () => Promise<void> | void  // parent refresh callback
- */
 export function TeamMembersList({
   users,
   getRoleIcon,
@@ -29,7 +22,8 @@ export function TeamMembersList({
   const loggedinId = user.user?.id;
 
   const { teamid } = useLocalSearchParams();
-  const [actionLoading, setActionLoading] = useState<Record<string, boolean>>(
+  // actionLoading maps userId -> "make-admin" | "remove-user"
+  const [actionLoading, setActionLoading] = useState<Record<string, string>>(
     {}
   );
 
@@ -49,7 +43,8 @@ export function TeamMembersList({
             text: "Continue",
             onPress: async () => {
               try {
-                setActionLoading((s) => ({ ...s, [userId]: true }));
+                // mark which action is loading for this user
+                setActionLoading((s) => ({ ...s, [userId]: action }));
 
                 if (action === "make-admin") {
                   await makeAdmin(teamid, userId);
@@ -57,7 +52,6 @@ export function TeamMembersList({
                   await removeFromTeam(teamid, userId);
                 }
 
-                // inform parent to refresh lists
                 if (typeof onRefreshRequested === "function") {
                   await onRefreshRequested();
                 }
@@ -68,7 +62,12 @@ export function TeamMembersList({
                 Alert.alert("Error", "Something went wrong. Please try again.");
                 reject(err);
               } finally {
-                setActionLoading((s) => ({ ...s, [userId]: false }));
+                // remove the loading key for this user
+                setActionLoading((s) => {
+                  const copy = { ...s };
+                  delete copy[userId];
+                  return copy;
+                });
               }
             },
           },
@@ -91,7 +90,11 @@ export function TeamMembersList({
       </View>
 
       {users.map((user: any, index: number) => {
-        const loadingForUser = !!actionLoading[user.userId];
+        const currentAction = actionLoading[user.userId]; // undefined | "make-admin" | "remove-user"
+        const anyLoadingForUser = !!currentAction;
+        const isMakingAdmin = currentAction === "make-admin";
+        const isRemoving = currentAction === "remove-user";
+
         return (
           <View
             key={user.userId}
@@ -159,15 +162,18 @@ export function TeamMembersList({
               {user.role !== "admin" && isAdmin && (
                 <TouchableOpacity
                   onPress={() => confirmAndPerform("make-admin", user.userId)}
-                  disabled={loadingForUser}
+                  // disable while any action for this user is running
+                  disabled={anyLoadingForUser}
                   style={{
-                    backgroundColor: loadingForUser ? "#f3ecdfe0" : "#ecdcbf5b",
+                    backgroundColor: anyLoadingForUser
+                      ? "#f3ecdfe0"
+                      : "#ecdcbf5b",
                     padding: 10,
                     borderRadius: 10,
-                    opacity: loadingForUser ? 0.8 : 1,
+                    opacity: anyLoadingForUser ? 0.8 : 1,
                   }}
                 >
-                  {loadingForUser ? (
+                  {isMakingAdmin ? (
                     <ActivityIndicator size="small" color="#f59e0b" />
                   ) : (
                     <UserStar size={18} color="#f59e0b" />
@@ -178,15 +184,15 @@ export function TeamMembersList({
               {isAdmin && loggedinId !== user.userId && (
                 <TouchableOpacity
                   onPress={() => confirmAndPerform("remove-user", user.userId)}
-                  disabled={loadingForUser}
+                  disabled={anyLoadingForUser}
                   style={{
-                    backgroundColor: loadingForUser ? "#feecec" : "#FEF2F2",
+                    backgroundColor: anyLoadingForUser ? "#feecec" : "#FEF2F2",
                     padding: 10,
                     borderRadius: 10,
-                    opacity: loadingForUser ? 0.8 : 1,
+                    opacity: anyLoadingForUser ? 0.8 : 1,
                   }}
                 >
-                  {loadingForUser ? (
+                  {isRemoving ? (
                     <ActivityIndicator size="small" color="#F87171" />
                   ) : (
                     <Trash2 size={18} color="#F87171" />
