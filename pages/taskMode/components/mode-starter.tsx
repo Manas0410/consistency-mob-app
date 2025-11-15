@@ -425,7 +425,7 @@ const ModeStarter = ({ mode }: ModeStarterProps) => {
         </Button>
       </View>
 
-      <View style={{ marginTop: 14 }}>
+      <View style={{ marginTop: 14, marginBottom: 350 }}>
         <Accordion
           key={mode}
           type="single"

@@ -6,6 +6,7 @@ import { Text } from "@/components/ui/text";
 import { useGetCurrentDayTask } from "@/contexts/todays-tasks-context";
 import { usePallet } from "@/hooks/use-pallet";
 import HabbitCard from "@/pages/Dashboard/components/habbit-card";
+import WorkModesCard from "@/pages/Dashboard/components/mode-card";
 import QuickActions from "@/pages/Dashboard/components/quick-actions";
 import { getTasksByDate } from "@/pages/task-viewer/API/getTasks";
 import { useUser } from "@clerk/clerk-expo";
@@ -260,6 +261,8 @@ export default function CalendarScreen() {
               </View>
             </View>
           </View>
+
+          <WorkModesCard />
 
           <CategoryClock />
 
