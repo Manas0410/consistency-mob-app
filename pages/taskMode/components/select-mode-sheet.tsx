@@ -4,6 +4,7 @@ import { RadioGroup } from "@/components/ui/radio";
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
 import { useSelectModeBottomSheet } from "@/contexts/select-mode-context";
+import { useGetViewTask } from "@/contexts/selected-view-task-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -13,6 +14,8 @@ export const SelectMode = () => {
   const [value, setValue] = useState("");
   const pallet = usePallet();
   const router = useRouter();
+
+  const { setSelectedWorkMode } = useGetViewTask();
 
   return (
     <View>
@@ -55,7 +58,8 @@ export const SelectMode = () => {
             }}
             textStyle={{ color: pallet.ButtonText, fontSize: 16 }}
             onPress={() => {
-              router.replace(`/calendar/mode/pomodoro`);
+              setSelectedWorkMode(value);
+              router.replace(`/calendar/mode`);
               close();
             }}
           >
