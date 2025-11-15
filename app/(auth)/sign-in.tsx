@@ -4,7 +4,7 @@ import { useSignIn } from "@clerk/clerk-expo";
 import { Link, useRouter } from "expo-router";
 import { KeyRound, Mail } from "lucide-react-native";
 import * as React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function Page() {
   const { signIn, setActive, isLoaded } = useSignIn();
@@ -28,12 +28,12 @@ export default function Page() {
       const signInAttempt = await signIn.create({
         identifier: emailAddress,
       });
-      
+
       // Find email code factor
       const firstFactor = signInAttempt.supportedFirstFactors?.find(
         (factor) => factor.strategy === "email_code"
       );
-      
+
       if (firstFactor) {
         await signIn.prepareFirstFactor({
           strategy: "email_code",
@@ -96,9 +96,9 @@ export default function Page() {
     }
   };
 
-
   return (
     <View style={styles.container}>
+      <Image source={require("../../assets/images/logo.svg")} />
       <Text style={styles.title}>Sign In</Text>
 
       <Input
@@ -125,7 +125,7 @@ export default function Page() {
       />
 
       {errorMsg ? <Text style={styles.error}>{errorMsg}</Text> : null}
-      
+
       <Button
         onPress={onSignInPasswordPress}
         disabled={loading || !emailAddress || !password}
