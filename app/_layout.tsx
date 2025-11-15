@@ -3,8 +3,10 @@ import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
 import BottomBar from "@/components/bottom-bar";
+import { useOnboarding } from "@/components/ui/onboarding";
 import { ToastProvider } from "@/components/ui/toast";
 import GlobalContextProvider from "@/contexts/global-context-provider";
+import { OnboardingProvider } from "@/contexts/onboarding-context";
 import { useTheme } from "@/hooks/use-theme";
 import TaskForm from "@/pages/addTask/task-form";
 import TeamTaskForm from "@/pages/Team/team-task-form";
@@ -69,28 +71,30 @@ async function initPushForUser(userId: string) {
 export default function RootLayout() {
   const theme = useTheme();
   const pathname = usePathname();
+  const { hasCompletedOnboarding } = useOnboarding();
 
   return (
     <ClerkProvider tokenCache={tokenCache}>
       <ThemeProvider>
-        <ToastProvider>
-          <GlobalContextProvider>
-            <Stack>
-              <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-              <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-              <Stack.Screen
-                name="modal"
-                options={{ presentation: "modal", title: "Modal" }}
-              />
-            </Stack>
-            {!["/sign-in", "/sign-up", "/ai-chat"].includes(pathname) && (
-              <BottomBar />
-            )}
-            <TaskForm />
-            <TeamTaskForm />
-            <StatusBar style="auto" />
-          </GlobalContextProvider>
-        </ToastProvider>
+        <OnboardingProvider>
+          <ToastProvider>
+            <GlobalContextProvider>
+              <Stack>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="modal"
+                  options={{ presentation: "modal", title: "Modal" }}
+                />
+              </Stack>
+              {!["/sign-in", "/sign-up", "/ai-chat"].includes(pathname) &&
+                hasCompletedOnboarding && <BottomBar />}
+              <TaskForm />
+              <TeamTaskForm />
+              <StatusBar style="auto" />
+            </GlobalContextProvider>
+          </ToastProvider>
+        </OnboardingProvider>
       </ThemeProvider>
     </ClerkProvider>
   );

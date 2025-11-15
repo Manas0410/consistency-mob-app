@@ -1,62 +1,11 @@
-const OnboardingPage = () => {};
-
-export default OnboardingPage;
-import { Button } from "@/components/ui/button";
 import { Image } from "@/components/ui/image";
-import {
-  Onboarding,
-  OnboardingStep,
-  useOnboarding,
-} from "@/components/ui/onboarding";
-import { Text } from "@/components/ui/text";
-import { View } from "@/components/ui/view";
+import { Onboarding, OnboardingStep } from "@/components/ui/onboarding";
+import { useOnboardingContext } from "@/contexts/onboarding-context";
 import React from "react";
 
-function MainApp() {
-  const { resetOnboarding } = useOnboarding();
-
-  return (
-    <View
-      style={{
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 20,
-        backgroundColor: "#f8fafc",
-      }}
-    >
-      <View style={{ alignItems: "center", marginBottom: 40 }}>
-        {/* <Text>{}</Text> */}
-        <Text variant="heading" style={{ marginTop: 20, textAlign: "center" }}>
-          Welcome to the App!
-        </Text>
-        <Text
-          variant="body"
-          style={{
-            marginTop: 12,
-            textAlign: "center",
-            color: "#64748b",
-            lineHeight: 22,
-          }}
-        >
-          You've successfully completed the onboarding process. You can restart
-          it anytime using the button below.
-        </Text>
-      </View>
-
-      <Button
-        onPress={resetOnboarding}
-        variant="outline"
-        style={{ paddingHorizontal: 24 }}
-      >
-        🔄 Restart Onboarding
-      </Button>
-    </View>
-  );
-}
-
-function OnboardingFlow() {
-  const { completeOnboarding, skipOnboarding } = useOnboarding();
+export function OnboardingFlow() {
+  const { completeOnboarding, skipOnboarding, setCurrentOnboardingStep } =
+    useOnboardingContext();
 
   const WelcomeImage = () => (
     <Image
@@ -120,10 +69,4 @@ function OnboardingFlow() {
       skipButtonText="Skip Demo"
     />
   );
-}
-
-export function OnboardingHook() {
-  const { hasCompletedOnboarding } = useOnboarding();
-
-  return hasCompletedOnboarding ? <MainApp /> : <OnboardingFlow />;
 }

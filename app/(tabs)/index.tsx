@@ -3,11 +3,13 @@ import Heatmap from "@/components/charts/heat-map";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AnimatedProgressRing from "@/components/ui/progress-ring";
 import { Text } from "@/components/ui/text";
+import { useOnboardingContext } from "@/contexts/onboarding-context";
 import { useGetCurrentDayTask } from "@/contexts/todays-tasks-context";
 import { usePallet } from "@/hooks/use-pallet";
 import HabbitCard from "@/pages/Dashboard/components/habbit-card";
 import WorkModesCard from "@/pages/Dashboard/components/mode-card";
 import QuickActions from "@/pages/Dashboard/components/quick-actions";
+import { OnboardingFlow } from "@/pages/Onboarding/onboarding-page";
 import { getTasksByDate } from "@/pages/task-viewer/API/getTasks";
 import { useUser } from "@clerk/clerk-expo";
 import { Image } from "expo-image";
@@ -19,7 +21,7 @@ import React, { useEffect, useState } from "react";
 import { ScrollView, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-export default function CalendarScreen() {
+function HomeScreen() {
   const insets = useSafeAreaInsets();
   const [selectedPeriod, setSelectedPeriod] = useState("Week");
 
@@ -366,4 +368,14 @@ export default function CalendarScreen() {
       </ScrollView>
     </View>
   );
+}
+
+export default function OnboardingHook() {
+  const { hasCompletedOnboarding, hydrated } = useOnboardingContext();
+  // optional: show a loading state until hydration finishes
+  if (!hydrated) {
+    return null; // or a spinner while AsyncStorage value loads
+  }
+
+  return hasCompletedOnboarding ? <HomeScreen /> : <OnboardingFlow />;
 }
