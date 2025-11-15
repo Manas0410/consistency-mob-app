@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const baseURL = "https://25hour-server.vercel.app/";
+export const baseURL = "https://25hour-server.vercel.app/";
 // const baseURL = "http://localhost:3000/";
 
 let userId = null;

@@ -1,7 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InputOTP } from "@/components/ui/input-otp";
+import { baseURL } from "@/constants/axios-config";
 import { useSignUp } from "@clerk/clerk-expo";
+import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, useRouter } from "expo-router";
 import { KeyRound, Mail, User } from "lucide-react-native";
@@ -70,6 +72,15 @@ export default function Page() {
       });
 
       if (signUpAttempt.status === "complete") {
+        const createdUser = signUpAttempt.createdUserId;
+        const email = signUpAttempt.emailAddress;
+        const username = signUpAttempt.username;
+        await axios.post(`${baseURL}user/add-user`, {
+          userId: createdUser,
+          userName: username,
+          mail: email,
+        });
+
         await setActive({ session: signUpAttempt.createdSessionId });
         router.replace("/"); // Navigate to home
       } else {
