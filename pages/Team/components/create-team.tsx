@@ -5,6 +5,7 @@ import { Text } from "@/components/ui/text";
 import { useToast } from "@/components/ui/toast";
 import { View } from "@/components/ui/view";
 import { useAddTeamBottomSheet } from "@/contexts/add-team-context";
+import { usePallet } from "@/hooks/use-pallet";
 import { useUser } from "@clerk/clerk-expo";
 import { Plus, Users } from "lucide-react-native";
 import React from "react";
@@ -21,6 +22,7 @@ export function AddTeam({
 
   const { success, error, warning, info } = useToast();
   const { user } = useUser();
+  const pallet = usePallet();
   const { close, isVisible } = useAddTeamBottomSheet();
 
   const handleTeamCreate = async () => {
@@ -71,6 +73,8 @@ export function AddTeam({
             loading={loading}
             icon={Plus}
             variant="success"
+            style={{ marginTop: 16, backgroundColor: pallet.shade1 }}
+            textStyle={{ color: "#fff" }}
             onPress={handleTeamCreate}
           >
             Create

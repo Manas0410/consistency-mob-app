@@ -176,7 +176,12 @@ export default function TaskForm() {
               <Button
                 variant="default"
                 onPress={handleNext}
-                style={{ marginTop: 16 }}
+                style={{
+                  marginTop: 16,
+                  marginBottom: 300,
+                  backgroundColor: pallet.shade1,
+                }}
+                textStyle={{ color: "#fff" }}
               >
                 Next
               </Button>
@@ -251,6 +256,12 @@ export default function TaskForm() {
                 loading={loading}
                 variant="success"
                 onPress={onSubmit}
+                style={{
+                  marginTop: 16,
+                  marginBottom: 300,
+                  backgroundColor: pallet.shade1,
+                }}
+                textStyle={{ color: "#fff" }}
               >
                 Add Task
               </Button>

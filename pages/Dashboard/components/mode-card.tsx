@@ -149,28 +149,30 @@ const WorkModesCard = () => {
               borderColor: pallet.shade3 + "66",
               backgroundColor: "#F9FAFB",
             },
-            pressed && { opacity: 0.9 },
+            pressed && { opacity: 0.9, transform: [{ scale: 0.98 }] },
           ]}
         >
-          <RNView style={styles.modeIconWrap}>
-            <Icon name={Apple} size={18} color={pallet.shade1} />
-          </RNView>
-          <RNView style={{ flex: 1 }}>
+          <RNView style={styles.modeHeader}>
+            <RNView style={styles.modeIconWrap}>
+              <Icon name={Apple} size={18} color={pallet.shade1} />
+            </RNView>
             <Text
               variant="caption"
               style={[styles.modeTitle, { color: pallet.shade1 }]}
             >
               Pomodoro
             </Text>
-            <Text
-              variant="caption"
-              style={[styles.modeDesc, { color: pallet.shade2 }]}
-              numberOfLines={2}
-            >
-              25m focus, 5m break. Classic cycles for sustainable deep work.
-            </Text>
           </RNView>
-          <ArrowRight size={16} color={pallet.shade2} />
+          <Text
+            variant="caption"
+            style={[styles.modeDesc, { color: pallet.shade2 }]}
+            numberOfLines={3}
+          >
+            25m focus, 5m break cycles
+          </Text>
+          <RNView style={styles.modeArrow}>
+            <ArrowRight size={14} color={pallet.shade2} />
+          </RNView>
         </Pressable>
 
         {/* Focus Mode */}
@@ -182,28 +184,30 @@ const WorkModesCard = () => {
               borderColor: pallet.shade3 + "66",
               backgroundColor: "#F9FAFB",
             },
-            pressed && { opacity: 0.9 },
+            pressed && { opacity: 0.9, transform: [{ scale: 0.98 }] },
           ]}
         >
-          <RNView style={styles.modeIconWrap}>
-            <Icon name={Target} size={18} color={pallet.shade1} />
-          </RNView>
-          <RNView style={{ flex: 1 }}>
+          <RNView style={styles.modeHeader}>
+            <RNView style={styles.modeIconWrap}>
+              <Icon name={Target} size={18} color={pallet.shade1} />
+            </RNView>
             <Text
               variant="caption"
               style={[styles.modeTitle, { color: pallet.shade1 }]}
             >
               Focus Mode
             </Text>
-            <Text
-              variant="caption"
-              style={[styles.modeDesc, { color: pallet.shade2 }]}
-              numberOfLines={2}
-            >
-              Continuous, distraction-free sessions. You pick the duration.
-            </Text>
           </RNView>
-          <ArrowRight size={16} color={pallet.shade2} />
+          <Text
+            variant="caption"
+            style={[styles.modeDesc, { color: pallet.shade2 }]}
+            numberOfLines={3}
+          >
+            Distraction-free sessions
+          </Text>
+          <RNView style={styles.modeArrow}>
+            <ArrowRight size={14} color={pallet.shade2} />
+          </RNView>
         </Pressable>
       </RNView>
     </View>
@@ -257,26 +261,41 @@ const styles = StyleSheet.create({
     flex: 1,
     borderRadius: 14,
     borderWidth: 1,
-    padding: 10,
+    padding: 12,
+    flexDirection: "column",
+    alignItems: "stretch",
+    gap: 8,
+    minHeight: 100,
+    position: "relative",
+  },
+  modeHeader: {
     flexDirection: "row",
-    alignItems: "flex-start",
+    alignItems: "center",
     gap: 8,
   },
   modeIconWrap: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#FFFFFF",
-    marginTop: 2,
   },
   modeTitle: {
     fontWeight: "600",
-    marginBottom: 2,
+    fontSize: 13,
+    flex: 1,
   },
   modeDesc: {
     fontSize: 11,
+    lineHeight: 15,
+    marginTop: 2,
+  },
+  modeArrow: {
+    position: "absolute",
+    bottom: 10,
+    right: 10,
+    opacity: 0.5,
   },
 });
 

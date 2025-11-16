@@ -255,6 +255,8 @@ export default function TeamTaskForm() {
               loading={loading}
               variant="success"
               onPress={onSubmit}
+              style={{ marginTop: 16, backgroundColor: pallet.shade1 }}
+              textStyle={{ color: "#fff" }}
             >
               Add Task
             </Button>

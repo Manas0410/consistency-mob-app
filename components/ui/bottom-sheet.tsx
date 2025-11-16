@@ -29,7 +29,7 @@ const MAX_TRANSLATE_Y = -SCREEN_HEIGHT + 50;
 
 type BottomSheetContentProps = {
   children: React.ReactNode;
-  title?: string;
+  title?: React.ReactNode;
   style?: ViewStyle;
   rBottomSheetStyle: any;
   cardColor: string;
@@ -93,9 +93,13 @@ const BottomSheetContent = ({
             paddingBottom: 8,
           }}
         >
-          <Text variant="title" style={{ textAlign: "center" }}>
-            {title}
-          </Text>
+          {typeof title === "string" ? (
+            <Text variant="title" style={{ textAlign: "center" }}>
+              {title}
+            </Text>
+          ) : (
+            title
+          )}
         </View>
       )}
 
@@ -104,6 +108,7 @@ const BottomSheetContent = ({
         style={{ flex: 1 }}
         contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
         keyboardShouldPersistTaps="handled"
+        nestedScrollEnabled
         showsVerticalScrollIndicator={false}
       >
         {children}
@@ -118,7 +123,7 @@ type BottomSheetProps = {
   children: React.ReactNode;
   snapPoints?: number[];
   enableBackdropDismiss?: boolean;
-  title?: string;
+  title?: React.ReactNode;
   style?: ViewStyle;
   disablePanGesture?: boolean;
 };

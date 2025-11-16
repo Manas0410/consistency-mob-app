@@ -5,6 +5,7 @@ import { Text } from "@/components/ui/text";
 import { useToast } from "@/components/ui/toast";
 import { View } from "@/components/ui/view";
 import { useJoinTeamBottomSheet } from "@/contexts/join-team-contex";
+import { usePallet } from "@/hooks/use-pallet";
 import { useUser } from "@clerk/clerk-expo";
 import { useLocalSearchParams } from "expo-router";
 import { Plus } from "lucide-react-native";
@@ -24,6 +25,7 @@ export function JoinTeam({
   const { user } = useUser();
   const { close, isVisible } = useJoinTeamBottomSheet();
   const { teamid } = useLocalSearchParams();
+  const pallet = usePallet();
 
   const handleTeamCreate = async () => {
     try {
@@ -77,6 +79,8 @@ export function JoinTeam({
             loading={loading}
             icon={Plus}
             variant="success"
+            style={{ marginTop: 16, backgroundColor: pallet.shade1 }}
+            textStyle={{ color: "#fff" }}
             onPress={handleTeamCreate}
           >
             Join Team

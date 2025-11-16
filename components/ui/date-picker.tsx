@@ -1125,7 +1125,12 @@ export function DatePicker(props: DatePickerProps) {
         }}
         title={getBottomSheetTitle()}
         snapPoints={[0.7]}
-        disablePanGesture={showMonthPicker || showYearPicker}
+        disablePanGesture={
+          showMonthPicker ||
+          showYearPicker ||
+          mode === "time" ||
+          (mode === "datetime" && viewMode === "time")
+        }
       >
         <View style={{ flex: 1 }}>
           {getBottomSheetContent()}
