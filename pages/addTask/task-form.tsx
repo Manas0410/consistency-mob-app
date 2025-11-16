@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
+import { DurationPicker } from "@/components/ui/duration-picker";
 import { Input } from "@/components/ui/input";
 import { Picker } from "@/components/ui/picker";
 import PriorityBadge from "@/components/ui/priority-badge";
@@ -18,7 +19,7 @@ import {
   ScrollText,
   SquarePen,
 } from "lucide-react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { addTask } from "./API/addTask";
 import AddPriority from "./components/add-priority";
@@ -36,6 +37,9 @@ const options = [
 ];
 
 export default function TaskForm() {
+  const { close, isVisible, initialData } = useAddTaskSheet();
+  const pallet = usePallet();
+
   const [task, setTask] = useState<TaskData>({
     taskName: "",
     taskDescription: "",
@@ -45,6 +49,26 @@ export default function TaskForm() {
     frequency: [0],
     category: "",
   });
+
+  // Update task when initialData changes
+  useEffect(() => {
+    if (initialData && isVisible) {
+      setTask((prev) => ({
+        ...prev,
+        ...(initialData.taskName && { taskName: initialData.taskName }),
+        ...(initialData.taskDescription && {
+          taskDescription: initialData.taskDescription,
+        }),
+        ...(initialData.duration && { duration: initialData.duration }),
+        ...(initialData.TaskStartDateTime && {
+          TaskStartDateTime: initialData.TaskStartDateTime,
+        }),
+      }));
+    }
+  }, [initialData, isVisible]);
+
+  const [loading, setLoading] = useState(false);
+  const { success, error } = useToast();
 
   const [showError, setShowError] = useState(false);
   const [step, setStep] = useState(1);
@@ -56,9 +80,6 @@ export default function TaskForm() {
   const handleChange = (field: keyof TaskData, value: any) => {
     setTask((prev) => ({ ...prev, [field]: value }));
   };
-
-  const [loading, setLoading] = useState(false);
-  const { success, error } = useToast();
 
   const onSubmit = async () => {
     if (task.taskName.trim() === "") {
@@ -105,9 +126,6 @@ export default function TaskForm() {
     setStep(1);
   };
 
-  const { close, isVisible } = useAddTaskSheet();
-  const pallet = usePallet();
-
   return (
     <BottomSheet
       style={{ backgroundColor: "#fff" }}
@@ -123,7 +141,7 @@ export default function TaskForm() {
         <AddPriority
           category={task.category}
           onClose={() => setOpenCategory(false)}
-          onSelect={(data) => {
+          onSelect={(data: string) => {
             handleChange("category", data);
           }}
         />
@@ -203,37 +221,19 @@ export default function TaskForm() {
                 </TouchableOpacity>
               </View>
 
-              <Text variant="caption">Duration</Text>
-              <View style={styles.row}>
-                <Input
-                  containerStyle={{ flex: 1, marginRight: 12 }}
-                  labelWidth={80}
-                  label="Hours"
-                  keyboardType="numeric"
-                  placeholder=""
-                  value={String(task.duration.hours)}
-                  onChangeText={(text) =>
-                    handleChange("duration", {
-                      ...task.duration,
-                      hours: Number(text) > 24 ? 24 : Number(text),
-                    })
-                  }
-                />
-                <Input
-                  containerStyle={{ flex: 1 }}
-                  labelWidth={80}
-                  label="Minutes"
-                  placeholder=""
-                  keyboardType="numeric"
-                  value={String(task.duration.minutes)}
-                  onChangeText={(text) =>
-                    handleChange("duration", {
-                      ...task.duration,
-                      minutes: Number(text) > 60 ? 60 : Number(text),
-                    })
-                  }
-                />
-              </View>
+              <Text variant="caption" style={{ marginBottom: 8 }}>
+                Duration
+              </Text>
+              <DurationPicker
+                hours={task.duration.hours}
+                minutes={task.duration.minutes}
+                onHoursChange={(hours) =>
+                  handleChange("duration", { ...task.duration, hours })
+                }
+                onMinutesChange={(minutes) =>
+                  handleChange("duration", { ...task.duration, minutes })
+                }
+              />
               <View style={styles.row}>
                 <DatePicker
                   label="Date & Time"
@@ -247,9 +247,17 @@ export default function TaskForm() {
               <Picker
                 label="Select Frequency"
                 multiple
-                values={task.frequency}
-                options={options}
-                onValuesChange={(val) => handleChange("frequency", val)}
+                values={task.frequency.map(String)}
+                options={options.map((opt) => ({
+                  ...opt,
+                  value: String(opt.value),
+                }))}
+                onValuesChange={(val) =>
+                  handleChange(
+                    "frequency",
+                    val.map((v) => parseInt(v))
+                  )
+                }
               />
               <Button
                 icon={Plus}

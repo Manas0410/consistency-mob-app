@@ -3,6 +3,7 @@ import { Icon } from "@/components/ui/icon";
 import { default as PriorityLabel } from "@/components/ui/prioritty-label";
 import { ScrollView } from "@/components/ui/scroll-view";
 import { Spinner } from "@/components/ui/spinner";
+import { useAddTaskSheet } from "@/contexts/add-task-context";
 import { useGetViewTask } from "@/contexts/selected-view-task-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { addHours, differenceInMinutes, format, parseISO } from "date-fns";
@@ -37,6 +38,7 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
   const [taskListData, setTaskListData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { open: openAddTask } = useAddTaskSheet();
 
   const loadTasks = async () => {
     try {
@@ -134,6 +136,23 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
                 </View>
                 <TouchableOpacity
                   style={[styles.addBtn, { backgroundColor: pallet.shade3 }]}
+                  onPress={() => {
+                    // Create a new Date object combining selectedDate and gap start time
+                    const startDateTime = new Date(selectedDate);
+                    const gapStart = new Date(item.gapStart);
+                    startDateTime.setHours(gapStart.getHours());
+                    startDateTime.setMinutes(gapStart.getMinutes());
+                    startDateTime.setSeconds(0);
+                    startDateTime.setMilliseconds(0);
+
+                    openAddTask({
+                      duration: {
+                        hours: item.gapHours || 0,
+                        minutes: item.gapMins || 0,
+                      },
+                      TaskStartDateTime: startDateTime,
+                    });
+                  }}
                 >
                   <Text style={[styles.addBtnText, { color: "#fff" }]}>
                     + Add Task

@@ -6,6 +6,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { DurationPicker } from "@/components/ui/duration-picker";
 import { Icon } from "@/components/ui/icon";
 import { RadioGroup } from "@/components/ui/radio";
 import { Text } from "@/components/ui/text";
@@ -345,45 +346,13 @@ const ModeStarter = ({ mode }: ModeStarterProps) => {
           </RNView>
 
           <RNView style={styles.customRow}>
-            <RNView style={styles.counter}>
-              <Text variant="caption" style={{ color: pallet.shade2 }}>
-                Hours
-              </Text>
-              <RNView style={styles.counterInner}>
-                <TouchableOpacity style={styles.counterBtn} onPress={decHours}>
-                  <Text style={{ fontSize: 18 }}>−</Text>
-                </TouchableOpacity>
-                <Text style={[styles.counterValue, { color: pallet.shade1 }]}>
-                  {hours}
-                </Text>
-                <TouchableOpacity style={styles.counterBtn} onPress={incHours}>
-                  <Text style={{ fontSize: 18 }}>+</Text>
-                </TouchableOpacity>
-              </RNView>
-            </RNView>
-
-            <RNView style={styles.counter}>
-              <Text variant="caption" style={{ color: pallet.shade2 }}>
-                Minutes
-              </Text>
-              <RNView style={styles.counterInner}>
-                <TouchableOpacity
-                  style={styles.counterBtn}
-                  onPress={decMinutes}
-                >
-                  <Text style={{ fontSize: 18 }}>−</Text>
-                </TouchableOpacity>
-                <Text style={[styles.counterValue, { color: pallet.shade1 }]}>
-                  {minutes.toString().padStart(2, "0")}
-                </Text>
-                <TouchableOpacity
-                  style={styles.counterBtn}
-                  onPress={incMinutes}
-                >
-                  <Text style={{ fontSize: 18 }}>+</Text>
-                </TouchableOpacity>
-              </RNView>
-            </RNView>
+            <DurationPicker
+              hours={hours}
+              minutes={minutes}
+              onHoursChange={setHours}
+              onMinutesChange={setMinutes}
+              maxHours={12}
+            />
           </RNView>
 
           <View style={styles.summary}>
@@ -504,36 +473,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   customRow: {
-    marginTop: 14,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    gap: 12,
-    alignItems: "center",
-  },
-  counter: {
-    flex: 1,
-    alignItems: "center",
-  },
-  counterInner: {
-    marginTop: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#fafafa",
-    borderRadius: 12,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-    borderWidth: 1,
-    borderColor: "#eee",
-  },
-  counterBtn: {
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-  },
-  counterValue: {
-    minWidth: 36,
-    textAlign: "center",
-    fontSize: 16,
-    fontWeight: "700",
+    marginTop: 16,
   },
   summary: {
     marginTop: 14,
