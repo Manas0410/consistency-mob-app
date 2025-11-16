@@ -1,9 +1,7 @@
-import { Stack, usePathname } from "expo-router";
+import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
-import BottomBar from "@/components/bottom-bar";
-import { useOnboarding } from "@/components/ui/onboarding";
 import { ToastProvider } from "@/components/ui/toast";
 import GlobalContextProvider from "@/contexts/global-context-provider";
 import { OnboardingProvider } from "@/contexts/onboarding-context";
@@ -70,8 +68,6 @@ async function initPushForUser(userId: string) {
 
 export default function RootLayout() {
   const theme = useTheme();
-  const pathname = usePathname();
-  const { hasCompletedOnboarding } = useOnboarding();
 
   return (
     <ClerkProvider tokenCache={tokenCache}>
@@ -87,8 +83,7 @@ export default function RootLayout() {
                   options={{ presentation: "modal", title: "Modal" }}
                 />
               </Stack>
-              {!["/sign-in", "/sign-up", "/ai-chat"].includes(pathname) &&
-                hasCompletedOnboarding && <BottomBar />}
+
               <TaskForm />
               <TeamTaskForm />
               <StatusBar style="auto" />
