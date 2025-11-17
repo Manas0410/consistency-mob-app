@@ -1,11 +1,20 @@
 import { Colors } from "@/constants/theme";
+import { useOnboardingContext } from "@/contexts/onboarding-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { useTheme } from "@/hooks/use-theme";
 import { useClerk, useUser } from "@clerk/clerk-expo";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Alert, ScrollView, StyleSheet, Switch, Text, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const paletteColors = ["#2196F3", "#4CAF50", "#E5734A", "#7B3FF2"];
@@ -17,30 +26,59 @@ export default function SettingsScreen() {
   const { user } = useUser();
   const { signOut } = useClerk();
   const router = useRouter();
+  const { resetOnboarding } = useOnboardingContext();
 
   const [selectedTheme, setSelectedTheme] = useState("light");
   const [selectedPalette, setSelectedPalette] = useState(0);
   const [remindersEnabled, setRemindersEnabled] = useState(true);
 
   const handleSignOut = async () => {
+    Alert.alert("Sign Out", "Are you sure you want to sign out?", [
+      {
+        text: "Cancel",
+        style: "cancel",
+      },
+      {
+        text: "Sign Out",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await signOut();
+            router.replace("/sign-in");
+          } catch (err) {
+            console.error("Sign out error:", err);
+            Alert.alert("Error", "Failed to sign out. Please try again.");
+          }
+        },
+      },
+    ]);
+  };
+
+  const handleResetOnboarding = () => {
     Alert.alert(
-      "Sign Out",
-      "Are you sure you want to sign out?",
+      "Reset Onboarding",
+      "This will show the onboarding screens again the next time you open the app. Are you sure?",
       [
         {
           text: "Cancel",
           style: "cancel",
         },
         {
-          text: "Sign Out",
+          text: "Reset",
           style: "destructive",
           onPress: async () => {
             try {
-              await signOut();
-              router.replace("/sign-in");
+              await resetOnboarding();
+              Alert.alert(
+                "Success",
+                "Onboarding has been reset. Restart the app to see it again."
+              );
             } catch (err) {
-              console.error("Sign out error:", err);
-              Alert.alert("Error", "Failed to sign out. Please try again.");
+              console.error("Reset onboarding error:", err);
+              Alert.alert(
+                "Error",
+                "Failed to reset onboarding. Please try again."
+              );
             }
           },
         },
@@ -51,139 +89,160 @@ export default function SettingsScreen() {
   return (
     <View style={{ flex: 1, backgroundColor: colors.background }}>
       <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView 
+        <ScrollView
           style={{ flex: 1 }}
           contentContainerStyle={styles.scrollContainer}
           showsVerticalScrollIndicator={false}
         >
           <View style={[styles.container]}>
-          <View style={styles.headerRow}>
-            <TouchableOpacity>
-              <Ionicons name="arrow-back" size={28} color={colors.text} />
-            </TouchableOpacity>
-            <Text style={[styles.headerTitle, { color: colors.text }]}>
-              Settings
-            </Text>
-          </View>
-          <View style={styles.profileRow}>
-            {/* <Image
+            <View style={styles.headerRow}>
+              <TouchableOpacity>
+                <Ionicons name="arrow-back" size={28} color={colors.text} />
+              </TouchableOpacity>
+              <Text style={[styles.headerTitle, { color: colors.text }]}>
+                Settings
+              </Text>
+            </View>
+            <View style={styles.profileRow}>
+              {/* <Image
           source={require("@/assets/images/profile.png")}
           style={styles.profileImg}
         /> */}
-            <Ionicons name="person-circle" size={64} color={colors.text} />
-            <View style={styles.profileInfo}>
-              <Text style={[styles.profileName, { color: colors.text }]}>
-                {user?.fullName || user?.firstName || "User"}
-              </Text>
-              <Text style={[styles.profileEmail, { color: colors.icon }]}>
-                {user?.primaryEmailAddress?.emailAddress || "No email"}
-              </Text>
-            </View>
-          </View>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Subscription
-          </Text>
-          <View
-            style={[styles.subscriptionBox, { backgroundColor: pallet.shade4 }]}
-          >
-            <View>
-              <Text style={[styles.subscriptionName, { color: colors.text }]}>
-                Sylvie Basic
-              </Text>
-              <Text style={[styles.subscriptionType, { color: colors.icon }]}>
-                Free
-              </Text>
-            </View>
-            <TouchableOpacity
-              style={[styles.upgradeBtn, { backgroundColor: pallet.shade2 }]}
-            >
-              <Text style={styles.upgradeText}>Upgrade</Text>
-            </TouchableOpacity>
-          </View>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Theme
-          </Text>
-          <View style={styles.themeRow}>
-            {[
-              { label: "Light", icon: "sunny", value: "light" },
-              { label: "Dark", icon: "moon", value: "dark" },
-              {
-                label: "System",
-                icon: "contrast",
-                value: "systemPreference",
-              },
-            ].map((item, idx) => (
-              <TouchableOpacity
-                key={item.value}
-                style={[
-                  styles.themeBtn,
-                  selectedTheme === item.value && {
-                    borderColor: pallet.shade1,
-                  },
-                ]}
-                onPress={() => setSelectedTheme(item.value)}
-              >
-                {/* @ts-ignore */}
-                <Ionicons name={item.icon} size={24} color={colors.text} />
-                <Text style={[styles.themeLabel, { color: colors.text }]}>
-                  {item.label}
+              <Ionicons name="person-circle" size={64} color={colors.text} />
+              <View style={styles.profileInfo}>
+                <Text style={[styles.profileName, { color: colors.text }]}>
+                  {user?.fullName || user?.firstName || "User"}
                 </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Color Palette
-          </Text>
-          <View style={styles.paletteRow}>
-            {paletteColors.map((color, idx) => (
-              <TouchableOpacity
-                key={color}
-                style={[
-                  styles.paletteCircle,
-                  {
-                    borderColor:
-                      idx === selectedPalette ? pallet.shade1 : "#fff",
-                    backgroundColor: color,
-                  },
-                ]}
-                onPress={() => setSelectedPalette(idx)}
-              />
-            ))}
-          </View>
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Reminders
-          </Text>
-          <View style={styles.reminderRow}>
-            <Text style={[styles.reminderLabel, { color: colors.text }]}>
-              Enable Reminders
-            </Text>
-            <Switch
-              value={remindersEnabled}
-              onValueChange={setRemindersEnabled}
-              trackColor={{ false: "#ccc", true: pallet.shade2 }}
-              thumbColor={"#f4f3f4"}
-            />
-          </View>
-
-          {/* Sign Out Section */}
-          <Text style={[styles.sectionTitle, { color: colors.text }]}>
-            Account
-          </Text>
-          <TouchableOpacity
-            style={[styles.signOutButton, { borderColor: colors.text + "20" }]}
-            onPress={handleSignOut}
-          >
-            <View style={styles.signOutContent}>
-              <Ionicons name="log-out-outline" size={24} color="#ff4444" />
-              <Text style={[styles.signOutText]}>
-                Sign Out
-              </Text>
+                <Text style={[styles.profileEmail, { color: colors.icon }]}>
+                  {user?.primaryEmailAddress?.emailAddress || "No email"}
+                </Text>
+              </View>
             </View>
-            <Ionicons name="chevron-forward" size={20} color={colors.icon} />
-          </TouchableOpacity>
-          
-          {/* Bottom spacing for tab bar */}
-          <View style={styles.bottomSpacer} />
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Subscription
+            </Text>
+            <View
+              style={[
+                styles.subscriptionBox,
+                { backgroundColor: pallet.shade4 },
+              ]}
+            >
+              <View>
+                <Text style={[styles.subscriptionName, { color: colors.text }]}>
+                  Sylvie Basic
+                </Text>
+                <Text style={[styles.subscriptionType, { color: colors.icon }]}>
+                  Free
+                </Text>
+              </View>
+              <TouchableOpacity
+                style={[styles.upgradeBtn, { backgroundColor: pallet.shade2 }]}
+              >
+                <Text style={styles.upgradeText}>Upgrade</Text>
+              </TouchableOpacity>
+            </View>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Theme
+            </Text>
+            <View style={styles.themeRow}>
+              {[
+                { label: "Light", icon: "sunny", value: "light" },
+                { label: "Dark", icon: "moon", value: "dark" },
+                {
+                  label: "System",
+                  icon: "contrast",
+                  value: "systemPreference",
+                },
+              ].map((item, idx) => (
+                <TouchableOpacity
+                  key={item.value}
+                  style={[
+                    styles.themeBtn,
+                    selectedTheme === item.value && {
+                      borderColor: pallet.shade1,
+                    },
+                  ]}
+                  onPress={() => setSelectedTheme(item.value)}
+                >
+                  {/* @ts-ignore */}
+                  <Ionicons name={item.icon} size={24} color={colors.text} />
+                  <Text style={[styles.themeLabel, { color: colors.text }]}>
+                    {item.label}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Color Palette
+            </Text>
+            <View style={styles.paletteRow}>
+              {paletteColors.map((color, idx) => (
+                <TouchableOpacity
+                  key={color}
+                  style={[
+                    styles.paletteCircle,
+                    {
+                      borderColor:
+                        idx === selectedPalette ? pallet.shade1 : "#fff",
+                      backgroundColor: color,
+                    },
+                  ]}
+                  onPress={() => setSelectedPalette(idx)}
+                />
+              ))}
+            </View>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Reminders
+            </Text>
+            <View style={styles.reminderRow}>
+              <Text style={[styles.reminderLabel, { color: colors.text }]}>
+                Enable Reminders
+              </Text>
+              <Switch
+                value={remindersEnabled}
+                onValueChange={setRemindersEnabled}
+                trackColor={{ false: "#ccc", true: pallet.shade2 }}
+                thumbColor={"#f4f3f4"}
+              />
+            </View>
+
+            {/* Account Section */}
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Account
+            </Text>
+
+            {/* Reset Onboarding Button */}
+            <TouchableOpacity
+              style={[styles.actionButton, { borderColor: colors.text + "20" }]}
+              onPress={handleResetOnboarding}
+            >
+              <View style={styles.actionContent}>
+                <Ionicons
+                  name="refresh-outline"
+                  size={24}
+                  color={pallet.shade1}
+                />
+                <Text style={[styles.actionText, { color: colors.text }]}>
+                  Reset Onboarding
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={colors.icon} />
+            </TouchableOpacity>
+
+            {/* Sign Out Button */}
+            <TouchableOpacity
+              style={[styles.actionButton, { borderColor: colors.text + "20" }]}
+              onPress={handleSignOut}
+            >
+              <View style={styles.actionContent}>
+                <Ionicons name="log-out-outline" size={24} color="#ff4444" />
+                <Text style={[styles.signOutText]}>Sign Out</Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={colors.icon} />
+            </TouchableOpacity>
+
+            {/* Bottom spacing for tab bar */}
+            <View style={styles.bottomSpacer} />
           </View>
         </ScrollView>
       </SafeAreaView>
@@ -307,7 +366,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "500",
   },
-  signOutButton: {
+  actionButton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
@@ -318,9 +377,14 @@ const styles = StyleSheet.create({
     marginTop: 8,
     backgroundColor: "transparent",
   },
-  signOutContent: {
+  actionContent: {
     flexDirection: "row",
     alignItems: "center",
+  },
+  actionText: {
+    fontSize: 16,
+    fontWeight: "500",
+    marginLeft: 12,
   },
   signOutText: {
     fontSize: 16,

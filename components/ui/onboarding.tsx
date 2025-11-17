@@ -1,16 +1,18 @@
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
 import { useColor } from "@/hooks/useColor";
+import { Ionicons } from "@expo/vector-icons";
 import React, { useRef, useState } from "react";
 import {
   Dimensions,
   ScrollView,
   StyleSheet,
+  TouchableOpacity,
   View,
   ViewStyle,
 } from "react-native";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
-import Animated, {
+import { Gesture } from "react-native-gesture-handler";
+import {
   runOnJS,
   useAnimatedStyle,
   useSharedValue,
@@ -21,7 +23,7 @@ const { width: screenWidth } = Dimensions.get("window");
 
 export interface OnboardingStep {
   id: string;
-  title: string;
+  title: string | React.ReactNode;
   description: string;
   image?: React.ReactNode;
   icon?: React.ReactNode;
@@ -162,12 +164,11 @@ export function Onboarding({
     const isActive = index === currentStep;
 
     return (
-      <Animated.View
+      <View
         key={step.id}
         style={[
           styles.stepContainer,
           { backgroundColor: step.backgroundColor || backgroundColor },
-          { opacity: isActive ? 1 : 0.8 },
         ]}
       >
         <View style={styles.contentContainer}>
@@ -179,44 +180,61 @@ export function Onboarding({
             <View style={styles.imageContainer}>{step.icon}</View>
           )}
 
-          {step.component && <View>{step.component}</View>}
-
           <View style={styles.textContainer}>
-            <Text variant="title" style={styles.title}>
-              {step.title}
-            </Text>
+            {typeof step.title === "string" ? (
+              <Text variant="title" style={styles.title}>
+                {step.title}
+              </Text>
+            ) : (
+              <View style={styles.titleWrapper}>
+                <Text variant="title" style={styles.title}>
+                  {step.title}
+                </Text>
+              </View>
+            )}
             <Text variant="body" style={styles.description}>
               {step.description}
             </Text>
           </View>
 
+          {step.component && (
+            <View style={styles.componentContainer}>{step.component}</View>
+          )}
+
           {children && <View style={styles.customContent}>{children}</View>}
         </View>
-      </Animated.View>
+      </View>
     );
   };
 
   return (
     <View style={[styles.container, { backgroundColor }, style]}>
-      <GestureDetector gesture={panGesture}>
-        <Animated.View style={[styles.container, animatedStyle]}>
-          <ScrollView
-            ref={scrollViewRef}
-            horizontal
-            pagingEnabled
-            showsHorizontalScrollIndicator={false}
-            scrollEnabled={swipeEnabled}
-            onMomentumScrollEnd={(event) => {
-              const newStep = Math.round(
-                event.nativeEvent.contentOffset.x / screenWidth
-              );
-              setCurrentStep(newStep);
-            }}
-          >
-            {steps.map((step, index) => renderStep(step, index))}
-          </ScrollView>
-        </Animated.View>
-      </GestureDetector>
+      {/* Close Button */}
+      <TouchableOpacity style={styles.closeButton} onPress={handleSkip}>
+        <Ionicons name="close" size={32} color="#000" />
+      </TouchableOpacity>
+
+      {/* Main Content Area */}
+      <View style={styles.contentArea}>
+        <ScrollView
+          ref={scrollViewRef}
+          horizontal
+          pagingEnabled
+          showsHorizontalScrollIndicator={false}
+          scrollEnabled={true}
+          bounces={false}
+          scrollEventThrottle={16}
+          decelerationRate="fast"
+          onMomentumScrollEnd={(event) => {
+            const newStep = Math.round(
+              event.nativeEvent.contentOffset.x / screenWidth
+            );
+            setCurrentStep(newStep);
+          }}
+        >
+          {steps.map((step, index) => renderStep(step, index))}
+        </ScrollView>
+      </View>
 
       {/* Progress Dots */}
       {renderProgressDots()}
@@ -241,7 +259,10 @@ export function Onboarding({
         <Button
           variant="default"
           onPress={handleNext}
-          style={[...(isFirstStep ? [styles.fullWidthButton] : [{ flex: 2 }])]}
+          style={[
+            styles.primaryButton,
+            ...(isFirstStep ? [styles.fullWidthButton] : [{ flex: 2 }]),
+          ]}
         >
           {isLastStep ? primaryButtonText : nextButtonText}
         </Button>
@@ -254,21 +275,24 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
+  contentArea: {
+    flex: 1,
+  },
   stepContainer: {
     width: screenWidth,
-    flex: 1,
-    justifyContent: "center",
+    height: "100%",
+    justifyContent: "flex-start",
     alignItems: "center",
     paddingHorizontal: 24,
+    paddingTop: 120,
+    paddingBottom: 20,
   },
   contentContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    width: "100%",
     maxWidth: 400,
+    alignItems: "center",
   },
   imageContainer: {
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 40,
@@ -277,17 +301,28 @@ const styles = StyleSheet.create({
   textContainer: {
     alignItems: "center",
     paddingHorizontal: 20,
-    marginBottom: 40,
+    marginBottom: 30,
+  },
+  titleWrapper: {
+    alignItems: "center",
   },
   title: {
     textAlign: "center",
     marginBottom: 16,
     paddingHorizontal: 20,
+    fontSize: 32,
+    fontWeight: "bold",
   },
   description: {
     textAlign: "center",
     lineHeight: 24,
     paddingHorizontal: 20,
+    fontSize: 16,
+    color: "#999",
+  },
+  componentContainer: {
+    width: "100%",
+    alignItems: "center",
   },
   customContent: {
     alignItems: "center",
@@ -298,13 +333,24 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    paddingVertical: 20,
+    paddingVertical: 16,
+    paddingBottom: 8,
   },
   progressDot: {
-    width: 8,
-    height: 8,
-    borderRadius: 4,
+    width: 10,
+    height: 10,
+    borderRadius: 5,
     marginHorizontal: 4,
+  },
+  closeButton: {
+    position: "absolute",
+    top: 60,
+    right: 24,
+    zIndex: 1,
+    width: 40,
+    height: 40,
+    justifyContent: "center",
+    alignItems: "center",
   },
   skipContainer: {
     position: "absolute",
@@ -319,6 +365,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingBottom: 40,
     gap: 12,
+  },
+  primaryButton: {
+    backgroundColor: "#FF9999",
   },
   fullWidthButton: {
     flex: 1,
