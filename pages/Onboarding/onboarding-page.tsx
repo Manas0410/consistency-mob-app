@@ -1,19 +1,30 @@
+// OnboardingFlow.tsx
 import { Onboarding, OnboardingStep } from "@/components/ui/onboarding";
 import { Text } from "@/components/ui/text";
 import { useOnboardingContext } from "@/contexts/onboarding-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { Ionicons } from "@expo/vector-icons";
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
+  ActivityIndicator,
+  Alert,
+  Dimensions,
+  FlatList,
   Image,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+  Pressable,
   ScrollView,
   StyleSheet,
-  TouchableOpacity,
   View,
 } from "react-native";
 
-// Timeline Preview Component
-const TimelinePreview = () => {
+// ---- CONFIG: replace this with your real backend endpoint ----
+const API_ENDPOINT = "https://your.api.server/v1/user/preferences";
+// ----------------------------------------------------------------
+
+// ----------------- Timeline preview -----------------
+const TimelinePreview: React.FC = () => {
   const tasks = [
     {
       id: 1,
@@ -69,7 +80,7 @@ const TimelinePreview = () => {
                   size={16}
                   color={pallet.ButtonText}
                 />
-                <Text style={styles.subtaskText}>{task.subtasks}</Text>
+                <Text style={styles.subtaskText as any}>{task.subtasks}</Text>
               </View>
             )}
           </View>
@@ -82,8 +93,8 @@ const TimelinePreview = () => {
   );
 };
 
-// Day Planner Illustration Component
-const DayPlannerIllustration = () => {
+// ----------------- Illustration -----------------
+const DayPlannerIllustration: React.FC = () => {
   return (
     <View style={styles.illustrationContainer}>
       <Image
@@ -95,108 +106,165 @@ const DayPlannerIllustration = () => {
   );
 };
 
-// Time Picker Component
-const TimePicker = ({
-  value,
-  onChange,
-}: {
+// ----------------- TimePicker (wheel) -----------------
+const { height: SCREEN_H } = Dimensions.get("window");
+const ITEM_HEIGHT = 72;
+const VISIBLE_ITEMS = 5; // must be odd to center properly
+
+type TimePickerProps = {
   value: string;
   onChange: (time: string) => void;
-}) => {
-  const scrollViewRef = React.useRef<ScrollView>(null);
-  const [selectedTime, setSelectedTime] = React.useState(value);
+  pillColor?: string;
+};
 
-  const generateTimes = () => {
-    const times = [];
+const TimePicker: React.FC<TimePickerProps> = ({
+  value,
+  onChange,
+  pillColor,
+}) => {
+  const pallet = usePallet?.() ?? null;
+  const themePill = pillColor ?? (pallet ? pallet.shade1 : "#3B82F6");
+
+  const [selectedTime, setSelectedTime] = useState<string>(value || "08:00");
+
+  const times = useMemo(() => {
+    const out: string[] = [];
     for (let hour = 0; hour < 24; hour++) {
       for (let minute = 0; minute < 60; minute += 5) {
-        const timeString = `${hour.toString().padStart(2, "0")}:${minute
-          .toString()
-          .padStart(2, "0")}`;
-        times.push(timeString);
+        out.push(
+          `${hour.toString().padStart(2, "0")}:${minute
+            .toString()
+            .padStart(2, "0")}`
+        );
       }
     }
-    return times;
-  };
+    return out;
+  }, []);
 
-  const times = generateTimes();
-  const currentIndex = times.indexOf(selectedTime);
+  const flatRef = useRef<FlatList<string> | null>(null);
 
-  // Sync internal state with prop value
-  React.useEffect(() => {
-    setSelectedTime(value);
+  // Sync when parent value changes — scroll once to center on value
+  useEffect(() => {
+    if (!value) return;
+    if (value !== selectedTime) {
+      setSelectedTime(value);
+      const idx = times.indexOf(value);
+      if (idx >= 0) {
+        flatRef.current?.scrollToIndex({ index: idx, animated: true });
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [value]);
 
-  // Scroll to selected time on mount and when selectedTime changes
-  React.useEffect(() => {
-    if (currentIndex >= 0 && scrollViewRef.current) {
+  // On mount, position the list at the initial value
+  useEffect(() => {
+    const idx = Math.max(0, times.indexOf(selectedTime));
+    if (idx >= 0) {
       setTimeout(() => {
-        scrollViewRef.current?.scrollTo({
-          y: currentIndex * 52 - 100,
-          animated: false,
-        });
-      }, 100);
+        flatRef.current?.scrollToIndex({ index: idx, animated: false });
+      }, 50);
     }
-  }, [currentIndex]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const handleTimeSelect = (time: string) => {
-    console.log("Time selected:", time);
+  // When user taps an item: update value but DO NOT auto-scroll (user requested)
+  const handleSelect = (time: string) => {
     setSelectedTime(time);
     onChange(time);
-    const newIndex = times.indexOf(time);
-    scrollViewRef.current?.scrollTo({
-      y: newIndex * 52 - 100,
-      animated: true,
-    });
+    // no programmatic scroll to avoid little jump on tap
+  };
+
+  // When user scrolls and snapping ends, pick centered item
+  const onMomentumEnd = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const offsetY = e.nativeEvent.contentOffset.y;
+    const centerIndex = Math.round(offsetY / ITEM_HEIGHT);
+    const bounded = Math.max(0, Math.min(times.length - 1, centerIndex));
+    const time = times[bounded];
+    if (time && time !== selectedTime) {
+      setSelectedTime(time);
+      onChange(time);
+    }
+  };
+
+  const getItemLayout = (_: string[] | null, index: number) => ({
+    length: ITEM_HEIGHT,
+    offset: ITEM_HEIGHT * index,
+    index,
+  });
+
+  const sideSpacerHeight = ((VISIBLE_ITEMS - 1) / 2) * ITEM_HEIGHT;
+
+  const renderItem = ({ item, index }: { item: string; index: number }) => {
+    const selIndex = Math.max(0, times.indexOf(selectedTime));
+    const distance = Math.abs(index - selIndex);
+    const isCenter = distance === 0;
+    const opacity = distance === 0 ? 1 : distance === 1 ? 0.7 : 0.35;
+    const scale = distance === 0 ? 1.06 : distance === 1 ? 0.98 : 0.92;
+
+    return (
+      <Pressable
+        onPress={() => handleSelect(item)}
+        style={[styles.row, isCenter && styles.rowCenter]}
+        android_ripple={{ color: "#00000005" }}
+      >
+        <Text
+          style={[
+            styles.timeText,
+            isCenter ? styles.timeTextCenter : null,
+            { opacity, transform: [{ scale }] },
+          ]}
+        >
+          {item}
+        </Text>
+      </Pressable>
+    );
   };
 
   return (
     <View style={styles.timePickerContainer}>
-      <ScrollView
-        ref={scrollViewRef}
-        contentContainerStyle={styles.timePickerScroll}
-        showsVerticalScrollIndicator={false}
-        nestedScrollEnabled={true}
-        scrollEnabled={true}
-      >
-        {times.map((time, index) => {
-          const distance = Math.abs(index - currentIndex);
-          const opacity = distance === 0 ? 1 : distance === 1 ? 0.6 : 0.3;
-          const isSelected = time === selectedTime;
+      <View pointerEvents="none" style={styles.centerPillWrap}>
+        <View style={[styles.centerPill, { backgroundColor: themePill }]}>
+          <Text style={styles.centerPillText as any}>{selectedTime}</Text>
+        </View>
+      </View>
 
-          return (
-            <TouchableOpacity
-              key={time}
-              style={[styles.timeItem, isSelected && styles.selectedTimeItem]}
-              onPress={() => handleTimeSelect(time)}
-              activeOpacity={0.7}
-            >
-              <Text
-                style={[
-                  styles.timeItemText,
-                  isSelected && styles.selectedTimeItemText,
-                  { opacity },
-                ]}
-              >
-                {time}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
+      <FlatList
+        ref={flatRef}
+        data={times}
+        keyExtractor={(t) => t}
+        renderItem={renderItem}
+        getItemLayout={getItemLayout}
+        showsVerticalScrollIndicator={false}
+        snapToInterval={ITEM_HEIGHT}
+        decelerationRate="fast"
+        onMomentumScrollEnd={onMomentumEnd}
+        contentContainerStyle={{
+          paddingTop: sideSpacerHeight,
+          paddingBottom: sideSpacerHeight,
+          alignItems: "center",
+        }}
+        style={styles.list}
+        initialNumToRender={VISIBLE_ITEMS * 3}
+        windowSize={VISIBLE_ITEMS * 3}
+      />
     </View>
   );
 };
 
+// ----------------- Main OnboardingFlow -----------------
 export function OnboardingFlow() {
   const { completeOnboarding, skipOnboarding } = useOnboardingContext();
   const [wakeUpTime, setWakeUpTime] = useState("08:00");
   const [sleepTime, setSleepTime] = useState("22:00");
 
+  // loading & error state for final API call
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
   const WakeUpTimeScreen = () => (
     <View style={styles.timeScreenContainer}>
       <TimePicker value={wakeUpTime} onChange={setWakeUpTime} />
-      <Text style={styles.timeScreenFooter}>
+      <Text style={styles.timeScreenFooter as any}>
         You can always update this later
       </Text>
     </View>
@@ -205,18 +273,131 @@ export function OnboardingFlow() {
   const SleepTimeScreen = () => (
     <View style={styles.timeScreenContainer}>
       <TimePicker value={sleepTime} onChange={setSleepTime} />
-      <Text style={styles.timeScreenFooter}>
+      <Text style={styles.timeScreenFooter as any}>
         You can always update this later
       </Text>
     </View>
   );
+
+  // Small summary component to show final selections before submitting
+  const FinalSummary = () => (
+    <View style={styles.summaryContainer}>
+      <Text style={styles.summaryTitle as any}>
+        Almost there — confirm your times
+      </Text>
+      <View style={styles.timeSummaryRow}>
+        <View style={styles.timeSummaryCard}>
+          <Text style={styles.summaryLabel as any}>Wake up</Text>
+          <Text style={styles.summaryValue as any}>{wakeUpTime}</Text>
+        </View>
+        <View style={styles.timeSummaryCard}>
+          <Text style={styles.summaryLabel as any}>Sleep</Text>
+          <Text style={styles.summaryValue as any}>{sleepTime}</Text>
+        </View>
+      </View>
+
+      {submitError ? (
+        <Text style={{ color: "#C0392B", textAlign: "center", marginTop: 8 }}>
+          {submitError}
+        </Text>
+      ) : null}
+
+      {submitting ? (
+        <View style={{ marginTop: 14 }}>
+          <ActivityIndicator size="small" />
+        </View>
+      ) : null}
+    </View>
+  );
+
+  // function to call backend API — replace endpoint above
+  const submitPreferences = async () => {
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const payload = {
+        wakeUpTime,
+        sleepTime,
+      };
+
+      const res = await fetch(API_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        const text = await res.text().catch(() => null);
+        throw new Error(
+          `Server returned ${res.status}${text ? `: ${text}` : ""}`
+        );
+      }
+
+      return true;
+    } catch (err: any) {
+      console.warn("Failed to save preferences", err);
+      setSubmitError(
+        err?.message ?? "Failed to save preferences. You can retry or skip."
+      );
+      return false;
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // handler passed to Onboarding's onComplete — does API call then completes onboarding
+  const handleComplete = async () => {
+    const ok = await submitPreferences();
+
+    if (!ok) {
+      return new Promise<void>((resolve) => {
+        Alert.alert(
+          "Couldn't save preferences",
+          "We couldn't save wake/sleep times to the server. You can retry, skip saving, or complete onboarding without saving.",
+          [
+            {
+              text: "Retry",
+              onPress: async () => {
+                const retryOk = await submitPreferences();
+                if (retryOk) {
+                  await completeOnboarding();
+                  resolve();
+                } else {
+                  resolve();
+                }
+              },
+            },
+            {
+              text: "Skip saving",
+              onPress: async () => {
+                await completeOnboarding();
+                resolve();
+              },
+              style: "destructive",
+            },
+            {
+              text: "Cancel",
+              style: "cancel",
+              onPress: () => resolve(),
+            },
+          ],
+          { cancelable: true }
+        );
+      });
+    }
+
+    await completeOnboarding();
+  };
 
   const steps: OnboardingStep[] = [
     {
       id: "1",
       title: (
         <>
-          A <Text style={styles.highlightText}>Timeline</Text>
+          A <Text style={styles.highlightText as any}>Timeline</Text>
           {"\n"}Of Your Day
         </>
       ) as any,
@@ -228,7 +409,7 @@ export function OnboardingFlow() {
       title: (
         <>
           25Hours{"\n"}is a{" "}
-          <Text style={styles.highlightText}>AI Day Planner</Text>
+          <Text style={styles.highlightText as any}>AI Day Planner</Text>
         </>
       ) as any,
       description: "Bring more productivity into your everyday life",
@@ -239,7 +420,7 @@ export function OnboardingFlow() {
       title: (
         <>
           When Do You{"\n"}Usually{" "}
-          <Text style={styles.highlightText}>Wake Up</Text>?
+          <Text style={styles.highlightText as any}>Wake Up</Text>?
         </>
       ) as any,
       description: "Scroll to adjust the time",
@@ -250,19 +431,27 @@ export function OnboardingFlow() {
       title: (
         <>
           When Do You{"\n"}Usually{" "}
-          <Text style={styles.highlightText}>Sleep</Text>?
+          <Text style={styles.highlightText as any}>Sleep</Text>?
         </>
       ) as any,
       description: "Scroll to adjust the time",
       component: <SleepTimeScreen />,
+    },
+    {
+      id: "5",
+      title: "Confirm",
+      description: "We will save these preferences to your account",
+      component: <FinalSummary />,
     },
   ];
 
   return (
     <Onboarding
       steps={steps}
-      onComplete={completeOnboarding}
-      onSkip={skipOnboarding}
+      onComplete={handleComplete}
+      onSkip={async () => {
+        await skipOnboarding();
+      }}
       primaryButtonText="Get Started"
       nextButtonText="Continue"
       skipButtonText="Skip"
@@ -271,6 +460,7 @@ export function OnboardingFlow() {
   );
 }
 
+// ----------------- Styles -----------------
 const styles = StyleSheet.create({
   // Timeline styles
   timelineScrollView: {
@@ -358,11 +548,43 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
   },
   timePickerContainer: {
-    height: 250,
+    height: ITEM_HEIGHT * VISIBLE_ITEMS,
     width: "100%",
     alignItems: "center",
     overflow: "hidden",
   },
+  list: {
+    width: "100%",
+  },
+  // selected time badge
+  centerPillWrap: {
+    position: "absolute",
+    top: (ITEM_HEIGHT * (VISIBLE_ITEMS - 1)) / 2 - ITEM_HEIGHT / 2,
+    left: "50%",
+    transform: [{ translateX: -90 }],
+    zIndex: 20,
+    width: 180,
+    alignItems: "center",
+  },
+  centerPill: {
+    width: 140,
+    height: 40,
+    borderRadius: ITEM_HEIGHT * 0.45,
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 6,
+  },
+  centerPillText: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "800",
+    letterSpacing: 0.4,
+  },
+
   timePickerScroll: {
     paddingVertical: 100,
     alignItems: "center",
@@ -405,8 +627,53 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 
+  // Final summary styles
+  summaryContainer: {
+    width: "100%",
+    paddingVertical: 20,
+    alignItems: "center",
+  },
+  summaryTitle: {
+    fontSize: 18,
+    fontWeight: "700",
+    marginBottom: 12,
+    textAlign: "center",
+  },
+  timeSummaryRow: {
+    flexDirection: "row",
+    gap: 12,
+    marginTop: 8,
+  },
+  timeSummaryCard: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 14,
+    minWidth: 120,
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#EEE",
+    elevation: 1,
+  },
+  summaryLabel: {
+    fontSize: 12,
+    color: "#888",
+    marginBottom: 6,
+  },
+  summaryValue: {
+    fontSize: 20,
+    fontWeight: "800",
+  },
+
   // Highlight text
   highlightText: {
     color: "#3B82F6",
   },
+
+  // tiny helpers
+  row: {
+    height: ITEM_HEIGHT,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  rowCenter: {},
 });
