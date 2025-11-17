@@ -1,6 +1,7 @@
 import { Onboarding, OnboardingStep } from "@/components/ui/onboarding";
 import { Text } from "@/components/ui/text";
 import { useOnboardingContext } from "@/contexts/onboarding-context";
+import { usePallet } from "@/hooks/use-pallet";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
 import {
@@ -35,6 +36,8 @@ const TimelinePreview = () => {
     },
   ];
 
+  const pallet = usePallet();
+
   return (
     <ScrollView
       style={styles.timelineScrollView}
@@ -45,8 +48,14 @@ const TimelinePreview = () => {
       {tasks.map((task, index) => (
         <View key={task.id} style={styles.timelineItem}>
           <View style={styles.timelineLeft}>
-            <View style={styles.iconCircle}>
-              <Ionicons name={task.icon as any} size={32} color="#FF9999" />
+            <View
+              style={{ ...styles.iconCircle, backgroundColor: pallet.buttonBg }}
+            >
+              <Ionicons
+                name={task.icon as any}
+                size={32}
+                color={pallet.ButtonText}
+              />
             </View>
             {index < tasks.length - 1 && <View style={styles.connector} />}
           </View>
@@ -55,12 +64,18 @@ const TimelinePreview = () => {
             <Text style={styles.taskTitle}>{task.title}</Text>
             {task.subtasks && (
               <View style={styles.subtaskBadge}>
-                <Ionicons name="checkmark-circle" size={16} color="#666" />
+                <Ionicons
+                  name="checkmark-circle"
+                  size={16}
+                  color={pallet.ButtonText}
+                />
                 <Text style={styles.subtaskText}>{task.subtasks}</Text>
               </View>
             )}
           </View>
-          <View style={styles.checkCircle} />
+          <View
+            style={{ ...styles.checkCircle, borderColor: pallet.buttonBg }}
+          />
         </View>
       ))}
     </ScrollView>
@@ -212,11 +227,11 @@ export function OnboardingFlow() {
       id: "2",
       title: (
         <>
-          Structured{"\n"}is a{" "}
-          <Text style={styles.highlightText}>Day Planner</Text>
+          25Hours{"\n"}is a{" "}
+          <Text style={styles.highlightText}>AI Day Planner</Text>
         </>
       ) as any,
-      description: "Bring structure into your everyday life",
+      description: "Bring more productivity into your everyday life",
       component: <DayPlannerIllustration />,
     },
     {
@@ -320,7 +335,6 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 15,
     borderWidth: 2,
-    borderColor: "#FF9999",
     marginLeft: 10,
   },
 
@@ -393,6 +407,6 @@ const styles = StyleSheet.create({
 
   // Highlight text
   highlightText: {
-    color: "#FF9999",
+    color: "#3B82F6",
   },
 });

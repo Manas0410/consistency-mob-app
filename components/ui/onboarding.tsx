@@ -251,7 +251,12 @@ export function Onboarding({
       {/* Navigation Buttons */}
       <View style={styles.buttonContainer}>
         {!isFirstStep && (
-          <Button variant="outline" onPress={handleBack} style={{ flex: 1 }}>
+          <Button
+            variant="outline"
+            onPress={handleBack}
+            style={{ flex: 1 }}
+            textStyle={{ fontSize: 14 }}
+          >
             {backButtonText}
           </Button>
         )}
@@ -263,6 +268,7 @@ export function Onboarding({
             styles.primaryButton,
             ...(isFirstStep ? [styles.fullWidthButton] : [{ flex: 2 }]),
           ]}
+          textStyle={{ fontSize: 14 }}
         >
           {isLastStep ? primaryButtonText : nextButtonText}
         </Button>
@@ -367,7 +373,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   primaryButton: {
-    backgroundColor: "#FF9999",
+    backgroundColor: "#3B82F6",
   },
   fullWidthButton: {
     flex: 1,

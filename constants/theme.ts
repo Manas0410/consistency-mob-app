@@ -43,6 +43,8 @@ export const Pallets = {
   },
 };
 
+// backgroundColor: "#FFE5E5", FF9999;
+
 export const Fonts = Platform.select({
   ios: {
     /** iOS `UIFontDescriptorSystemDesignDefault` */
