@@ -18,6 +18,7 @@ import {
   StyleSheet,
   View,
 } from "react-native";
+import { addTask } from "../addTask/API/addTask";
 
 // ---- CONFIG: replace this with your real backend endpoint ----
 const API_ENDPOINT = "https://your.api.server/v1/user/preferences";
@@ -310,30 +311,54 @@ export function OnboardingFlow() {
     </View>
   );
 
+  function buildISODateForLocalTime(time: string) {
+    // time = "08:00"
+    const [hour, minute] = time.split(":").map(Number);
+
+    // Use today’s date, or fixed date — doesn’t matter for recurring tasks
+    const date = new Date();
+    date.setHours(hour, minute, 0, 0);
+
+    return date.toISOString(); // Converts IST → UTC with correct offset
+  }
   // function to call backend API — replace endpoint above
   const submitPreferences = async () => {
     setSubmitting(true);
     setSubmitError(null);
 
     try {
-      const payload = {
-        wakeUpTime,
-        sleepTime,
+      const taskFormat = {
+        taskName: "",
+        taskDescription: "",
+        TaskStartDateTime: new Date().toISOString(),
+        duration: {
+          hours: 0,
+          minutes: 30,
+        },
+        priority: 0,
+        frequency: [8],
+        category: "",
       };
 
-      const res = await fetch(API_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      // wakeUpTime, sleepTime;
+      const tasks = [
+        {
+          ...taskFormat,
+          taskName: "Wake Up",
+          TaskStartDateTime: buildISODateForLocalTime(wakeUpTime),
         },
-        body: JSON.stringify(payload),
-      });
+        {
+          ...taskFormat,
+          taskName: "Sleep",
+          TaskStartDateTime: buildISODateForLocalTime(sleepTime),
+        },
+      ];
 
-      if (!res.ok) {
-        const text = await res.text().catch(() => null);
-        throw new Error(
-          `Server returned ${res.status}${text ? `: ${text}` : ""}`
-        );
+      // need to mange here
+      const res = await addTask(tasks);
+
+      if (!res.success) {
+        console.log("Failed to add tasks");
       }
 
       return true;
