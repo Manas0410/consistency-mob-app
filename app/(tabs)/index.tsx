@@ -1,5 +1,4 @@
 import CategoryClock from "@/components/category-clock";
-import Heatmap from "@/components/charts/heat-map";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AnimatedProgressRing from "@/components/ui/progress-ring";
 import { Text } from "@/components/ui/text";
@@ -9,10 +8,10 @@ import { usePallet } from "@/hooks/use-pallet";
 import HabbitCard from "@/pages/Dashboard/components/habbit-card";
 import WorkModesCard from "@/pages/Dashboard/components/mode-card";
 import QuickActions from "@/pages/Dashboard/components/quick-actions";
+import StreakCard from "@/pages/Dashboard/components/streak-card";
 import { OnboardingFlow } from "@/pages/Onboarding/onboarding-page";
 import { getTasksByDate } from "@/pages/task-viewer/API/getTasks";
 import { useUser } from "@clerk/clerk-expo";
-import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
@@ -133,75 +132,7 @@ function HomeScreen() {
           </View>
 
           {/* Main Stats */}
-          <View
-            style={{
-              backgroundColor: "rgba(255,255,255,0.15)",
-              borderRadius: 24,
-              padding: 24,
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <View style={{ width: 200 }}>
-              <Text
-                style={{
-                  fontSize: 22,
-                  fontWeight: "bold",
-                  color: "#ffffff",
-                  marginLeft: 2,
-                }}
-              >
-                30 Days Streak
-              </Text>
-              <Heatmap />
-            </View>
-            <View style={{ alignItems: "center" }}>
-              <View
-                style={{
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                <Image
-                  source={require("@/assets/images/flame.png")}
-                  style={{
-                    width: 66,
-                    height: 92,
-                  }}
-                  resizeMode="contain"
-                />
-                <View
-                  style={{
-                    width: 56,
-                    height: 72,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    position: "absolute",
-                    bottom: -9,
-                    left: "50%",
-                    transform: [{ translateX: -33 }],
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 32,
-                      fontWeight: "bold",
-                      color: "#fff",
-                      textShadowColor: "#d17b2c",
-                      textShadowOffset: { width: 0, height: 2 },
-                      textShadowRadius: 6,
-                    }}
-                  >
-                    {30}
-                  </Text>
-                </View>
-              </View>
-              <Text style={{ fontSize: 12, color: "rgba(255,255,255,0.8)" }}>
-                Productivity
-              </Text>
-            </View>
-          </View>
+          <StreakCard />
         </LinearGradient>
 
         {/* Progress Circle Section */}
