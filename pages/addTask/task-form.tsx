@@ -37,7 +37,7 @@ const options = [
 ];
 
 export default function TaskForm() {
-  const { close, isVisible, initialData } = useAddTaskSheet();
+  const { close, isVisible, initialData, rerender } = useAddTaskSheet();
   const pallet = usePallet();
 
   const [task, setTask] = useState<TaskData>({
@@ -92,6 +92,8 @@ export default function TaskForm() {
       const response = await addTask(task);
       if (response.success) {
         success("Task added successfully!");
+        rerender();
+        close();
         setTask({
           taskName: "",
           taskDescription: "",

@@ -20,6 +20,8 @@ type BottomSheetContextValue = {
   close: () => void;
   toggle: () => void;
   setVisible: (v: boolean) => void;
+  rerender: () => void;
+  rerenderTask: boolean;
 };
 
 const AddTaskContext = createContext<BottomSheetContextValue | undefined>(
@@ -33,6 +35,7 @@ export const AddTaskBottomSheetProvider = ({
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const [initialData, setInitialData] = useState<InitialTaskData | null>(null);
+  const [rerenderTask, toggleRerenderTask] = useState(false);
 
   const open = useCallback((data?: InitialTaskData) => {
     setInitialData(data || null);
@@ -45,6 +48,7 @@ export const AddTaskBottomSheetProvider = ({
   }, []);
 
   const toggle = useCallback(() => setIsVisible((s) => !s), []);
+  const rerender = useCallback(() => toggleRerenderTask((s) => !s), []);
 
   return (
     <AddTaskContext.Provider
@@ -55,6 +59,8 @@ export const AddTaskBottomSheetProvider = ({
         close,
         toggle,
         setVisible: setIsVisible,
+        rerender,
+        rerenderTask,
       }}
     >
       {children}

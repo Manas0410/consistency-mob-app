@@ -1,7 +1,6 @@
 import CategoryClock from "@/components/category-clock";
 import Heatmap from "@/components/charts/heat-map";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import AnimatedProgressRing from "@/components/ui/progress-ring";
 import { Text } from "@/components/ui/text";
 import { useOnboardingContext } from "@/contexts/onboarding-context";
@@ -205,7 +204,6 @@ function HomeScreen() {
           </View>
         </LinearGradient>
 
-        <Button onPress={resetOnboarding}>Reset Onboarding</Button>
         {/* Progress Circle Section */}
         <View style={{ flex: 1, gap: 24, paddingHorizontal: 24 }}>
           <View style={{ marginTop: -20, marginBottom: 30 }}>

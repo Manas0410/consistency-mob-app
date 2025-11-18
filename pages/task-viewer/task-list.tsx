@@ -38,7 +38,7 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
   const [taskListData, setTaskListData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { open: openAddTask } = useAddTaskSheet();
+  const { open: openAddTask, rerenderTask } = useAddTaskSheet();
 
   const loadTasks = async () => {
     try {
@@ -52,7 +52,7 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
 
   useEffect(() => {
     loadTasks();
-  }, [selectedDate]);
+  }, [selectedDate, rerenderTask]);
 
   // Sort tasks by start time for correct timeline order
   const sortedTasks = [...taskListData].sort(
