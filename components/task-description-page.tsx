@@ -32,10 +32,13 @@ import BackHeader from "@/components/ui/back-header";
 import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Spinner } from "@/components/ui/spinner";
+import apicall from "@/constants/axios-config";
+import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { DatePicker } from "./ui/date-picker"; // replace with your actual DatePicker
 import { Input } from "./ui/input"; // your Input component
 import { Picker } from "./ui/picker"; // replace with your actual Picker (multi-select)
+import { useToast } from "./ui/toast";
 
 // ---------------- Types ----------------------------------------------------
 
@@ -342,16 +345,73 @@ const TaskDetails: React.FC<Props> = ({
   };
 
   const [isAdmin, setisAdmin] = useState(false);
+  const [deleteInProgress, setDeleteInProgress] = useState(false);
+  const { success, error } = useToast();
+  const { currentTeamData } = useCurrentTeamData();
+
+  const deleteTask = async () => {
+    try {
+      setDeleteInProgress(true);
+      const res = await apicall.post("/task/deleteTask", { taskId: task?._id });
+      if (res.status === 200) {
+        router.replace("/calendar");
+        success("Task deleted successfully");
+      }
+    } catch (e) {
+      setDeleteInProgress(false);
+      error("Error deleting task");
+      console.error("Error deleting task:", e);
+    } finally {
+      setDeleteInProgress(false);
+    }
+  };
+  const deleteTeamTask = async () => {
+    try {
+      setDeleteInProgress(true);
+      const res = await apicall.post("/team/delete-task", {
+        taskId: task?._id,
+        teamId: currentTeamData?._id,
+      });
+      if (res.status === 200) {
+        router.replace("/calendar");
+        success("Team Task deleted successfully");
+      }
+    } catch (e) {
+      setDeleteInProgress(false);
+      error("Error deleting team task");
+      console.error("Error deleting team task:", e);
+    } finally {
+      setDeleteInProgress(false);
+    }
+  };
 
   // UI
   return (
     <View style={{ flex: 1, backgroundColor: "#fff" }}>
       <SafeAreaView>
         <BackHeader title="Task description">
-          {team ? (
-            <>{isAdmin && <Icon name={Trash2} color={pallet.errorText} />}</>
+          {deleteInProgress ? (
+            <Spinner size="sm" variant="circle" color={pallet.errorText} />
           ) : (
-            <Icon name={Trash2} color={pallet.errorText} />
+            <>
+              {team ? (
+                <>
+                  {isAdmin && (
+                    <Icon
+                      name={Trash2}
+                      color={pallet.errorText}
+                      onPress={deleteTeamTask}
+                    />
+                  )}
+                </>
+              ) : (
+                <Icon
+                  name={Trash2}
+                  color={pallet.errorText}
+                  onPress={deleteTask}
+                />
+              )}
+            </>
           )}
         </BackHeader>
         <View style={{ backgroundColor: "#F7F8FA" }}>
