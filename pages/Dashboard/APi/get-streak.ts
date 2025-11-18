@@ -1,7 +1,7 @@
 import apicall from "@/constants/axios-config";
 
 // 1. Create Task Plan (POST /taskplanner/task-plan)
-export const getStreakData = async (planData: any) => {
+export const getStreakData = async () => {
   try {
     const response = await apicall.post("/streak/getStreak", {
       days: 30,

@@ -53,7 +53,7 @@ const Heatmap = ({ data = dummyHeatmapData }) => {
   const renderItem = ({ item, index }) => {
     // Determine style based on true/false & highlight today's block
     const isToday = index + 1 === today;
-    const isCompleted = item === true;
+    const isCompleted = item?.isAllCompleted === true;
 
     const backgroundColor = isCompleted ? "#1dda66ff" : "#ced2dbff"; // dark green or light gray
     const borderColor = isToday ? "#3B82F6" : "transparent"; // blue border if today

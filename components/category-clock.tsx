@@ -19,30 +19,30 @@ const { width: screenWidth } = Dimensions.get("window");
 
 // Fallback demo data (used only if API empty/fails)
 const sampleData = [
-  {
-    startTime: 21,
-    endTime: 24,
-    categoryName: "Meeting",
-    color: "rgba(78, 205, 196, 0.7)",
-  },
-  {
-    startTime: 0,
-    endTime: 3.5,
-    categoryName: "Meeting",
-    color: "rgba(78, 205, 196, 0.7)",
-  },
-  {
-    startTime: 9,
-    endTime: 12,
-    categoryName: "Building",
-    color: "rgba(247, 220, 111, 0.7)",
-  },
-  {
-    startTime: 15,
-    endTime: 18,
-    categoryName: "Working",
-    color: "rgba(231, 76, 60, 0.7)",
-  },
+  // {
+  //   startTime: 21,
+  //   endTime: 24,
+  //   categoryName: "Meeting",
+  //   color: "rgba(78, 205, 196, 0.7)",
+  // },
+  // {
+  //   startTime: 0,
+  //   endTime: 3.5,
+  //   categoryName: "Meeting",
+  //   color: "rgba(78, 205, 196, 0.7)",
+  // },
+  // {
+  //   startTime: 9,
+  //   endTime: 12,
+  //   categoryName: "Building",
+  //   color: "rgba(247, 220, 111, 0.7)",
+  // },
+  // {
+  //   startTime: 15,
+  //   endTime: 18,
+  //   categoryName: "Working",
+  //   color: "rgba(231, 76, 60, 0.7)",
+  // },
 ];
 
 const categoryColors: Record<string, string> = {

@@ -1,9 +1,28 @@
 import Heatmap from "@/components/charts/heat-map";
 import { View } from "@/components/ui/view";
 import { Image } from "expo-image";
+import { useEffect, useState } from "react";
 import { Text } from "react-native";
+import { getStreakData } from "../APi/get-streak";
 
 const StreakCard = () => {
+  const [streakData, setStreakData] = useState({});
+
+  const getStreak = async () => {
+    try {
+      const res = await getStreakData();
+      if (res.success) {
+        setStreakData(res.data);
+      }
+    } catch (err) {
+      console.log("Error fetching streak data", err);
+    }
+  };
+
+  useEffect(() => {
+    getStreak();
+  }, []);
+
   return (
     <View
       style={{
@@ -24,9 +43,9 @@ const StreakCard = () => {
             marginLeft: 2,
           }}
         >
-          30 Days Streak
+          {streakData?.currentStreak ?? 0} Days Streak
         </Text>
-        <Heatmap />
+        <Heatmap data={streakData?.streakData ?? []} />
       </View>
       <View style={{ alignItems: "center" }}>
         <View
@@ -65,7 +84,7 @@ const StreakCard = () => {
                 textShadowRadius: 6,
               }}
             >
-              {30}
+              {streakData?.currentStreak ?? 0}
             </Text>
           </View>
         </View>
