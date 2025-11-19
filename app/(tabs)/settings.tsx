@@ -211,6 +211,13 @@ export default function SettingsScreen() {
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
               Connect Apps
             </Text>
+            {/* <RemindersEditor
+              initialReminders={[]}
+              maxReminders={5}
+              onChange={(list) => {
+                // setReminders(list);
+              }}
+            /> */}
             <ConnectGoogleCalendarButton />
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
               Account
