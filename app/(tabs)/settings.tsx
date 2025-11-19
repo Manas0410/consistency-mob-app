@@ -1,3 +1,4 @@
+import ConnectGoogleCalendarButton from "@/components/gcal";
 import { Colors } from "@/constants/theme";
 import { useOnboardingContext } from "@/contexts/onboarding-context";
 import { usePallet } from "@/hooks/use-pallet";
@@ -207,6 +208,10 @@ export default function SettingsScreen() {
             </View>
 
             {/* Account Section */}
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>
+              Connect Apps
+            </Text>
+            <ConnectGoogleCalendarButton />
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
               Account
             </Text>
