@@ -1,3 +1,4 @@
+import { Colors } from "@/constants/theme";
 import { useAddTaskSheet } from "@/contexts/add-task-context";
 import { useAddTeamBottomSheet } from "@/contexts/add-team-context";
 import { useAddTeamMemberBottomSheet } from "@/contexts/add-team-member-context";
@@ -5,6 +6,7 @@ import { useAddTeamTaskSheet } from "@/contexts/add-team-task-context";
 import { useJoinTeamBottomSheet } from "@/contexts/join-team-contex";
 import { useSelectMode } from "@/contexts/select-mode-context";
 import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { useNavigation } from "@react-navigation/native";
 import { usePathname, useRouter } from "expo-router";
 import {
@@ -40,6 +42,8 @@ const BottomBar = () => {
   const router = useRouter();
   const pathname = usePathname();
   const pallet = usePallet();
+  const colors = Colors.light; // Always use light theme
+  const backgroundCardColor = useColor({}, "background");
 
   const [isTeamsButtonExpanded, setIsTeamsButtonExpanded] =
     React.useState(true);
@@ -52,7 +56,12 @@ const BottomBar = () => {
   const { open: SelectModeTaskOpen } = useSelectMode();
 
   return (
-    <View style={[styles.container, { paddingBottom: insets.bottom }]}>
+    <View
+      style={[
+        styles.container,
+        { paddingBottom: insets.bottom, backgroundColor: backgroundCardColor },
+      ]}
+    >
       <View style={styles.bar}>
         {bottomBarOptions.map((option) => (
           <TouchableOpacity
@@ -78,7 +87,7 @@ const BottomBar = () => {
         !pathname.endsWith("/taskDescriptionTeam") &&
         !pathname.endsWith("/teamMembers") && (
           <TouchableOpacity
-            style={styles.addButton}
+            style={[styles.addButton, { backgroundColor: pallet.shade1 }]}
             onPress={() => {
               AddTaskOpen();
             }}
@@ -153,15 +162,15 @@ const BottomBar = () => {
           {isTeamsButtonExpanded ? (
             <View style={styles.buttonCnt}>
               <TouchableOpacity
-                style={styles.BtnCntCross}
+                style={[styles.BtnCntCross, { backgroundColor: "#c6c4c4ff" }]}
                 onPress={() => {
                   setIsTeamsButtonExpanded(false);
                 }}
               >
-                <X size={24} />
+                <X size={24} color="#000" />
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.BtnCntBtn}
+                style={[styles.BtnCntBtn, { backgroundColor: pallet.shade1 }]}
                 onPress={() => {
                   AddTaskOpen();
                 }}
@@ -169,7 +178,7 @@ const BottomBar = () => {
                 <Plus color="white" size={36} />
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.BtnCntBtn}
+                style={[styles.BtnCntBtn, { backgroundColor: pallet.shade1 }]}
                 onPress={() => {
                   SelectModeTaskOpen();
                 }}
@@ -179,10 +188,10 @@ const BottomBar = () => {
             </View>
           ) : (
             <View
-              style={styles.addButton}
+              style={[styles.addButton, { backgroundColor: pallet.shade1 }]}
               onTouchEnd={() => setIsTeamsButtonExpanded(true)}
             >
-              <ChevronUp />
+              <ChevronUp color="#000" />
             </View>
           )}
         </>
@@ -209,7 +218,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 5,
-    backgroundColor: "#fff",
     // borderTopLeftRadius: 23,
     // borderTopRightRadius: 23,
   },
@@ -232,7 +240,6 @@ const styles = StyleSheet.create({
     position: "absolute",
     right: 22,
     bottom: BAR_HEIGHT + 48,
-    backgroundColor: "#23A8FF",
     width: ADD_BUTTON_SIZE,
     height: ADD_BUTTON_SIZE,
     borderRadius: ADD_BUTTON_SIZE / 2,
@@ -252,7 +259,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   BtnCntBtn: {
-    backgroundColor: "#23A8FF",
     width: ADD_BUTTON_SIZE,
     height: ADD_BUTTON_SIZE,
     borderRadius: ADD_BUTTON_SIZE / 2,
@@ -265,7 +271,6 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
   },
   BtnCntCross: {
-    backgroundColor: "#c6c4c4ff",
     width: 34,
     height: 34,
     borderRadius: 17,

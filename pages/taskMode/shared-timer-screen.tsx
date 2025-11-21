@@ -1,24 +1,14 @@
 // shared-timer-screen.tsx
 import { ScrollView } from "@/components/ui/scroll-view";
+import { Colors } from "@/constants/theme";
+import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { useKeepAwake } from "expo-keep-awake";
 import { useRouter } from "expo-router";
 import React, { useMemo } from "react";
 import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Circle } from "react-native-svg";
-
-const LIGHT = {
-  bg: "#F7F8FA",
-  card: "#FFFFFF",
-  text: "#0F172A",
-  subtle: "#64748B",
-  primary: "#2563EB",
-  primarySoft: "#E8F0FE",
-  ringTrack: "#EEF2F7",
-  success: "#16A34A",
-  danger: "#DC2626",
-  border: "#E5E7EB",
-};
 
 const PADDING = 24;
 const RADIUS = 120;
@@ -69,6 +59,27 @@ export default function SharedTimerScreen({
 }: SharedTimerScreenProps) {
   useKeepAwake();
   const router = useRouter();
+  const pallet = usePallet();
+  const colors = Colors.light;
+  const backgroundColor = useColor({}, "background");
+  const cardBackgroundColor = useColor({}, "card");
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
+  const borderColor = useColor({}, "border");
+
+  // Create dynamic color object using palette
+  const LIGHT = {
+    bg: backgroundColor,
+    card: cardBackgroundColor,
+    text: textColor,
+    subtle: textMutedColor,
+    primary: pallet.shade1,
+    primarySoft: pallet.shade4,
+    ringTrack: borderColor + "40",
+    success: colors.green || "#16A34A",
+    danger: colors.red || "#DC2626",
+    border: borderColor,
+  };
 
   const fmt = (secs: number) => {
     const m = Math.floor(secs / 60)
@@ -131,18 +142,23 @@ export default function SharedTimerScreen({
       <ScrollView>
         <View style={styles.container}>
           <View style={styles.headerRow}>
-            <Text style={styles.title} numberOfLines={1}>
+            <Text
+              style={[styles.title, { color: LIGHT.text }]}
+              numberOfLines={1}
+            >
               {taskName}
             </Text>
-            <View style={styles.pill}>
-              <Text style={styles.pillText}>
+            <View style={[styles.pill, { backgroundColor: LIGHT.primarySoft }]}>
+              <Text style={[styles.pillText, { color: LIGHT.primary }]}>
                 {Math.round(totalMinutes)}m planned
               </Text>
             </View>
           </View>
 
-          <View style={styles.card}>
-            <Text style={styles.phase}>{timerState.phaseLabel}</Text>
+          <View style={[styles.card, { backgroundColor: LIGHT.card }]}>
+            <Text style={[styles.phase, { color: LIGHT.subtle }]}>
+              {timerState.phaseLabel}
+            </Text>
 
             <View style={styles.ringWrap}>
               <Svg width={(RADIUS + STROKE) * 2} height={(RADIUS + STROKE) * 2}>
@@ -170,10 +186,12 @@ export default function SharedTimerScreen({
                 />
               </Svg>
               <View style={styles.ringCenter}>
-                <Text style={styles.time}>
+                <Text style={[styles.time, { color: LIGHT.text }]}>
                   {isDone ? "00:00" : fmt(timerState.secondsLeft)}
                 </Text>
-                <Text style={styles.caption}>{timerState.caption}</Text>
+                <Text style={[styles.caption, { color: LIGHT.subtle }]}>
+                  {timerState.caption}
+                </Text>
               </View>
             </View>
 
@@ -184,6 +202,10 @@ export default function SharedTimerScreen({
                     key={index}
                     style={[
                       styles.chip,
+                      {
+                        backgroundColor: LIGHT.card,
+                        borderColor: LIGHT.border,
+                      },
                       chip.isActive && {
                         backgroundColor: LIGHT.primarySoft,
                         borderColor: LIGHT.primary,
@@ -193,6 +215,7 @@ export default function SharedTimerScreen({
                     <Text
                       style={[
                         styles.chipText,
+                        { color: LIGHT.subtle },
                         chip.isActive && { color: LIGHT.primary },
                       ]}
                     >
@@ -208,10 +231,13 @@ export default function SharedTimerScreen({
                 onPress={timerActions.toggle}
                 style={({ pressed }) => [
                   styles.primaryBtn,
+                  { backgroundColor: LIGHT.primary },
                   pressed && { opacity: 0.9 },
                 ]}
               >
-                <Text style={styles.primaryBtnText}>
+                <Text
+                  style={[styles.primaryBtnText, { color: pallet.ButtonText }]}
+                >
                   {timerState.isRunning ? "Pause" : "Start"}
                 </Text>
               </Pressable>
@@ -220,20 +246,26 @@ export default function SharedTimerScreen({
                   onPress={timerActions.skip}
                   style={({ pressed }) => [
                     styles.ghostBtn,
+                    { backgroundColor: LIGHT.card, borderColor: LIGHT.border },
                     pressed && { opacity: 0.7 },
                   ]}
                 >
-                  <Text style={styles.ghostBtnText}>Skip</Text>
+                  <Text style={[styles.ghostBtnText, { color: LIGHT.text }]}>
+                    Skip
+                  </Text>
                 </Pressable>
               ) : (
                 <Pressable
                   onPress={timerActions.reset}
                   style={({ pressed }) => [
                     styles.ghostBtn,
+                    { backgroundColor: LIGHT.card, borderColor: LIGHT.border },
                     pressed && { opacity: 0.7 },
                   ]}
                 >
-                  <Text style={styles.ghostBtnText}>Restart</Text>
+                  <Text style={[styles.ghostBtnText, { color: LIGHT.text }]}>
+                    Restart
+                  </Text>
                 </Pressable>
               )}
             </View>
@@ -253,12 +285,20 @@ export default function SharedTimerScreen({
             </View>
           </View>
 
-          <View style={styles.progressCard}>
-            <Text style={styles.subtle}>Overall progress</Text>
-            <View style={styles.progressTrack}>
+          <View style={[styles.progressCard, { backgroundColor: LIGHT.card }]}>
+            <Text style={[styles.subtle, { color: LIGHT.subtle }]}>
+              Overall progress
+            </Text>
+            <View
+              style={[
+                styles.progressTrack,
+                { backgroundColor: LIGHT.ringTrack },
+              ]}
+            >
               <View
                 style={[
                   styles.progressFill,
+                  { backgroundColor: LIGHT.primary },
                   {
                     width: `${Math.max(
                       0,
@@ -269,13 +309,15 @@ export default function SharedTimerScreen({
               />
             </View>
             <View style={styles.etaRow}>
-              <Text style={styles.subtle}>ETA</Text>
-              <Text style={styles.eta}>{eta}</Text>
+              <Text style={[styles.subtle, { color: LIGHT.subtle }]}>ETA</Text>
+              <Text style={[styles.eta, { color: LIGHT.text }]}>{eta}</Text>
             </View>
           </View>
 
           <View style={styles.footerRow}>
-            <Text style={styles.footerText}>{footerText}</Text>
+            <Text style={[styles.footerText, { color: LIGHT.subtle }]}>
+              {footerText}
+            </Text>
           </View>
         </View>
       </ScrollView>
@@ -295,19 +337,16 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: LIGHT.text,
     flex: 1,
     marginRight: 12,
   },
   pill: {
-    backgroundColor: LIGHT.primarySoft,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 999,
   },
-  pillText: { color: LIGHT.primary, fontWeight: "600" },
+  pillText: { fontWeight: "600" },
   card: {
-    backgroundColor: LIGHT.card,
     borderRadius: 16,
     padding: 20,
     shadowColor: "#000",
@@ -318,7 +357,6 @@ const styles = StyleSheet.create({
   },
   phase: {
     alignSelf: "center",
-    color: LIGHT.subtle,
     fontWeight: "600",
     marginBottom: 8,
   },
@@ -332,8 +370,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  time: { fontSize: 42, fontWeight: "800", color: LIGHT.text },
-  caption: { marginTop: 4, color: LIGHT.subtle },
+  time: { fontSize: 42, fontWeight: "800" },
+  caption: { marginTop: 4 },
   chipsRow: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -343,13 +381,11 @@ const styles = StyleSheet.create({
   },
   chip: {
     borderWidth: 1,
-    borderColor: LIGHT.border,
-    backgroundColor: "#FFF",
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 999,
   },
-  chipText: { color: LIGHT.subtle, fontWeight: "600", fontSize: 12 },
+  chipText: { fontWeight: "600", fontSize: 12 },
   controls: {
     flexDirection: "row",
     justifyContent: "center",
@@ -357,23 +393,19 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   primaryBtn: {
-    backgroundColor: LIGHT.primary,
     paddingHorizontal: 24,
     paddingVertical: 14,
     borderRadius: 12,
   },
-  primaryBtnText: { color: "#fff", fontWeight: "700" },
+  primaryBtnText: { fontWeight: "700" },
   ghostBtn: {
-    backgroundColor: LIGHT.card,
     borderWidth: 1,
-    borderColor: LIGHT.border,
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderRadius: 12,
   },
-  ghostBtnText: { color: LIGHT.text, fontWeight: "700" },
+  ghostBtnText: { fontWeight: "700" },
   progressCard: {
-    backgroundColor: LIGHT.card,
     borderRadius: 16,
     padding: 16,
     gap: 10,
@@ -383,20 +415,19 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 2,
   },
-  subtle: { color: LIGHT.subtle },
+  subtle: {},
   progressTrack: {
     height: 10,
-    backgroundColor: LIGHT.ringTrack,
     borderRadius: 999,
     overflow: "hidden",
   },
-  progressFill: { height: 10, backgroundColor: LIGHT.primary },
+  progressFill: { height: 10 },
   etaRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
-  eta: { color: LIGHT.text, fontWeight: "700" },
+  eta: { fontWeight: "700" },
   footerRow: { alignItems: "center", marginTop: 4 },
-  footerText: { fontSize: 12, color: LIGHT.subtle },
+  footerText: { fontSize: 12 },
 });

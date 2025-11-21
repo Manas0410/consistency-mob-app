@@ -1,5 +1,8 @@
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
+import { Colors } from "@/constants/theme";
+import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import React from "react";
 import { Pressable } from "react-native";
 
@@ -19,11 +22,20 @@ export function TabSelector({
   activeTab,
   onTabChange,
 }: TabSelectorProps) {
+  const colors = Colors.light; // Always use light theme
+  const pallet = usePallet();
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
+  const iconColor = useColor({}, "icon");
+  const backgroundCardColor = useColor({}, "background");
+  const tabBackgroundColor = "#E0E0E0";
+  const activeTabBackgroundColor = backgroundCardColor;
+
   return (
     <View
       style={{
         flexDirection: "row",
-        backgroundColor: "#E0E0E0",
+        backgroundColor: tabBackgroundColor,
         borderRadius: 8,
         padding: 4,
         alignSelf: "flex-start",
@@ -39,13 +51,17 @@ export function TabSelector({
             style={{
               paddingVertical: 4,
               paddingHorizontal: 12,
-              backgroundColor: isActive ? "#fff" : "transparent",
+              backgroundColor: isActive
+                ? activeTabBackgroundColor
+                : "transparent",
               borderRadius: 6,
             }}
           >
             <Text
               style={{
-                color: isActive ? "#1A1A1A" : "#757575",
+                color: isActive
+                  ? pallet.shade1 || textColor
+                  : textMutedColor || iconColor,
                 fontWeight: isActive ? "bold" : "400",
                 fontSize: 14,
               }}

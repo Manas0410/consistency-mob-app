@@ -29,9 +29,11 @@ import BackHeader from "@/components/ui/back-header";
 import { Input } from "@/components/ui/input";
 import { ScrollView } from "@/components/ui/scroll-view";
 import { Spinner } from "@/components/ui/spinner";
+import { Colors } from "@/constants/theme";
 import { useAddTeamMemberBottomSheet } from "@/contexts/add-team-member-context";
 import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { useUser } from "@clerk/clerk-expo";
 
 import { getAllTeams } from "./API/api-calls";
@@ -45,23 +47,38 @@ const TeamCard: React.FC<{
   onOpenAdd: (teamId: string) => void;
 }> = ({ item, onPressCard, onOpenAdd }) => {
   const pallet = usePallet();
+  const colors = Colors.light;
+  const iconColor = useColor({}, "icon");
+  const textMutedColor = useColor({}, "textMuted");
 
   return (
-    <View style={styles.teamCard}>
+    <View
+      style={[
+        styles.teamCard,
+        { backgroundColor: colors.background, borderColor: colors.border },
+      ]}
+    >
       <TouchableOpacity
         onPress={() => onPressCard(item)}
         activeOpacity={0.7}
         style={{ flex: 1 }}
       >
         <View style={styles.teamCardHeader}>
-          <View style={styles.teamIconContainer}>
+          <View
+            style={[
+              styles.teamIconContainer,
+              { backgroundColor: pallet.shade1 },
+            ]}
+          >
             <Text style={styles.teamIcon}>
               {(item?.teamName ?? "?").charAt(0).toUpperCase()}
             </Text>
           </View>
           <View style={styles.teamInfo}>
-            <Text style={styles.teamName}>{item?.teamName}</Text>
-            <Text style={styles.teamDate}>
+            <Text style={[styles.teamName, { color: colors.text }]}>
+              {item?.teamName}
+            </Text>
+            <Text style={[styles.teamDate, { color: textMutedColor }]}>
               Created{" "}
               {item?.createdAt
                 ? new Date(item.createdAt).toLocaleDateString("en-US", {
@@ -72,20 +89,20 @@ const TeamCard: React.FC<{
                 : "-"}
             </Text>
           </View>
-          <ChevronRight size={20} color="#CBD5E1" />
+          <ChevronRight size={20} color={iconColor} />
         </View>
 
         <View style={styles.teamStats}>
           <View style={styles.statItem}>
-            <Users size={16} color="#6B7280" />
-            <Text style={styles.statText}>
+            <Users size={16} color={iconColor} />
+            <Text style={[styles.statText, { color: textMutedColor }]}>
               {item?.members?.length || 0} member
               {(item?.members?.length || 0) !== 1 ? "s" : ""}
             </Text>
           </View>
           <View style={styles.statItem}>
-            <Calendar size={16} color="#6B7280" />
-            <Text style={styles.statText}>
+            <Calendar size={16} color={iconColor} />
+            <Text style={[styles.statText, { color: textMutedColor }]}>
               {item?.tasks?.length || 0} task
               {(item?.tasks?.length || 0) !== 1 ? "s" : ""}
             </Text>
@@ -96,9 +113,16 @@ const TeamCard: React.FC<{
           {item?.members?.slice(0, 4).map((member: any, index: number) => (
             <View
               key={member?.userId ?? index}
-              style={[styles.memberAvatar, { marginLeft: index > 0 ? -8 : 0 }]}
+              style={[
+                styles.memberAvatar,
+                {
+                  marginLeft: index > 0 ? -8 : 0,
+                  backgroundColor: pallet.shade4,
+                  borderColor: colors.background,
+                },
+              ]}
             >
-              <Text style={styles.memberAvatarText}>
+              <Text style={[styles.memberAvatarText, { color: pallet.shade1 }]}>
                 {(member?.userName ?? "?").charAt(0).toUpperCase()}
               </Text>
             </View>
@@ -108,10 +132,14 @@ const TeamCard: React.FC<{
               style={[
                 styles.memberAvatar,
                 styles.moreMembers,
-                { marginLeft: -8 },
+                {
+                  marginLeft: -8,
+                  backgroundColor: pallet.shade4,
+                  borderColor: colors.background,
+                },
               ]}
             >
-              <Text style={styles.moreMembersText}>
+              <Text style={[styles.moreMembersText, { color: textMutedColor }]}>
                 +{(item?.members?.length || 0) - 4}
               </Text>
             </View>
@@ -139,7 +167,7 @@ const TeamCard: React.FC<{
             gap: 8,
           }}
         >
-          <Plus color={pallet.shade1} />
+          <Plus color={pallet.ButtonText} />
           <Text style={{ color: pallet.ButtonText, fontSize: 12 }}>
             Add member
           </Text>
@@ -169,14 +197,21 @@ const TeamsHeader = React.memo(function TeamsHeader({
   };
 }) {
   const pallet = usePallet();
+  const colors = Colors.light;
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
   const { totalTasks = 0, assignedToMe = 0, completedByMe = 0 } = totals ?? {};
   const assignedFraction =
     totalTasks > 0 ? `${assignedToMe}/${totalTasks}` : String(assignedToMe);
 
   return (
-    <View style={styles.headerContainer}>
+    <View
+      style={[styles.headerContainer, { backgroundColor: colors.background }]}
+    >
       <View style={styles.welcomeSection}>
-        <Text style={styles.welcomeSubtext}>Manage your teams and task</Text>
+        <Text style={[styles.welcomeSubtext, { color: textMutedColor }]}>
+          Manage your teams and task
+        </Text>
       </View>
 
       <ScrollView
@@ -184,38 +219,78 @@ const TeamsHeader = React.memo(function TeamsHeader({
         style={styles.statsContainer}
         showsHorizontalScrollIndicator={false}
       >
-        <View style={styles.statCard}>
-          <View style={styles.statIconContainer}>
-            <Users size={20} color="#3B82F6" />
+        <View
+          style={[
+            styles.statCard,
+            { backgroundColor: colors.card, borderColor: colors.border },
+          ]}
+        >
+          <View
+            style={[
+              styles.statIconContainer,
+              { backgroundColor: pallet.shade4 },
+            ]}
+          >
+            <Users size={20} color={pallet.shade1} />
           </View>
-          <Text style={styles.statNumber}>{Teams.length}</Text>
-          <Text style={styles.statLabel}>Teams</Text>
+          <Text style={[styles.statNumber, { color: textColor }]}>
+            {Teams.length}
+          </Text>
+          <Text style={[styles.statLabel, { color: textMutedColor }]}>
+            Teams
+          </Text>
         </View>
 
-        <View style={styles.statCard}>
+        <View
+          style={[
+            styles.statCard,
+            { backgroundColor: colors.card, borderColor: colors.border },
+          ]}
+        >
           <View
-            style={[styles.statIconContainer, { backgroundColor: "#F0FDF4" }]}
+            style={[
+              styles.statIconContainer,
+              { backgroundColor: pallet.shade4 },
+            ]}
           >
-            <TrendingUp size={20} color="#F59E0B" />
+            <TrendingUp size={20} color={pallet.shade2} />
           </View>
-          <Text style={styles.statNumber}>{assignedFraction}</Text>
-          <Text style={styles.statLabel}>Tasks Assigned</Text>
+          <Text style={[styles.statNumber, { color: textColor }]}>
+            {assignedFraction}
+          </Text>
+          <Text style={[styles.statLabel, { color: textMutedColor }]}>
+            Tasks Assigned
+          </Text>
         </View>
 
-        <View style={styles.statCard}>
+        <View
+          style={[
+            styles.statCard,
+            { backgroundColor: colors.card, borderColor: colors.border },
+          ]}
+        >
           <View
-            style={[styles.statIconContainer, { backgroundColor: "#EFF6FF" }]}
+            style={[
+              styles.statIconContainer,
+              { backgroundColor: pallet.shade4 },
+            ]}
           >
-            <TrendingUp size={20} color="#10B981" />
+            <TrendingUp size={20} color={pallet.shade1} />
           </View>
-          <Text style={styles.statNumber}>{completedByMe}</Text>
-          <Text style={styles.statLabel}>Completed</Text>
+          <Text style={[styles.statNumber, { color: textColor }]}>
+            {completedByMe}
+          </Text>
+          <Text style={[styles.statLabel, { color: textMutedColor }]}>
+            Completed
+          </Text>
         </View>
       </ScrollView>
 
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>Your Teams</Text>
-        <Text style={styles.sectionSubtitle}>
+        <Text style={[styles.sectionTitle, { color: textColor }]}>
+          Your Teams
+        </Text>
+        <Text style={[styles.sectionSubtitle, { color: textMutedColor }]}>
           {Teams.length} teams available
         </Text>
       </View>
@@ -382,20 +457,35 @@ const TeamsListing: React.FC<{ rerender?: any }> = ({ rerender }) => {
     router.push(`/${item?._id}/TeamDetails`);
   };
 
-  const renderEmptyState = () => (
-    <View style={styles.emptyStateContainer}>
-      <View style={styles.emptyStateIcon}>
-        <Users size={48} color="#D1D5DB" />
+  const renderEmptyState = () => {
+    const colors = Colors.light;
+    const textColor = useColor({}, "text");
+    const textMutedColor = useColor({}, "textMuted");
+    const iconColor = useColor({}, "icon");
+
+    return (
+      <View style={styles.emptyStateContainer}>
+        <View
+          style={[styles.emptyStateIcon, { backgroundColor: pallet.shade4 }]}
+        >
+          <Users size={48} color={iconColor} />
+        </View>
+        <Text style={[styles.emptyStateTitle, { color: textColor }]}>
+          No teams yet
+        </Text>
+        <Text style={[styles.emptyStateSubtitle, { color: textMutedColor }]}>
+          Create your first team to start collaborating with others
+        </Text>
       </View>
-      <Text style={styles.emptyStateTitle}>No teams yet</Text>
-      <Text style={styles.emptyStateSubtitle}>
-        Create your first team to start collaborating with others
-      </Text>
-    </View>
-  );
+    );
+  };
+
+  const colors = Colors.light;
+  const backgroundColor = useColor({}, "background");
+  const textColor = useColor({}, "text");
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor }]}>
       <StatusBar style="dark" />
       <BackHeader title="Teams" />
 
@@ -404,7 +494,7 @@ const TeamsListing: React.FC<{ rerender?: any }> = ({ rerender }) => {
 
       <View style={{ flex: 1 }}>
         <FlatList
-          style={styles.listContainer}
+          style={[styles.listContainer, { backgroundColor }]}
           data={Teams}
           keyExtractor={(item: any) => String(item?._id)}
           renderItem={({ item }) => (
@@ -429,9 +519,14 @@ const TeamsListing: React.FC<{ rerender?: any }> = ({ rerender }) => {
         />
 
         {initialLoading && (
-          <View style={styles.initialOverlay}>
+          <View
+            style={[
+              styles.initialOverlay,
+              { backgroundColor: backgroundColor + "E6" },
+            ]}
+          >
             <Spinner variant="bars" size="default" color={pallet.shade1} />
-            <Text>Loading your teams...</Text>
+            <Text style={{ color: textColor }}>Loading your teams...</Text>
           </View>
         )}
       </View>
@@ -440,16 +535,15 @@ const TeamsListing: React.FC<{ rerender?: any }> = ({ rerender }) => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1, backgroundColor: "#F8FAFC" },
+  safeArea: { flex: 1 },
 
   headerContainer: {
-    backgroundColor: "#fff",
     paddingHorizontal: 20,
     paddingBottom: 24,
     marginBottom: 8,
   },
   welcomeSection: { marginTop: 16, marginBottom: 24 },
-  welcomeSubtext: { fontSize: 16, color: "#64748B", fontWeight: "500" },
+  welcomeSubtext: { fontSize: 16, fontWeight: "500" },
 
   statsContainer: {
     flexDirection: "row",
@@ -458,12 +552,10 @@ const styles = StyleSheet.create({
     display: "flex",
   },
   statCard: {
-    backgroundColor: "#F8FAFC",
     borderRadius: 16,
     padding: 10,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#E2E8F0",
     marginRight: 8,
     width: 130,
   },
@@ -471,7 +563,6 @@ const styles = StyleSheet.create({
     width: 40,
     height: 40,
     borderRadius: 20,
-    backgroundColor: "#DBEAFE",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 12,
@@ -479,12 +570,10 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 16,
     fontWeight: "800",
-    color: "#1E293B",
     marginBottom: 4,
   },
   statLabel: {
     fontSize: 10,
-    color: "#64748B",
     fontWeight: "600",
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -494,22 +583,18 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 20,
     fontWeight: "700",
-    color: "#1E293B",
     marginBottom: 4,
   },
-  sectionSubtitle: { fontSize: 14, color: "#64748B", fontWeight: "500" },
+  sectionSubtitle: { fontSize: 14, fontWeight: "500" },
 
-  listContainer: { flex: 1, backgroundColor: "#F8FAFC" },
+  listContainer: { flex: 1 },
   listContent: { paddingBottom: 220 },
   itemSeparator: { height: 16 },
 
   teamCard: {
-    backgroundColor: "#fff",
     borderRadius: 16,
     padding: 0,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
-    shadowColor: "#1E293B",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
@@ -528,7 +613,6 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: "#3B82F6",
     justifyContent: "center",
     alignItems: "center",
     marginRight: 16,
@@ -538,10 +622,9 @@ const styles = StyleSheet.create({
   teamName: {
     fontSize: 18,
     fontWeight: "700",
-    color: "#1E293B",
     marginBottom: 4,
   },
-  teamDate: { fontSize: 14, color: "#64748B", fontWeight: "500" },
+  teamDate: { fontSize: 14, fontWeight: "500" },
   teamStats: {
     flexDirection: "row",
     gap: 20,
@@ -550,7 +633,7 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   statItem: { flexDirection: "row", alignItems: "center", gap: 6 },
-  statText: { fontSize: 14, color: "#6B7280", fontWeight: "500" },
+  statText: { fontSize: 14, fontWeight: "500" },
   memberAvatars: {
     flexDirection: "row",
     alignItems: "center",
@@ -561,15 +644,13 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: "#E2E8F0",
     justifyContent: "center",
     alignItems: "center",
     borderWidth: 2,
-    borderColor: "#fff",
   },
-  memberAvatarText: { fontSize: 12, fontWeight: "600", color: "#64748B" },
-  moreMembers: { backgroundColor: "#F1F5F9" },
-  moreMembersText: { fontSize: 10, fontWeight: "600", color: "#6B7280" },
+  memberAvatarText: { fontSize: 12, fontWeight: "600" },
+  moreMembers: {},
+  moreMembersText: { fontSize: 10, fontWeight: "600" },
 
   emptyStateContainer: {
     alignItems: "center",
@@ -580,7 +661,6 @@ const styles = StyleSheet.create({
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: "#F1F5F9",
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 24,
@@ -588,13 +668,11 @@ const styles = StyleSheet.create({
   emptyStateTitle: {
     fontSize: 24,
     fontWeight: "700",
-    color: "#1E293B",
     marginBottom: 8,
     textAlign: "center",
   },
   emptyStateSubtitle: {
     fontSize: 16,
-    color: "#64748B",
     textAlign: "center",
     lineHeight: 24,
     marginBottom: 32,
@@ -603,12 +681,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     marginLeft: 8,
-    color: "#3B82F6",
   },
 
   initialOverlay: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(248,250,252,0.9)",
     justifyContent: "center",
     alignItems: "center",
   },

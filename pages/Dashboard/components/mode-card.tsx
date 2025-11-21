@@ -3,8 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
+import { Colors } from "@/constants/theme";
 import { useSelectMode } from "@/contexts/select-mode-context";
 import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { useRouter } from "expo-router";
 import { Apple, ArrowRight, Target, Timer } from "lucide-react-native";
 import React from "react";
@@ -13,6 +15,9 @@ import { Pressable, View as RNView, StyleSheet } from "react-native";
 const WorkModesCard = () => {
   const pallet = usePallet();
   const router = useRouter();
+  const colors = Colors.light; // Always use light theme
+  const cardBackgroundColor = useColor({}, "background");
+  const modeTileBackgroundColor = "#F9FAFB";
 
   const {
     hydrated,
@@ -61,7 +66,7 @@ const WorkModesCard = () => {
       style={[
         styles.card,
         {
-          backgroundColor: "#fff",
+          backgroundColor: cardBackgroundColor,
           borderColor: pallet.shade3 + "33",
           shadowColor: pallet.shade3,
         },
@@ -147,13 +152,18 @@ const WorkModesCard = () => {
             styles.modeTile,
             {
               borderColor: pallet.shade3 + "66",
-              backgroundColor: "#F9FAFB",
+              backgroundColor: modeTileBackgroundColor,
             },
             pressed && { opacity: 0.9, transform: [{ scale: 0.98 }] },
           ]}
         >
           <RNView style={styles.modeHeader}>
-            <RNView style={styles.modeIconWrap}>
+            <RNView
+              style={[
+                styles.modeIconWrap,
+                { backgroundColor: cardBackgroundColor },
+              ]}
+            >
               <Icon name={Apple} size={18} color={pallet.shade1} />
             </RNView>
             <Text
@@ -182,13 +192,18 @@ const WorkModesCard = () => {
             styles.modeTile,
             {
               borderColor: pallet.shade3 + "66",
-              backgroundColor: "#F9FAFB",
+              backgroundColor: modeTileBackgroundColor,
             },
             pressed && { opacity: 0.9, transform: [{ scale: 0.98 }] },
           ]}
         >
           <RNView style={styles.modeHeader}>
-            <RNView style={styles.modeIconWrap}>
+            <RNView
+              style={[
+                styles.modeIconWrap,
+                { backgroundColor: cardBackgroundColor },
+              ]}
+            >
               <Icon name={Target} size={18} color={pallet.shade1} />
             </RNView>
             <Text
@@ -279,7 +294,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "#FFFFFF",
+    // backgroundColor will be set dynamically
   },
   modeTitle: {
     fontWeight: "600",

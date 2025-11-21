@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Text } from "@/components/ui/text";
+import { usePallet } from "@/hooks/use-pallet";
 import { useColor } from "@/hooks/useColor";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useRef, useState } from "react";
@@ -74,6 +75,8 @@ export function Onboarding({
   const backgroundColor = useColor({}, "background");
   const primaryColor = useColor({}, "primary");
   const mutedColor = useColor({}, "mutedForeground");
+  const textColor = useColor({}, "text");
+  const pallet = usePallet();
 
   const isLastStep = currentStep === steps.length - 1;
   const isFirstStep = currentStep === 0;
@@ -192,7 +195,10 @@ export function Onboarding({
                 </Text>
               </View>
             )}
-            <Text variant="body" style={styles.description}>
+            <Text
+              variant="body"
+              style={[styles.description, { color: mutedColor }]}
+            >
               {step.description}
             </Text>
           </View>
@@ -211,7 +217,7 @@ export function Onboarding({
     <View style={[styles.container, { backgroundColor }, style]}>
       {/* Close Button */}
       <TouchableOpacity style={styles.closeButton} onPress={handleSkip}>
-        <Ionicons name="close" size={32} color="#000" />
+        <Ionicons name="close" size={32} color={textColor} />
       </TouchableOpacity>
 
       {/* Main Content Area */}
@@ -324,7 +330,6 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     paddingHorizontal: 20,
     fontSize: 16,
-    color: "#999",
   },
   componentContainer: {
     width: "100%",
@@ -373,7 +378,7 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   primaryButton: {
-    backgroundColor: "#3B82F6",
+    // backgroundColor will be set by Button component using palette
   },
   fullWidthButton: {
     flex: 1,

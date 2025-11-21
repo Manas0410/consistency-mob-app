@@ -1,4 +1,6 @@
+import { Colors } from "@/constants/theme";
 import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import React from "react";
 import { Image, StyleSheet, Text, View } from "react-native";
 
@@ -8,12 +10,29 @@ interface StreakCardProps {
 
 export default function StreakCard({ streak }: StreakCardProps) {
   const pallet = usePallet();
+  const colors = Colors.light; // Always use light theme
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
+  const iconColor = useColor({}, "icon");
+  const backgroundCardColor = useColor({}, "background");
+
   return (
     <View>
-      <View style={styles.card}>
+      <View
+        style={[
+          styles.card,
+          {
+            backgroundColor: backgroundCardColor,
+            borderColor: pallet.shade3,
+            shadowColor: pallet.shade1,
+          },
+        ]}
+      >
         <View style={styles.textContainer}>
-          <Text style={styles.title}>Day Streak!</Text>
-          <Text style={styles.subtitle}>
+          <Text style={[styles.title, { color: textColor }]}>Day Streak!</Text>
+          <Text
+            style={[styles.subtitle, { color: textMutedColor || iconColor }]}
+          >
             you've maintained a {streak}-days of{" "}
             <Text style={{ fontWeight: "bold" }}>task completion</Text> streak!
           </Text>
@@ -25,7 +44,11 @@ export default function StreakCard({ streak }: StreakCardProps) {
             resizeMode="contain"
           />
           <View style={styles.streakNumberOverlay}>
-            <Text style={styles.streakNumber}>{streak}</Text>
+            <Text
+              style={[styles.streakNumber, { textShadowColor: pallet.shade1 }]}
+            >
+              {streak}
+            </Text>
           </View>
         </View>
       </View>
@@ -38,15 +61,12 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
     borderRadius: 24,
     padding: 18,
-    shadowColor: "#a18aff",
     shadowOpacity: 0.12,
     shadowRadius: 12,
     elevation: 4,
     borderWidth: 2,
-    borderColor: "#e0e0e0",
     // Gradient border effect
     borderStyle: "solid",
   },
@@ -73,7 +93,6 @@ const styles = StyleSheet.create({
     fontSize: 32,
     fontWeight: "bold",
     color: "#fff",
-    textShadowColor: "#d17b2c",
     textShadowOffset: { width: 0, height: 2 },
     textShadowRadius: 6,
   },
@@ -83,11 +102,9 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "bold",
-    color: "#222",
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 15,
-    color: "#888",
   },
 });

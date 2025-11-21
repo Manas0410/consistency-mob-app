@@ -1,58 +1,88 @@
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
+import { Colors } from "@/constants/theme";
+import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { useRouter } from "expo-router";
 import {
   ArrowRight,
   Calendar,
   Goal,
+  LucideProps,
   PlaneTakeoff,
   Sparkles,
   Users,
 } from "lucide-react-native";
+import { ComponentType } from "react";
 import { TouchableOpacity } from "react-native";
 
-const quickActionsData = (router) => [
+type QuickActionData = {
+  title: string;
+  subtitle: string;
+  icon: ComponentType<LucideProps>;
+  color: string;
+  bgColor: string;
+  onPress: () => void;
+};
+
+const quickActionsData = (
+  router: ReturnType<typeof useRouter>,
+  pallet: ReturnType<typeof usePallet>
+): QuickActionData[] => [
   {
     title: "Track tasks",
     subtitle: "Track your daily tasks",
     icon: Calendar,
-    color: "#3b82f6",
-    bgColor: "#dbeafe",
+    color: pallet.shade1,
+    bgColor: pallet.shade4,
     onPress: () => router.push("/calendar"),
   },
   {
     title: "Ask AI",
     subtitle: "need mativation ?",
     icon: Sparkles,
-    color: "#3b82f6",
-    bgColor: "#dbeafe",
+    color: pallet.shade1,
+    bgColor: pallet.shade4,
     onPress: () => router.push("/ai-chat"),
   },
   {
     title: "AI Planner",
     subtitle: "Get your tasks plan via AI",
     icon: PlaneTakeoff,
-    color: "#3b82f6",
-    bgColor: "#dbeafe",
+    color: pallet.shade1,
+    bgColor: pallet.shade4,
     onPress: () => router.push("/ai-chat"),
   },
   {
     title: "Manage your teams",
     subtitle: "Manage your team and wwork with your fellows",
     icon: Users,
-    color: "#3b82f6",
-    bgColor: "#dbeafe",
+    color: pallet.shade1,
+    bgColor: pallet.shade4,
     onPress: () => router.push("/team"),
   },
   {
     title: "Create Habits",
     subtitle: "turn your goals into habits",
     icon: Goal,
-    color: "#3b82f6",
-    bgColor: "#dbeafe",
+    color: pallet.shade1,
+    bgColor: pallet.shade4,
     onPress: () => router.push("/habbit"),
   },
 ];
+
+interface QuickActionCardProps {
+  title: string;
+  subtitle: string;
+  icon: ComponentType<LucideProps>;
+  color: string;
+  bgColor: string;
+  onPress: () => void;
+  textColor: string;
+  textMutedColor?: string;
+  iconColor: string;
+  cardBackgroundColor: string;
+}
 
 const QuickActionCard = ({
   title,
@@ -61,11 +91,15 @@ const QuickActionCard = ({
   color,
   bgColor,
   onPress,
-}) => (
+  textColor,
+  textMutedColor,
+  iconColor,
+  cardBackgroundColor,
+}: QuickActionCardProps) => (
   <TouchableOpacity
     onPress={onPress}
     style={{
-      backgroundColor: "#ffffff",
+      backgroundColor: cardBackgroundColor,
       borderRadius: 20,
       padding: 20,
       flexDirection: "row",
@@ -96,21 +130,29 @@ const QuickActionCard = ({
         style={{
           fontSize: 16,
           fontWeight: "600",
-          color: "#1f2937",
+          color: textColor,
           marginBottom: 2,
         }}
       >
         {" "}
         {title}{" "}
       </Text>
-      <Text style={{ fontSize: 13, color: "#64748b" }}>{subtitle}</Text>
+      <Text style={{ fontSize: 13, color: textMutedColor || iconColor }}>
+        {subtitle}
+      </Text>
     </View>
-    <ArrowRight size={20} color="#94a3b8" />
+    <ArrowRight size={20} color={iconColor} />
   </TouchableOpacity>
 );
 
 const QuickActions = () => {
   const router = useRouter();
+  const pallet = usePallet();
+  const colors = Colors.light; // Always use light theme
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
+  const iconColor = useColor({}, "icon");
+  const cardBackgroundColor = useColor({}, "background");
 
   return (
     <View style={{ marginBottom: 32 }}>
@@ -118,14 +160,14 @@ const QuickActions = () => {
         style={{
           fontSize: 20,
           fontWeight: "bold",
-          color: "#1f2937",
+          color: textColor,
           marginBottom: 16,
         }}
       >
         Quick Actions
       </Text>
 
-      {quickActionsData(router).map((action, index) => (
+      {quickActionsData(router, pallet).map((action, index) => (
         <QuickActionCard
           key={index}
           title={action.title}
@@ -134,6 +176,10 @@ const QuickActions = () => {
           color={action.color}
           bgColor={action.bgColor}
           onPress={action.onPress}
+          textColor={textColor}
+          textMutedColor={textMutedColor}
+          iconColor={iconColor}
+          cardBackgroundColor={cardBackgroundColor}
         />
       ))}
     </View>

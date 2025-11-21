@@ -6,4 +6,5 @@ export type TaskData = {
   priority: 0 | 1 | 2;
   frequency: number[];
   category: string;
+  sync?: boolean;
 };

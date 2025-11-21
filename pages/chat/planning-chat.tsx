@@ -10,6 +10,8 @@ import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { useToast } from "@/components/ui/toast";
 import { View } from "@/components/ui/view";
+import { Colors } from "@/constants/theme";
+import { usePallet } from "@/hooks/use-pallet";
 import { useColor } from "@/hooks/useColor";
 import { Lightbulb, Plus, SendHorizonal, X } from "lucide-react-native";
 import { useState } from "react";
@@ -38,8 +40,14 @@ const PlanningChat = () => {
 
   const { success, error } = useToast();
 
-  const card = useColor({}, "card");
-  const blue = useColor({}, "blue");
+  const pallet = usePallet();
+  const colors = Colors.light; // Always use light theme
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
+  const iconColor = useColor({}, "icon");
+  const backgroundColor = useColor({}, "background");
+  const borderColor = useColor({}, "border");
+  const cardBackgroundColor = "#F2F2F7";
   const insets = useSafeAreaInsets();
 
   const hadleCheckBoxChange = (isChecked: boolean, item: any) => {
@@ -96,45 +104,51 @@ const PlanningChat = () => {
     }
   };
 
-  const RenderMessage = ({ text, isMessage }: any) => (
-    <View>
-      <View
-        style={{
-          marginBottom: 12,
-          alignItems: isMessage ? "flex-end" : "flex-start",
-        }}
-      >
+  const RenderMessage = ({ text, isMessage }: any) => {
+    const userMessageBg = "#F2F2F7";
+    const aiMessageBg = pallet.shade1;
+
+    return (
+      <View>
         <View
           style={{
-            maxWidth: "80%",
-            padding: 12,
-            borderRadius: 16,
-            backgroundColor: isMessage ? "#F2F2F7" : blue,
+            marginBottom: 12,
+            alignItems: isMessage ? "flex-end" : "flex-start",
           }}
         >
-          <Text
+          <View
             style={{
-              color: isMessage ? "#000" : "white",
-              fontSize: 16,
+              maxWidth: "80%",
+              padding: 12,
+              borderRadius: 16,
+              backgroundColor: isMessage ? userMessageBg : aiMessageBg,
             }}
           >
-            {text}
-          </Text>
-          {/* <Text
+            <Text
+              style={{
+                color: isMessage ? textColor : "white",
+                fontSize: 16,
+              }}
+            >
+              {text}
+            </Text>
+            {/* <Text
           style={{
-            color: isMessage ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.7)",
+            color: isMessage ? (textMutedColor || iconColor) : "rgba(255,255,255,0.7)",
             fontSize: 12,
             marginTop: 4,
           }}
         >
           {format(parseISO(item.createdAt), "d MMMM hh:mmaaa")}
         </Text> */}
+          </View>
         </View>
       </View>
-    </View>
-  );
+    );
+  };
+
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+    <View style={{ flex: 1, backgroundColor }}>
       {/* Message List */}
       <ScrollView style={{ flex: 1, paddingHorizontal: 16 }}>
         {message && <RenderMessage text={message} isMessage={true} />}
@@ -148,8 +162,8 @@ const PlanningChat = () => {
               justifyContent: "center",
             }}
           >
-            <Spinner variant="pulse" color={blue} />
-            <Text style={{ color: blue }}>Generating plan ...</Text>
+            <Spinner variant="pulse" color={pallet.shade1} />
+            <Text style={{ color: pallet.shade1 }}>Generating plan ...</Text>
           </View>
         ) : (
           <>
@@ -217,13 +231,13 @@ const PlanningChat = () => {
               style={{
                 padding: 12,
                 borderBottomWidth: 1,
-                borderBottomColor: "#eee",
+                borderBottomColor: borderColor || "#eee",
                 flexDirection: "row",
                 gap: 8,
               }}
             >
-              <Icon name={Lightbulb} size={16} color="#000" />
-              <Text style={{ color: "#000", fontSize: 13 }}>{prompt}</Text>
+              <Icon name={Lightbulb} size={16} color={pallet.shade1} />
+              <Text style={{ color: textColor, fontSize: 13 }}>{prompt}</Text>
             </Pressable>
           ))}
         </View>
@@ -236,7 +250,7 @@ const PlanningChat = () => {
           flexDirection: "row",
           paddingHorizontal: 16,
           gap: 12,
-          backgroundColor: card,
+          backgroundColor: cardBackgroundColor,
           paddingBottom: insets.bottom,
           paddingTop: 16,
         }}

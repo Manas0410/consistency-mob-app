@@ -2,6 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { InputOTP } from "@/components/ui/input-otp";
 import { baseURL } from "@/constants/axios-config";
+import { Colors } from "@/constants/theme";
+import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { useSignUp } from "@clerk/clerk-expo";
 import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
@@ -13,6 +16,12 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 export default function Page() {
   const { isLoaded, signUp, setActive } = useSignUp();
   const router = useRouter();
+  const colors = Colors.light; // Always use light theme
+  const pallet = usePallet();
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
+  const iconColor = useColor({}, "icon");
+  const backgroundCardColor = useColor({}, "background");
 
   const [emailAddress, setEmailAddress] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -99,12 +108,17 @@ export default function Page() {
 
   // If we are waiting for verification
   if (pendingVerification) {
-    const success = "#10B981";
+    const success = colors.green || "#10B981";
     return (
       <LinearGradient colors={["#f6f8ff", "#f2f7fb"]} style={styles.gradient}>
         <View style={styles.pageWrap}>
-          <View style={styles.card}>
-            <View style={styles.logoWrap}>
+          <View style={[styles.card, { backgroundColor: backgroundCardColor }]}>
+            <View
+              style={[
+                styles.logoWrap,
+                { backgroundColor: backgroundCardColor },
+              ]}
+            >
               {/* Use PNG if you don't have react-native-svg set up */}
               <Image
                 source={require("../../assets/images/logo.png")}
@@ -113,8 +127,12 @@ export default function Page() {
               />
             </View>
 
-            <Text style={styles.title}>Verify your email</Text>
-            <Text style={styles.subtitle}>
+            <Text style={[styles.title, { color: textColor }]}>
+              Verify your email
+            </Text>
+            <Text
+              style={[styles.subtitle, { color: textMutedColor || iconColor }]}
+            >
               Enter the verification code we sent to your email
             </Text>
 
@@ -132,7 +150,13 @@ export default function Page() {
                 }}
               />
 
-              {errorMsg ? <Text style={styles.error}>{errorMsg}</Text> : null}
+              {errorMsg ? (
+                <Text
+                  style={[styles.error, { color: colors.red || "#B00020" }]}
+                >
+                  {errorMsg}
+                </Text>
+              ) : null}
 
               <Button
                 variant="success"
@@ -156,7 +180,14 @@ export default function Page() {
                   pressed && { opacity: 0.7 },
                 ]}
               >
-                <Text style={styles.ghostText}>Edit details</Text>
+                <Text
+                  style={[
+                    styles.ghostText,
+                    { color: textMutedColor || iconColor },
+                  ]}
+                >
+                  Edit details
+                </Text>
               </Pressable>
             </View>
           </View>
@@ -169,8 +200,10 @@ export default function Page() {
   return (
     <LinearGradient colors={["#f6f8ff", "#f2f7fb"]} style={styles.gradient}>
       <View style={styles.pageWrap}>
-        <View style={styles.card}>
-          <View style={styles.logoWrap}>
+        <View style={[styles.card, { backgroundColor: backgroundCardColor }]}>
+          <View
+            style={[styles.logoWrap, { backgroundColor: backgroundCardColor }]}
+          >
             <Image
               source={require("../../assets/images/logo.png")}
               style={styles.logo}
@@ -178,8 +211,12 @@ export default function Page() {
             />
           </View>
 
-          <Text style={styles.title}>Create Account</Text>
-          <Text style={styles.subtitle}>
+          <Text style={[styles.title, { color: textColor }]}>
+            Create Account
+          </Text>
+          <Text
+            style={[styles.subtitle, { color: textMutedColor || iconColor }]}
+          >
             Join us — create your account in seconds
           </Text>
 
@@ -233,7 +270,11 @@ export default function Page() {
               containerStyle={{ marginBottom: 6 }}
             />
 
-            {errorMsg ? <Text style={styles.error}>{errorMsg}</Text> : null}
+            {errorMsg ? (
+              <Text style={[styles.error, { color: colors.red || "#B00020" }]}>
+                {errorMsg}
+              </Text>
+            ) : null}
 
             <Button
               onPress={onSignUpPress}
@@ -252,10 +293,19 @@ export default function Page() {
             </Button>
 
             <View style={styles.footer}>
-              <Text style={styles.footerText}>Have an account?</Text>
+              <Text
+                style={[
+                  styles.footerText,
+                  { color: textMutedColor || iconColor },
+                ]}
+              >
+                Have an account?
+              </Text>
               <Link href="/sign-in">
                 <Pressable>
-                  <Text style={styles.link}>Sign in</Text>
+                  <Text style={[styles.link, { color: pallet.shade1 }]}>
+                    Sign in
+                  </Text>
                 </Pressable>
               </Link>
             </View>
@@ -277,7 +327,6 @@ const styles = StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 480,
-    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 24,
     // iOS shadow
@@ -293,7 +342,6 @@ const styles = StyleSheet.create({
     width: 84,
     height: 84,
     borderRadius: 42,
-    backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
     marginTop: -60,
@@ -309,13 +357,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: "#111827",
     textAlign: "center",
     marginTop: 8,
   },
   subtitle: {
     fontSize: 13,
-    color: "#6b7280",
     textAlign: "center",
     marginBottom: 16,
   },
@@ -323,7 +369,6 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   error: {
-    color: "#B00020",
     textAlign: "center",
     marginBottom: 8,
     fontSize: 13,
@@ -332,7 +377,7 @@ const styles = StyleSheet.create({
     marginTop: 8,
     borderRadius: 12,
     width: "100%",
-    backgroundColor: "#177AD5",
+    // backgroundColor will be set by Button component using palette
   },
   actionsRow: {
     marginTop: 12,
@@ -344,11 +389,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   ghostText: {
-    color: "#6b7280",
     fontSize: 13,
   },
   forgotText: {
-    color: "#2563EB",
     textDecorationLine: "underline",
     fontSize: 13,
   },
@@ -359,10 +402,9 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   footerText: {
-    color: "#6b7280",
+    // Color set dynamically
   },
   link: {
-    color: "#2563EB",
     fontWeight: "600",
     marginLeft: 6,
   },

@@ -128,7 +128,7 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
                 <View
                   style={{ flexDirection: "row", alignItems: "center", gap: 6 }}
                 >
-                  <Icon name={ClockPlus} size={18} />
+                  <Icon name={ClockPlus} size={18} color={pallet.shade1} />
                   <Text style={styles.gapMsg}>
                     Use {item.gapHours ? `${item.gapHours}h ` : ""}
                     {item.gapMins ? `${item.gapMins}m` : ""}

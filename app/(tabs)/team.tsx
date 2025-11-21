@@ -1,6 +1,7 @@
 // import CategoryClock from "@/components/category-clock";
 import { View } from "@/components/ui/view";
 // import TaskDetail from "@/pages/task-viewer/task-description";
+import { useColor } from "@/hooks/useColor";
 import { AddTeam } from "@/pages/Team/components/create-team";
 import { JoinTeam } from "@/pages/Team/components/join-team";
 import TeamsListing from "@/pages/Team/Teams-listpage";
@@ -9,12 +10,13 @@ import { useState } from "react";
 const Team = () => {
   // return <TeamDashboard/>
   const [rerender, toggleRerender] = useState<boolean>(false);
+  const backgroundColor = useColor({}, "background");
 
   return (
     <View
       style={{
         flex: 1,
-        backgroundColor: "#fff",
+        backgroundColor: backgroundColor,
       }}
     >
       <TeamsListing rerender={rerender} />

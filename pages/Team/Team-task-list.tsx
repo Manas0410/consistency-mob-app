@@ -1,10 +1,12 @@
 import { Icon } from "@/components/ui/icon";
 import { ScrollView } from "@/components/ui/scroll-view";
 import { Spinner } from "@/components/ui/spinner";
+import { Colors } from "@/constants/theme";
 import { useAddTeamTaskSheet } from "@/contexts/add-team-task-context";
 import { useGetViewTask } from "@/contexts/selected-view-task-context";
 import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { addHours, differenceInMinutes, format, parseISO } from "date-fns";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ClockPlus, FileText, Flag, Users } from "lucide-react-native";
@@ -58,6 +60,11 @@ const getTimeDuration = (start: string, end: string) => {
 
 const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
   const pallet = usePallet();
+  const colors = Colors.light;
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
+  const cardBackgroundColor = useColor({}, "card");
+  const backgroundColor = useColor({}, "background");
   const [taskListData, setTaskListData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const { currentTeamData } = useCurrentTeamData();
@@ -134,21 +141,17 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
   if (!taskListData.length) {
     return (
       <ScrollView
-        contentContainerStyle={[
-          styles.emptyContainer,
-          { backgroundColor: "#F8FAFC" },
-        ]}
+        contentContainerStyle={[styles.emptyContainer, { backgroundColor }]}
       >
         <View
-          style={[
-            styles.emptyIllustration,
-            { backgroundColor: pallet.shade4 || "#EFF6FF" },
-          ]}
+          style={[styles.emptyIllustration, { backgroundColor: pallet.shade4 }]}
         >
           <Text style={styles.emptyEmoji}>📝</Text>
         </View>
-        <Text style={styles.emptyTitle}>No tasks for today</Text>
-        <Text style={styles.emptySubtitle}>
+        <Text style={[styles.emptyTitle, { color: textColor }]}>
+          No tasks for today
+        </Text>
+        <Text style={[styles.emptySubtitle, { color: textMutedColor }]}>
           Looks like you have a free day — add a task to plan your time or
           import from your team.
         </Text>
@@ -160,7 +163,11 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
               open();
             }}
           >
-            <Text style={styles.primaryActionText}>+ Add Task</Text>
+            <Text
+              style={[styles.primaryActionText, { color: pallet.ButtonText }]}
+            >
+              + Add Task
+            </Text>
           </TouchableOpacity>
 
           {/* <TouchableOpacity
@@ -213,7 +220,7 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
                     gap: 6,
                   }}
                 >
-                  <Icon name={ClockPlus} size={18} />
+                  <Icon name={ClockPlus} size={18} color={pallet.shade1} />
                   <Text style={styles.gapMsg}>
                     Use {item.gapHours ? `${item.gapHours}h ` : ""}
                     {item.gapMins ? `${item.gapMins}m` : ""}
@@ -222,7 +229,9 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
                 <TouchableOpacity
                   style={[styles.addBtn, { backgroundColor: pallet.shade3 }]}
                 >
-                  <Text style={[styles.addBtnText, { color: "#fff" }]}>
+                  <Text
+                    style={[styles.addBtnText, { color: pallet.ButtonText }]}
+                  >
                     + Add Task
                   </Text>
                 </TouchableOpacity>
@@ -254,16 +263,17 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
                 }}
                 style={styles.detailsCol}
               >
-                <Text style={styles.timeText}>
+                <Text style={[styles.timeText, { color: textMutedColor }]}>
                   {getTimeStr(item.taskStartDateTime)} -{" "}
                   {getTimeStr(item.endTime)}{" "}
-                  <Text style={styles.durationText}>
+                  <Text style={[styles.durationText, { color: pallet.shade2 }]}>
                     ({getTimeDuration(item.taskStartDateTime, item.endTime)})
                   </Text>
                 </Text>
                 <View
                   style={[
                     styles.taskBox,
+                    { backgroundColor: cardBackgroundColor },
                     item.isDone && { backgroundColor: pallet.shade4 },
                   ]}
                 >
@@ -289,12 +299,15 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
                   <Text
                     style={[
                       styles.taskTitle,
+                      { color: textColor },
                       item.isDone && styles.strikethrough,
                     ]}
                   >
                     {item.taskName}
                   </Text>
-                  {item.taskDescription && <Icon name={FileText} size={18} />}
+                  {item.taskDescription && (
+                    <Icon name={FileText} size={18} color={textMutedColor} />
+                  )}
                   {item?.assignees?.length ? (
                     <View
                       style={{
@@ -303,8 +316,10 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
                         gap: 6,
                       }}
                     >
-                      <Icon name={Users} size={18} />
-                      <Text>{item.assignees.length} Assignees</Text>
+                      <Icon name={Users} size={18} color={textMutedColor} />
+                      <Text style={{ color: textMutedColor }}>
+                        {item.assignees.length} Assignees
+                      </Text>
                     </View>
                   ) : null}
                 </View>
@@ -362,18 +377,15 @@ const styles = StyleSheet.create({
     marginLeft: 12,
   },
   timeText: {
-    color: "#888",
     fontSize: 14,
     marginBottom: 2,
   },
   durationText: {
-    color: "#F49F6D",
     fontWeight: "600",
   },
   taskBox: {
     borderRadius: 16,
     padding: 12,
-    backgroundColor: "#fff",
     marginBottom: 2,
     shadowColor: "#000",
     shadowOpacity: 0.1,
@@ -384,7 +396,6 @@ const styles = StyleSheet.create({
   taskTitle: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#222",
   },
   strikethrough: {
     textDecorationLine: "line-through",

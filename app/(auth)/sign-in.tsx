@@ -1,5 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Colors } from "@/constants/theme";
+import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { useSignIn } from "@clerk/clerk-expo";
 import { LinearGradient } from "expo-linear-gradient";
 import { Link, useRouter } from "expo-router";
@@ -10,6 +13,12 @@ import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 export default function Page() {
   const { signIn, setActive, isLoaded } = useSignIn();
   const router = useRouter();
+  const colors = Colors.light; // Always use light theme
+  const pallet = usePallet();
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
+  const iconColor = useColor({}, "icon");
+  const backgroundCardColor = useColor({}, "background");
 
   const [emailAddress, setEmailAddress] = React.useState("");
   const [password, setPassword] = React.useState("");
@@ -99,8 +108,10 @@ export default function Page() {
   return (
     <LinearGradient colors={["#f6f8ff", "#f2f7fb"]} style={styles.gradient}>
       <View style={styles.pageWrap}>
-        <View style={styles.card}>
-          <View style={styles.logoWrap}>
+        <View style={[styles.card, { backgroundColor: backgroundCardColor }]}>
+          <View
+            style={[styles.logoWrap, { backgroundColor: backgroundCardColor }]}
+          >
             {/* If you have an SVG loader, keep your svg. Otherwise convert to PNG:
                 require("../../assets/images/logo.png") */}
             <Image
@@ -110,8 +121,10 @@ export default function Page() {
             />
           </View>
 
-          <Text style={styles.title}>Welcome back</Text>
-          <Text style={styles.subtitle}>
+          <Text style={[styles.title, { color: textColor }]}>Welcome back</Text>
+          <Text
+            style={[styles.subtitle, { color: textMutedColor || iconColor }]}
+          >
             Sign in to continue to your account
           </Text>
 
@@ -153,7 +166,11 @@ export default function Page() {
               />
             )}
 
-            {errorMsg ? <Text style={styles.error}>{errorMsg}</Text> : null}
+            {errorMsg ? (
+              <Text style={[styles.error, { color: colors.red || "#B00020" }]}>
+                {errorMsg}
+              </Text>
+            ) : null}
 
             {/* Primary action */}
             {!isOtpMode ? (
@@ -197,23 +214,39 @@ export default function Page() {
                 ]}
                 disabled={loading || !emailAddress}
               >
-                <Text style={styles.ghostText}>
+                <Text
+                  style={[
+                    styles.ghostText,
+                    { color: textMutedColor || iconColor },
+                  ]}
+                >
                   {isOtpMode ? "Use password instead" : "Send OTP to email"}
                 </Text>
               </Pressable>
 
               <Link href="/forgot-password" asChild>
                 <Pressable>
-                  <Text style={styles.forgotText}>Forgot password?</Text>
+                  <Text style={[styles.forgotText, { color: pallet.shade1 }]}>
+                    Forgot password?
+                  </Text>
                 </Pressable>
               </Link>
             </View>
           </View>
 
           <View style={styles.footer}>
-            <Text style={styles.footerText}>Don't have an account?</Text>
+            <Text
+              style={[
+                styles.footerText,
+                { color: textMutedColor || iconColor },
+              ]}
+            >
+              Don't have an account?
+            </Text>
             <Link href="/sign-up">
-              <Text style={styles.link}>Create account</Text>
+              <Text style={[styles.link, { color: pallet.shade1 }]}>
+                Create account
+              </Text>
             </Link>
           </View>
         </View>
@@ -233,7 +266,6 @@ const styles = StyleSheet.create({
   card: {
     width: "100%",
     maxWidth: 480,
-    backgroundColor: "#fff",
     borderRadius: 20,
     padding: 24,
     // iOS shadow
@@ -249,7 +281,6 @@ const styles = StyleSheet.create({
     width: 84,
     height: 84,
     borderRadius: 42,
-    backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
     marginTop: -60,
@@ -265,13 +296,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "700",
-    color: "#111827",
     textAlign: "center",
     marginTop: 8,
   },
   subtitle: {
     fontSize: 13,
-    color: "#6b7280",
     textAlign: "center",
     marginBottom: 16,
   },
@@ -279,7 +308,6 @@ const styles = StyleSheet.create({
     marginTop: 6,
   },
   error: {
-    color: "#B00020",
     textAlign: "center",
     marginBottom: 8,
     fontSize: 13,
@@ -289,7 +317,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     // make the button full width
     width: "100%",
-    backgroundColor: "#177AD5",
+    // backgroundColor will be set by Button component using palette
   },
   actionsRow: {
     marginTop: 12,
@@ -301,11 +329,9 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   ghostText: {
-    color: "#6b7280",
     fontSize: 13,
   },
   forgotText: {
-    color: "#2563EB",
     textDecorationLine: "underline",
     fontSize: 13,
   },
@@ -316,10 +342,9 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   footerText: {
-    color: "#6b7280",
+    // Color set dynamically
   },
   link: {
-    color: "#2563EB",
     fontWeight: "600",
     marginLeft: 6,
   },

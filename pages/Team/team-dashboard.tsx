@@ -4,8 +4,10 @@ import AnimatedProgressRing from "@/components/ui/progress-ring";
 import { ScrollView } from "@/components/ui/scroll-view";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Text } from "@/components/ui/text";
+import { Colors } from "@/constants/theme";
 import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { useUser } from "@clerk/clerk-expo";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { Calendar, LogOut, Trash2, Users } from "lucide-react-native";
@@ -22,6 +24,9 @@ function TeamDashboard() {
   const userId = user?.id ?? "";
 
   const pallet = usePallet();
+  const colors = Colors.light;
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
   const [deleteLoading, setDeleteLoading] = useState(false);
 
   // ---- Helpers -------------------------------------------------------------
@@ -50,15 +55,15 @@ function TeamDashboard() {
   const myCompletionPct = pct(myCompletedCount, myAssignedCount);
 
   const teamStats = [
-    { label: "Completed", value: teamCompletedCount, color: "#17c964" },
-    { label: "Remaining", value: teamRemainingCount, color: "#F87171" },
-    { label: "Assigned", value: totalCount, color: "#4299e1" }, // total team tasks
+    { label: "Completed", value: teamCompletedCount, color: colors.green },
+    { label: "Remaining", value: teamRemainingCount, color: colors.red },
+    { label: "Assigned", value: totalCount, color: pallet.shade1 },
   ];
 
   const myStats = [
-    { label: "Completed", value: myCompletedCount, color: "#17c964" },
-    { label: "Remaining", value: myRemainingCount, color: "#F87171" },
-    { label: "Assigned", value: myAssignedCount, color: "#4299e1" },
+    { label: "Completed", value: myCompletedCount, color: colors.green },
+    { label: "Remaining", value: myRemainingCount, color: colors.red },
+    { label: "Assigned", value: myAssignedCount, color: pallet.shade1 },
   ];
 
   // ---- Delete team ---------------------------------------------------------
@@ -89,13 +94,16 @@ function TeamDashboard() {
     setIsAdmin(currentMember?.role === "admin");
   }, [userId, currentTeamData?.members, members]);
 
+  const backgroundColor = useColor({}, "background");
+  const cardBackgroundColor = useColor({}, "card");
+
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+    <View style={{ flex: 1, backgroundColor }}>
       <SafeAreaView>
         <BackHeader title={currentTeamData?.teamName ?? "Team"} />
 
         <ScrollView>
-          <View style={styles.card}>
+          <View style={[styles.card, { backgroundColor: cardBackgroundColor }]}>
             <Text
               variant="heading"
               style={{ textAlign: "center", color: pallet.shade1 }}
@@ -106,13 +114,17 @@ function TeamDashboard() {
             <View
               style={{ flexDirection: "row", alignItems: "baseline", gap: 4 }}
             >
-              <Text style={styles.count}>{totalCount}</Text>
-              <Text variant="caption">Tasks</Text>
+              <Text style={[styles.count, { color: textColor }]}>
+                {totalCount}
+              </Text>
+              <Text variant="caption" style={{ color: textMutedColor }}>
+                Tasks
+              </Text>
             </View>
 
-            <Text style={styles.monthProgress}>
+            <Text style={[styles.monthProgress, { color: textMutedColor }]}>
               Task Completion{" "}
-              <Text style={{ color: "#17c964", fontWeight: "bold" }}>
+              <Text style={{ color: colors.green, fontWeight: "bold" }}>
                 {teamCompletionPct}%
               </Text>
             </Text>
@@ -177,7 +189,9 @@ function TeamDashboard() {
           </View>
 
           {/* Actions */}
-          <View style={styles.actionRow}>
+          <View
+            style={[styles.actionRow, { backgroundColor: cardBackgroundColor }]}
+          >
             <Button
               variant="default"
               style={{ borderRadius: 12, backgroundColor: pallet.buttonBg }}
@@ -261,13 +275,12 @@ function TeamDashboard() {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
     borderRadius: 18,
     padding: 24,
     gap: 2,
   },
-  count: { fontSize: 32, fontWeight: "700", color: "#222", marginBottom: 4 },
-  monthProgress: { color: "#7a7a7a", fontSize: 14, marginBottom: 18 },
+  count: { fontSize: 32, fontWeight: "700", marginBottom: 4 },
+  monthProgress: { fontSize: 14, marginBottom: 18 },
   statsRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -276,13 +289,11 @@ const styles = StyleSheet.create({
   statBox: { alignItems: "center", flex: 1 },
   statLabel: {
     fontSize: 13,
-    color: "#999",
     marginBottom: 2,
     fontWeight: "600",
   },
-  statValue: { fontSize: 16, fontWeight: "700", color: "#222" },
+  statValue: { fontSize: 16, fontWeight: "700" },
   actionRow: {
-    backgroundColor: "#fff",
     borderRadius: 14,
     marginHorizontal: 4,
     overflow: "hidden",

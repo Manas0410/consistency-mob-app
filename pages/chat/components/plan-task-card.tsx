@@ -1,5 +1,7 @@
 import { Icon } from "@/components/ui/icon"; // adjust your Icon import
 import PriorityLabel from "@/components/ui/prioritty-label";
+import { Colors } from "@/constants/theme";
+import { useColor } from "@/hooks/useColor";
 import { addHours, addMinutes, format, parseISO } from "date-fns";
 import { ChevronDown, ChevronUp } from "lucide-react-native"; // or your icon source
 import React, { useState } from "react";
@@ -26,6 +28,11 @@ type CardProps = {
 
 export const PlanTaskCard: React.FC<CardProps> = ({ task, open = false }) => {
   const [expanded, setExpanded] = useState(open);
+  const colors = Colors.light; // Always use light theme
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
+  const iconColor = useColor({}, "icon");
+  const cardBackgroundColor = useColor({}, "background");
 
   const startDate = parseISO(task.TaskStartDateTime);
   const endDate = addHours(
@@ -41,14 +48,16 @@ export const PlanTaskCard: React.FC<CardProps> = ({ task, open = false }) => {
   const priority = PRIORITY_MAPPING[task.priority] || PRIORITY_MAPPING[0];
 
   return (
-    <View style={styles.card}>
+    <View style={[styles.card, { backgroundColor: cardBackgroundColor }]}>
       <TouchableOpacity
         style={styles.header}
         onPress={() => setExpanded((prev) => !prev)}
         activeOpacity={0.8}
       >
         <View style={styles.titleRow}>
-          <Text style={styles.title}>{task.taskName}</Text>
+          <Text style={[styles.title, { color: textColor }]}>
+            {task.taskName}
+          </Text>
           <View style={{ alignItems: "flex-end", gap: 4 }}>
             <PriorityLabel priority={task.priority} />
           </View>
@@ -58,19 +67,27 @@ export const PlanTaskCard: React.FC<CardProps> = ({ task, open = false }) => {
             name={expanded ? ChevronUp : ChevronDown}
             width={24}
             height={24}
-            stroke="#363d4e"
+            stroke={iconColor}
           />
         </Text>
       </TouchableOpacity>
       {expanded && (
         <View style={styles.details}>
-          <Text style={styles.timeText}>
+          <Text
+            style={[styles.timeText, { color: textMutedColor || iconColor }]}
+          >
             {format(task.TaskStartDateTime, "dd-MM-yyyy")}
           </Text>
-          <Text style={styles.timeText}>{timeRange}</Text>
+          <Text
+            style={[styles.timeText, { color: textMutedColor || iconColor }]}
+          >
+            {timeRange}
+          </Text>
 
           {task.taskDescription && (
-            <Text style={styles.desc}>{task.taskDescription}</Text>
+            <Text style={[styles.desc, { color: textMutedColor || iconColor }]}>
+              {task.taskDescription}
+            </Text>
           )}
         </View>
       )}
@@ -80,7 +97,6 @@ export const PlanTaskCard: React.FC<CardProps> = ({ task, open = false }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#fff",
     borderRadius: 16,
     padding: 15,
     marginVertical: 8,
@@ -105,7 +121,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: "bold",
-    color: "#26304a",
     flexShrink: 1,
   },
   flagIcon: {
@@ -113,7 +128,6 @@ const styles = StyleSheet.create({
   },
   arrow: {
     fontSize: 16,
-    color: "#363d4e",
     marginLeft: 8,
   },
   details: {
@@ -121,7 +135,6 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontSize: 15,
-    color: "#656d79",
     marginBottom: 6,
   },
   priorityLabel: {
@@ -130,7 +143,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   desc: {
-    color: "#656d79",
     fontSize: 15,
   },
 });

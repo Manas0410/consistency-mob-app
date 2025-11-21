@@ -1,7 +1,9 @@
 import { Icon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
+import { Colors } from "@/constants/theme";
 import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { getHabbit } from "@/pages/Habbits/API/callAPI";
 import StatusChangeCheckbox from "@/pages/task-viewer/components/status-change-checkbox";
 import { useRouter } from "expo-router";
@@ -19,6 +21,12 @@ import { useEffect, useState } from "react";
 const HabbitCard = () => {
   const pallet = usePallet();
   const router = useRouter();
+  const colors = Colors.light; // Always use light theme
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
+  const iconColor = useColor({}, "icon");
+  const cardBackgroundColor = useColor({}, "background");
+  const borderColor = useColor({}, "border");
   const [habbitData, sethabbitData] = useState([]);
   const [habbitLoading, setHabbitLoading] = useState(false);
 
@@ -43,7 +51,7 @@ const HabbitCard = () => {
   return (
     <View
       style={{
-        backgroundColor: "#fff",
+        backgroundColor: cardBackgroundColor,
         borderRadius: 16,
         padding: 20,
         shadowColor: "#000",
@@ -60,12 +68,12 @@ const HabbitCard = () => {
           marginBottom: 16,
         }}
       >
-        <Goal size={24} color="#06B6D4" />
+        <Goal size={24} color={pallet.shade1} />
         <Text
           style={{
             fontSize: 18,
             fontWeight: "700",
-            color: "#1E293B",
+            color: textColor,
             marginLeft: 8,
           }}
         >
@@ -93,7 +101,7 @@ const HabbitCard = () => {
                 alignItems: "center",
                 paddingVertical: 12,
                 borderBottomWidth: index === habbitData.length - 1 ? 0 : 1,
-                borderBottomColor: "#F1F5F9",
+                borderBottomColor: borderColor || "#F1F5F9",
               }}
             >
               <StatusChangeCheckbox
@@ -108,7 +116,9 @@ const HabbitCard = () => {
                     fontSize: 16,
                     marginLeft: 10,
                     fontWeight: "600",
-                    color: habit.isDone ? "#374151" : "#6B7280",
+                    color: habit.isDone
+                      ? textColor
+                      : textMutedColor || iconColor,
                     // textDecorationLine: habit.isDone ? "line-through" : "none",
                   }}
                 >

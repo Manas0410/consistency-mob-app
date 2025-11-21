@@ -1,7 +1,6 @@
 import { Text } from "@/components/ui/text";
 import { Colors } from "@/constants/theme";
 import { useFocus } from "@/contexts/focus-context";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import { usePallet } from "@/hooks/use-pallet";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -35,8 +34,7 @@ const FocusOverlay: React.FC<FocusOverlayProps> = ({
 }) => {
   const insets = useSafeAreaInsets();
   const pallet = usePallet();
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme ?? "light"];
+  const colors = Colors.light; // Always use light theme
   const { remainingTime, currentSession } = useFocus();
 
   // Animation values
@@ -119,24 +117,28 @@ const FocusOverlay: React.FC<FocusOverlayProps> = ({
         </Animated.View>
 
         {/* Focus Mode Title */}
-        <Text style={styles.title}>Focus Mode Active</Text>
+        <Text style={[styles.title, { color: pallet.shade1 }]}>
+          Focus Mode Active
+        </Text>
 
         {/* Session Info */}
         <View style={styles.sessionInfo}>
-          <Text style={styles.timeRemaining}>
+          <Text style={[styles.timeRemaining, { color: pallet.shade1 }]}>
             {formatTime(remainingTime)} remaining
           </Text>
-          <Text style={styles.sessionDuration}>
+          <Text
+            style={[styles.sessionDuration, { color: colors.textSecondary }]}
+          >
             {currentSession?.duration}-minute focus session
           </Text>
         </View>
 
         {/* Motivational Message */}
         <View style={styles.messageContainer}>
-          <Text style={styles.message}>
+          <Text style={[styles.message, { color: pallet.shade1 }]}>
             🧘‍♀️ Stay focused. You're in the zone.
           </Text>
-          <Text style={styles.submessage}>
+          <Text style={[styles.submessage, { color: colors.textSecondary }]}>
             Minimize distractions and maximize your productivity
           </Text>
         </View>
@@ -144,16 +146,26 @@ const FocusOverlay: React.FC<FocusOverlayProps> = ({
         {/* Action Buttons */}
         <View style={styles.actionButtons}>
           <TouchableOpacity
-            style={[styles.button, styles.returnButton]}
+            style={[
+              styles.button,
+              styles.returnButton,
+              { backgroundColor: colors.card, borderColor: colors.border },
+            ]}
             onPress={onRequestReturn}
             activeOpacity={0.8}
           >
-            <Ionicons name="arrow-back" size={20} color="white" />
-            <Text style={styles.returnButtonText}>Return to Timer</Text>
+            <Ionicons name="arrow-back" size={20} color={pallet.shade1} />
+            <Text style={[styles.returnButtonText, { color: pallet.shade1 }]}>
+              Return to Timer
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.button, styles.endButton]}
+            style={[
+              styles.button,
+              styles.endButton,
+              { backgroundColor: colors.red },
+            ]}
             onPress={onEndSession}
             activeOpacity={0.8}
           >
@@ -163,9 +175,17 @@ const FocusOverlay: React.FC<FocusOverlayProps> = ({
         </View>
 
         {/* Bottom Tip */}
-        <View style={styles.tipContainer}>
-          <Ionicons name="bulb" size={16} color="#FFD700" />
-          <Text style={styles.tipText}>
+        <View
+          style={[
+            styles.tipContainer,
+            {
+              backgroundColor: colors.yellow + "1A",
+              borderColor: colors.yellow + "4D",
+            },
+          ]}
+        >
+          <Ionicons name="bulb" size={16} color={colors.yellow} />
+          <Text style={[styles.tipText, { color: colors.yellow }]}>
             Use the notification panel to return to your focus session
           </Text>
         </View>
@@ -212,7 +232,6 @@ const styles = StyleSheet.create({
   title: {
     fontSize: Platform.OS === "ios" ? 28 : 26,
     fontWeight: Platform.OS === "ios" ? "700" : "bold",
-    color: "white",
     textAlign: "center",
     marginBottom: 24,
     letterSpacing: -0.5,
@@ -224,7 +243,6 @@ const styles = StyleSheet.create({
   timeRemaining: {
     fontSize: Platform.OS === "ios" ? 48 : 44,
     fontWeight: Platform.OS === "ios" ? "300" : "200",
-    color: "white",
     textAlign: "center",
     marginBottom: 8,
     fontVariant: ["tabular-nums"],
@@ -232,7 +250,6 @@ const styles = StyleSheet.create({
   sessionDuration: {
     fontSize: Platform.OS === "ios" ? 16 : 15,
     fontWeight: "400",
-    color: "rgba(255, 255, 255, 0.7)",
     textAlign: "center",
   },
   messageContainer: {
@@ -243,7 +260,6 @@ const styles = StyleSheet.create({
   message: {
     fontSize: Platform.OS === "ios" ? 20 : 19,
     fontWeight: "500",
-    color: "white",
     textAlign: "center",
     marginBottom: 8,
     lineHeight: 28,
@@ -251,7 +267,6 @@ const styles = StyleSheet.create({
   submessage: {
     fontSize: Platform.OS === "ios" ? 16 : 15,
     fontWeight: "400",
-    color: "rgba(255, 255, 255, 0.6)",
     textAlign: "center",
     lineHeight: 22,
   },
@@ -281,17 +296,14 @@ const styles = StyleSheet.create({
     }),
   },
   returnButton: {
-    backgroundColor: "rgba(255, 255, 255, 0.15)",
     borderWidth: 1,
-    borderColor: "rgba(255, 255, 255, 0.3)",
   },
   endButton: {
-    backgroundColor: "#E53E3E",
+    // backgroundColor will be set inline
   },
   returnButtonText: {
     fontSize: Platform.OS === "ios" ? 18 : 17,
     fontWeight: "600",
-    color: "white",
   },
   endButtonText: {
     fontSize: Platform.OS === "ios" ? 18 : 17,
@@ -301,18 +313,15 @@ const styles = StyleSheet.create({
   tipContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(255, 215, 0, 0.1)",
     borderRadius: 20,
     paddingVertical: 12,
     paddingHorizontal: 20,
     gap: 8,
     borderWidth: 1,
-    borderColor: "rgba(255, 215, 0, 0.3)",
   },
   tipText: {
     fontSize: Platform.OS === "ios" ? 14 : 13,
     fontWeight: "500",
-    color: "#FFD700",
     textAlign: "center",
     flex: 1,
   },

@@ -1,7 +1,6 @@
 import { Text } from "@/components/ui/text";
 import { Colors } from "@/constants/theme";
 import { useFocus } from "@/contexts/focus-context";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import { usePallet } from "@/hooks/use-pallet";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useState } from "react";
@@ -30,9 +29,7 @@ interface FocusControlsProps {
 
 const FocusControls: React.FC<FocusControlsProps> = ({ onSessionComplete }) => {
   const pallet = usePallet();
-  const colorScheme = useColorScheme();
-  // const colors = Colors[colorScheme ?? "light"];
-  const colors = Colors["light"];
+  const colors = Colors.light; // Always use light theme
   const styles = createStyles(colors, pallet);
   const {
     currentSession,
@@ -252,7 +249,7 @@ const FocusControls: React.FC<FocusControlsProps> = ({ onSessionComplete }) => {
               onChangeText={setCustomMinutes}
               keyboardType="numeric"
               placeholder="e.g., 45"
-              placeholderTextColor="#C7C7CC"
+              placeholderTextColor={colors.icon}
               maxLength={3}
               autoFocus
               selectTextOnFocus
@@ -357,7 +354,7 @@ const createStyles = (colors: any, pallet: any) =>
       borderColor: pallet.shade1,
     },
     selectedPresetLabel: {
-      color: "#FFFFFF",
+      color: pallet.ButtonText,
     },
     customButton: {
       flexDirection: "row",
@@ -412,7 +409,7 @@ const createStyles = (colors: any, pallet: any) =>
     startButtonText: {
       fontSize: Platform.OS === "ios" ? 19 : 18,
       fontWeight: "600",
-      color: "#FFFFFF",
+      color: pallet.ButtonText,
       letterSpacing: 0.3,
     },
     sessionControls: {
@@ -448,8 +445,8 @@ const createStyles = (colors: any, pallet: any) =>
       shadowColor: "rgba(0,0,0,0.2)",
     },
     endCircleButton: {
-      backgroundColor: "#FF6B47",
-      shadowColor: "#FF6B47",
+      backgroundColor: colors.red || "#FF6B47",
+      shadowColor: colors.red || "#FF6B47",
     },
     modalOverlay: {
       flex: 1,

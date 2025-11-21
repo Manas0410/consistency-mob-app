@@ -2,10 +2,11 @@ import CategoryClock from "@/components/category-clock";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import AnimatedProgressRing from "@/components/ui/progress-ring";
 import { Text } from "@/components/ui/text";
+import { Colors } from "@/constants/theme";
 import { useOnboardingContext } from "@/contexts/onboarding-context";
 import { useGetCurrentDayTask } from "@/contexts/todays-tasks-context";
 import { usePallet } from "@/hooks/use-pallet";
-import HabbitCard from "@/pages/Dashboard/components/habbit-card";
+import HabitCard from "@/pages/Dashboard/components/habbit-card";
 import WorkModesCard from "@/pages/Dashboard/components/mode-card";
 import QuickActions from "@/pages/Dashboard/components/quick-actions";
 import StreakCard from "@/pages/Dashboard/components/streak-card";
@@ -26,6 +27,7 @@ function HomeScreen() {
 
   const periods = ["Day", "Week", "Month", "Quarter"];
   const pallet = usePallet();
+  const colors = Colors.light; // Always use light theme
   const { user } = useUser();
 
   const [todayTasks, setTodayTasks] = useState([]);
@@ -51,7 +53,7 @@ function HomeScreen() {
   const { resetOnboarding } = useOnboardingContext();
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#fafafa" }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <StatusBar style="dark" />
 
       <ScrollView
@@ -140,7 +142,7 @@ function HomeScreen() {
           <View style={{ marginTop: -20, marginBottom: 30 }}>
             <View
               style={{
-                backgroundColor: "#ffffff",
+                backgroundColor: colors.background,
                 borderRadius: 28,
                 padding: 32,
                 alignItems: "center",
@@ -170,7 +172,7 @@ function HomeScreen() {
                   <Text
                     style={{
                       fontSize: 12,
-                      color: "#64748b",
+                      color: colors.icon || colors.textMuted || "#64748b",
                       fontWeight: "500",
                     }}
                   >
@@ -179,13 +181,16 @@ function HomeScreen() {
                 </View>
 
                 <View style={{ alignItems: "center" }}>
-                  <Text variant="heading" style={{ color: "#9aa2adff" }}>
+                  <Text
+                    variant="heading"
+                    style={{ color: colors.icon || "#9aa2adff" }}
+                  >
                     {remainingCount}
                   </Text>
                   <Text
                     style={{
                       fontSize: 12,
-                      color: "#64748b",
+                      color: colors.icon || colors.textMuted || "#64748b",
                       fontWeight: "500",
                     }}
                   >
@@ -201,7 +206,7 @@ function HomeScreen() {
           <CategoryClock />
 
           {/* habbit */}
-          <HabbitCard />
+          <HabitCard />
 
           {/* {focus hours} */}
           {/* <View

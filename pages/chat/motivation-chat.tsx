@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
 import { View } from "@/components/ui/view";
+import { Colors } from "@/constants/theme";
 import { usePallet } from "@/hooks/use-pallet";
 import { useColor } from "@/hooks/useColor";
 import { format, parseISO } from "date-fns";
@@ -26,9 +27,13 @@ interface Message {
 }
 
 export function MotivationChatPage() {
-  const card = useColor({}, "card");
-  const blue = useColor({}, "blue");
   const pallet = usePallet();
+  const colors = Colors.light; // Always use light theme
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
+  const iconColor = useColor({}, "icon");
+  const backgroundColor = useColor({}, "background");
+  const cardBackgroundColor = "#F2F2F7";
   const insets = useSafeAreaInsets();
 
   const [messages, setMessages] = useState([]);
@@ -89,46 +94,53 @@ export function MotivationChatPage() {
     }
   };
 
-  const renderMessage = ({ item }: { item: any }) => (
-    <View>
-      <View
-        style={{
-          marginBottom: 12,
-          alignItems: item.isUser ? "flex-end" : "flex-start",
-        }}
-      >
+  const renderMessage = ({ item }: { item: any }) => {
+    const userMessageBg = "#F2F2F7";
+    const aiMessageBg = pallet.shade1;
+
+    return (
+      <View>
         <View
           style={{
-            maxWidth: "80%",
-            padding: 12,
-            borderRadius: 16,
-            backgroundColor: item.isUser ? "#F2F2F7" : blue,
+            marginBottom: 12,
+            alignItems: item.isUser ? "flex-end" : "flex-start",
           }}
         >
-          <Text
+          <View
             style={{
-              color: item.isUser ? "#000" : "white",
-              fontSize: 16,
+              maxWidth: "80%",
+              padding: 12,
+              borderRadius: 16,
+              backgroundColor: item.isUser ? userMessageBg : aiMessageBg,
             }}
           >
-            {item.message}
-          </Text>
-          <Text
-            style={{
-              color: item.isUser ? "rgba(0,0,0,0.5)" : "rgba(255,255,255,0.7)",
-              fontSize: 12,
-              marginTop: 4,
-            }}
-          >
-            {format(parseISO(item.createdAt), "d MMMM hh:mmaaa")}
-          </Text>
+            <Text
+              style={{
+                color: item.isUser ? textColor : "white",
+                fontSize: 16,
+              }}
+            >
+              {item.message}
+            </Text>
+            <Text
+              style={{
+                color: item.isUser
+                  ? textMutedColor || iconColor
+                  : "rgba(255,255,255,0.7)",
+                fontSize: 12,
+                marginTop: 4,
+              }}
+            >
+              {format(parseISO(item.createdAt), "d MMMM hh:mmaaa")}
+            </Text>
+          </View>
         </View>
       </View>
-    </View>
-  );
+    );
+  };
 
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+    <View style={{ flex: 1, backgroundColor }}>
       {/* Header */}
       {/* Messages */}
       {loading ? (
@@ -157,7 +169,7 @@ export function MotivationChatPage() {
       {sendingMessage && (
         <View
           style={{
-            backgroundColor: blue,
+            backgroundColor: pallet.shade1,
             width: 70,
             paddingVertical: 20,
             borderRadius: 35,
@@ -175,7 +187,7 @@ export function MotivationChatPage() {
           flexDirection: "row",
           padding: 16,
           gap: 12,
-          backgroundColor: card,
+          backgroundColor: cardBackgroundColor,
           paddingBottom: insets.bottom,
         }}
       >

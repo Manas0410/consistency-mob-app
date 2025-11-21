@@ -1,6 +1,7 @@
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
 import { DatePicker } from "@/components/ui/date-picker";
+import { DurationPicker } from "@/components/ui/duration-picker";
 import { Input } from "@/components/ui/input";
 import { Picker } from "@/components/ui/picker";
 import PriorityBadge from "@/components/ui/priority-badge";
@@ -38,25 +39,26 @@ export default function TeamTaskForm() {
   const [task, setTask] = useState<TaskData>({
     taskName: "",
     taskDescription: "",
-    taskStartDateTime: addMinutes(new Date(), 15),
+    TaskStartDateTime: addMinutes(new Date(), 15),
     duration: { hours: 0, minutes: 30 },
     priority: 0,
     frequency: [0],
-    assignees: [],
+    category: "",
   });
 
   const { currentTeamData } = useCurrentTeamData();
-  const [assigneeValues, setAssigneeValues] = useState([]);
+  const [assigneeValues, setAssigneeValues] = useState<string[]>([]);
 
-  const assigneesOptions = currentTeamData?.members?.map((item) => {
-    return { ...item, ["label"]: item?.userName, ["value"]: item?.userId };
-  });
+  const assigneesOptions =
+    currentTeamData?.members?.map((item: any) => {
+      return { ...item, ["label"]: item?.userName, ["value"]: item?.userId };
+    }) || [];
 
   useEffect(() => {
     if (assigneeValues && assigneesOptions) {
       const selected = assigneesOptions
-        .filter((option) => assigneeValues.includes(option.value))
-        .map((option) => ({
+        .filter((option: any) => assigneeValues.includes(option.value))
+        .map((option: any) => ({
           userId: option.value,
           userName: option.label,
         }));
@@ -86,17 +88,31 @@ export default function TeamTaskForm() {
     }
     try {
       setLoading(true);
-      const response = await addTeamTask(currentTeamData._id, task);
+      // Convert TaskData to TeamTask format
+      const totalMinutes = task.duration.hours * 60 + task.duration.minutes;
+      const endTime = addMinutes(task.TaskStartDateTime, totalMinutes);
+      const teamTask = {
+        assignees: (task as any).assignees || [],
+        taskName: task.taskName,
+        taskDescription: task.taskDescription,
+        taskStartDateTime: task.TaskStartDateTime.toISOString(),
+        endTime: endTime.toISOString(),
+        duration: task.duration,
+        priority: task.priority,
+        frequency: task.frequency,
+      };
+      const response = await addTeamTask(currentTeamData._id, teamTask);
       if (response.success) {
         close();
         success("Task added successfully!");
         setTask({
           taskName: "",
           taskDescription: "",
-          taskStartDateTime: addMinutes(new Date(), 15),
+          TaskStartDateTime: addMinutes(new Date(), 15),
           duration: { hours: 0, minutes: 30 },
           priority: 0,
           frequency: [0],
+          category: "",
         });
         setStep(1);
         triggerRender();
@@ -202,43 +218,31 @@ export default function TeamTaskForm() {
               modalTitle="Select Assignee"
               multiple
             />
-            <Text variant="caption">Duration</Text>
-            <View style={styles.row}>
-              <Input
-                containerStyle={{ flex: 1, marginRight: 12 }}
-                labelWidth={80}
-                label="Hours"
-                placeholder=""
-                keyboardType="numeric"
-                value={String(task.duration.hours)}
-                onChangeText={(text) =>
-                  handleChange("duration", {
-                    ...task.duration,
-                    hours: Number(text),
-                  })
-                }
-              />
-              <Input
-                containerStyle={{ flex: 1 }}
-                labelWidth={80}
-                label="Minutes"
-                placeholder=""
-                keyboardType="numeric"
-                value={String(task.duration.minutes)}
-                onChangeText={(text) =>
-                  handleChange("duration", {
-                    ...task.duration,
-                    minutes: Number(text),
-                  })
-                }
-              />
-            </View>
+            <Text variant="caption" style={{ marginBottom: 8 }}>
+              Duration
+            </Text>
+            <DurationPicker
+              hours={task.duration.hours}
+              minutes={task.duration.minutes}
+              onHoursChange={(hours) =>
+                handleChange("duration", {
+                  ...task.duration,
+                  hours,
+                })
+              }
+              onMinutesChange={(minutes) =>
+                handleChange("duration", {
+                  ...task.duration,
+                  minutes,
+                })
+              }
+            />
             <View style={styles.row}>
               <DatePicker
                 label="Date & Time"
                 mode="datetime"
-                value={task.taskStartDateTime}
-                onChange={(date) => handleChange("taskStartDateTime", date)}
+                value={task.TaskStartDateTime}
+                onChange={(date) => handleChange("TaskStartDateTime", date)}
                 placeholder="Select date and time"
                 timeFormat="12"
               />

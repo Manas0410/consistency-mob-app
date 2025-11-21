@@ -1,8 +1,8 @@
 import ConnectGoogleCalendarButton from "@/components/gcal";
 import { Colors } from "@/constants/theme";
 import { useOnboardingContext } from "@/contexts/onboarding-context";
+import { usePaletteContext } from "@/contexts/palette-context";
 import { usePallet } from "@/hooks/use-pallet";
-import { useTheme } from "@/hooks/use-theme";
 import { useClerk, useUser } from "@clerk/clerk-expo";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { useRouter } from "expo-router";
@@ -19,18 +19,21 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const paletteColors = ["#2196F3", "#4CAF50", "#E5734A", "#7B3FF2"];
+const paletteNames: ("blue" | "green" | "orange" | "purple")[] = [
+  "blue",
+  "green",
+  "orange",
+  "purple",
+];
 
 export default function SettingsScreen() {
-  const theme = useTheme();
-  const colors = theme === "dark" ? Colors.dark : Colors.light;
+  const colors = Colors.light; // Always use light theme
   const pallet = usePallet();
   const { user } = useUser();
   const { signOut } = useClerk();
   const router = useRouter();
   const { resetOnboarding } = useOnboardingContext();
-
-  const [selectedTheme, setSelectedTheme] = useState("light");
-  const [selectedPalette, setSelectedPalette] = useState(0);
+  const { paletteName, setPalette } = usePaletteContext();
   const [remindersEnabled, setRemindersEnabled] = useState(true);
 
   const handleSignOut = async () => {
@@ -143,37 +146,6 @@ export default function SettingsScreen() {
               </TouchableOpacity>
             </View>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
-              Theme
-            </Text>
-            <View style={styles.themeRow}>
-              {[
-                { label: "Light", icon: "sunny", value: "light" },
-                { label: "Dark", icon: "moon", value: "dark" },
-                {
-                  label: "System",
-                  icon: "contrast",
-                  value: "systemPreference",
-                },
-              ].map((item, idx) => (
-                <TouchableOpacity
-                  key={item.value}
-                  style={[
-                    styles.themeBtn,
-                    selectedTheme === item.value && {
-                      borderColor: pallet.shade1,
-                    },
-                  ]}
-                  onPress={() => setSelectedTheme(item.value)}
-                >
-                  {/* @ts-ignore */}
-                  <Ionicons name={item.icon} size={24} color={colors.text} />
-                  <Text style={[styles.themeLabel, { color: colors.text }]}>
-                    {item.label}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <Text style={[styles.sectionTitle, { color: colors.text }]}>
               Color Palette
             </Text>
             <View style={styles.paletteRow}>
@@ -184,11 +156,15 @@ export default function SettingsScreen() {
                     styles.paletteCircle,
                     {
                       borderColor:
-                        idx === selectedPalette ? pallet.shade1 : "#fff",
+                        paletteName === paletteNames[idx]
+                          ? pallet.shade1
+                          : "#fff",
                       backgroundColor: color,
                     },
                   ]}
-                  onPress={() => setSelectedPalette(idx)}
+                  onPress={() => {
+                    setPalette(paletteNames[idx]);
+                  }}
                 />
               ))}
             </View>
@@ -348,7 +324,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 16,
     marginHorizontal: 4,
-    backgroundColor: "#fff",
   },
   themeLabel: {
     marginTop: 6,

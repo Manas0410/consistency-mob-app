@@ -1,6 +1,8 @@
 import { Text } from "@/components/ui/text";
+import { Colors } from "@/constants/theme";
 import { useGetCurrentDateTime } from "@/hooks/use-get-current-date-time";
 import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { getCategorywiseTasks } from "@/pages/task-viewer/API/getTasks";
 import React, { useEffect, useMemo, useState } from "react";
 import { Dimensions, View } from "react-native";
@@ -18,7 +20,12 @@ import Svg, {
 const { width: screenWidth } = Dimensions.get("window");
 
 // Fallback demo data (used only if API empty/fails)
-const sampleData = [
+const sampleData: Array<{
+  startTime?: number;
+  endTime?: number;
+  categoryName?: string;
+  color?: string;
+}> = [
   // {
   //   startTime: 21,
   //   endTime: 24,
@@ -79,15 +86,13 @@ export default function CategoryClock() {
   const insets = useSafeAreaInsets();
   const [data, setData] = useState<any[]>([]);
   const pallet = usePallet();
-  const isDark =
-    (pallet && ("mode" in pallet ? (pallet as any).mode === "dark" : false)) ||
-    (pallet as any)?.isDark === true;
+  const colors = Colors.light;
+  const textMutedColor = useColor({}, "textMuted");
+  const iconColor = useColor({}, "icon");
 
-  const ACCENT = (pallet as any)?.primary ?? "#2E86FF";
-  const MUTED_TEXT = isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.6)";
-  const RING_BG = isDark
-    ? "rgba(255,255,255,0.08)"
-    : "rgba(100, 116, 139, 0.08)";
+  const ACCENT = pallet.shade1;
+  const MUTED_TEXT = textMutedColor || iconColor || "rgba(0,0,0,0.6)";
+  const RING_BG = "rgba(100, 116, 139, 0.08)";
 
   const fetchCategorywise = async () => {
     try {
@@ -367,9 +372,7 @@ export default function CategoryClock() {
                   key={`empty-${index}`}
                   d={arcPath}
                   fill={RING_BG}
-                  stroke={
-                    isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.06)"
-                  }
+                  stroke="rgba(0,0,0,0.06)"
                   strokeWidth="1"
                 />
               );
@@ -389,9 +392,7 @@ export default function CategoryClock() {
                 <Path
                   key={`tick-${hour}`}
                   d={`M ${x1} ${y1} L ${x2} ${y2}`}
-                  stroke={
-                    isDark ? "rgba(255, 255, 255, 0.18)" : "rgba(0, 0, 0, 0.14)"
-                  }
+                  stroke="rgba(0, 0, 0, 0.14)"
                   strokeWidth="1"
                 />
               );
@@ -415,22 +416,14 @@ export default function CategoryClock() {
                 <G key={`major-${hour}`}>
                   <Path
                     d={`M ${x1} ${y1} L ${x2} ${y2}`}
-                    stroke={
-                      isDark
-                        ? "rgba(255, 255, 255, 0.35)"
-                        : "rgba(0, 0, 0, 0.45)"
-                    }
+                    stroke="rgba(0, 0, 0, 0.45)"
                     strokeWidth="3.5"
                     strokeLinecap="round"
                   />
                   <SvgText
                     x={textX}
                     y={textY}
-                    fill={
-                      isDark
-                        ? "rgba(255, 255, 255, 0.5)"
-                        : "rgba(0, 0, 0, 0.55)"
-                    }
+                    fill="rgba(0, 0, 0, 0.55)"
                     fontSize="12"
                     fontWeight="500"
                     textAnchor="middle"
@@ -459,20 +452,13 @@ export default function CategoryClock() {
 
               return (
                 <G key={`seg-${index}`}>
-                  {/* subtle drop “shadow” */}
-                  <Path
-                    d={shadowPath}
-                    fill={isDark ? "rgba(0,0,0,0.18)" : "rgba(0,0,0,0.10)"}
-                  />
+                  {/* subtle drop "shadow" */}
+                  <Path d={shadowPath} fill="rgba(0,0,0,0.10)" />
                   <Path d={arcPath} fill={item.color} />
                   <SvgText
                     x={labelPos.x}
                     y={labelPos.y - 4}
-                    fill={
-                      isDark
-                        ? "rgba(255,255,255,0.95)"
-                        : "rgba(15, 23, 42, 0.9)"
-                    }
+                    fill="rgba(15, 23, 42, 0.9)"
                     fontSize="13"
                     fontWeight="600"
                     textAnchor="middle"
@@ -483,7 +469,7 @@ export default function CategoryClock() {
                   <SvgText
                     x={labelPos.x}
                     y={labelPos.y + 10}
-                    fill={isDark ? "rgba(255,255,255,0.6)" : "rgba(0,0,0,0.55)"}
+                    fill="rgba(0,0,0,0.55)"
                     fontSize="10"
                     textAnchor="middle"
                   >
@@ -558,6 +544,7 @@ export default function CategoryClock() {
           };
           const colorBase = categoryColors[category] ?? "rgba(82, 80, 80, 0.7)";
           const solidColor = colorBase.replace("0.7", "1");
+          const textColor = useColor({}, "text");
           return (
             <View
               key={category}
@@ -567,9 +554,7 @@ export default function CategoryClock() {
                 paddingVertical: 6,
                 paddingHorizontal: 10,
                 borderRadius: 999,
-                backgroundColor: isDark
-                  ? "rgba(255,255,255,0.06)"
-                  : "rgba(15,23,42,0.04)",
+                backgroundColor: "rgba(15,23,42,0.04)",
               }}
             >
               <View
@@ -581,7 +566,14 @@ export default function CategoryClock() {
                   marginRight: 8,
                 }}
               />
-              <Text style={{ fontSize: 14, fontWeight: "600", marginRight: 6 }}>
+              <Text
+                style={{
+                  fontSize: 14,
+                  fontWeight: "600",
+                  marginRight: 6,
+                  color: textColor,
+                }}
+              >
                 {v.hours}h {String(v.minutes).padStart(2, "0")}m
               </Text>
               <Text

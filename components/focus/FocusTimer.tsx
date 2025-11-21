@@ -1,7 +1,6 @@
 import { Text } from "@/components/ui/text";
 import { Colors } from "@/constants/theme";
 import { useFocus } from "@/contexts/focus-context";
-import { useColorScheme } from "@/hooks/use-color-scheme";
 import { usePallet } from "@/hooks/use-pallet";
 import React, { useEffect } from "react";
 import { Dimensions, Platform, StyleSheet, View } from "react-native";
@@ -41,8 +40,7 @@ const FocusTimer: React.FC<FocusTimerProps> = ({
     progressMessage,
   } = useFocus();
   const pallet = usePallet();
-  const colorScheme = useColorScheme();
-  const themeColors = Colors[colorScheme ?? "light"];
+  const themeColors = Colors.light; // Always use light theme
   const styles = createStyles(themeColors, pallet);
 
   const radius = (size - strokeWidth) / 2;
@@ -250,8 +248,8 @@ const createStyles = (colors: any, pallet: any) =>
       width: screenWidth * 0.9,
       height: screenWidth * 0.9,
       borderRadius: screenWidth * 0.45,
-      backgroundColor: "rgba(52, 199, 89, 0.08)",
-      shadowColor: "#34C759",
+      backgroundColor: pallet.shade1 + "14", // 8% opacity
+      shadowColor: pallet.shade1,
       shadowOffset: { width: 0, height: 0 },
       shadowOpacity: 0.2,
       shadowRadius: 15,
@@ -306,7 +304,7 @@ const createStyles = (colors: any, pallet: any) =>
     activeTimeText: {
       fontSize: Platform.OS === "ios" ? 64 : 60,
       fontWeight: Platform.OS === "ios" ? "300" : "200",
-      color: "#FFFFFF",
+      color: pallet.ButtonText,
       textAlign: "center",
       letterSpacing: -1,
       marginBottom: 8,
@@ -326,14 +324,14 @@ const createStyles = (colors: any, pallet: any) =>
       marginBottom: 16,
     },
     activeTimeContainer: {
-      backgroundColor: "#34C759",
+      backgroundColor: pallet.shade1,
       borderRadius: 16,
       paddingVertical: 20,
       paddingHorizontal: 32,
       marginBottom: 24,
       ...Platform.select({
         ios: {
-          shadowColor: "#34C759",
+          shadowColor: pallet.shade1,
           shadowOffset: { width: 0, height: 2 },
           shadowOpacity: 0.3,
           shadowRadius: 8,
@@ -349,10 +347,10 @@ const createStyles = (colors: any, pallet: any) =>
       fontFamily: Platform.OS === "ios" ? "System" : "sans-serif-thin",
       letterSpacing: Platform.OS === "ios" ? -3 : -2,
       textAlign: "center",
-      color: "#333333",
+      color: colors.text,
     },
     activeTimeDisplay: {
-      color: "#FFFFFF",
+      color: pallet.ButtonText,
       fontSize: Platform.OS === "ios" ? 60 : 56,
       fontWeight: Platform.OS === "ios" ? "300" : "200",
       textShadowColor: "rgba(0, 0, 0, 0.2)",
@@ -364,7 +362,7 @@ const createStyles = (colors: any, pallet: any) =>
       marginBottom: 20,
     },
     activeSessionInfo: {
-      backgroundColor: "#F8F9FA",
+      backgroundColor: themeColors.card,
       borderRadius: 12,
       paddingVertical: 12,
       paddingHorizontal: 20,
@@ -374,10 +372,10 @@ const createStyles = (colors: any, pallet: any) =>
       fontSize: Platform.OS === "ios" ? 17 : 16,
       fontWeight: "500",
       textAlign: "center",
-      color: "#666666",
+      color: colors.textMuted || colors.icon || "#666666",
     },
     activeSessionText: {
-      color: "#333333",
+      color: colors.text || "#333333",
       fontSize: Platform.OS === "ios" ? 18 : 17,
       fontWeight: "600",
     },
@@ -409,7 +407,7 @@ const createStyles = (colors: any, pallet: any) =>
       width: "100%",
     },
     activeProgressInfo: {
-      backgroundColor: "#F8F9FA",
+      backgroundColor: themeColors.card,
       borderRadius: 16,
       padding: 20,
       width: "100%",

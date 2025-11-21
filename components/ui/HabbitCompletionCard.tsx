@@ -28,7 +28,7 @@ export default function HabbitCompletionCard({
   change = 10,
 }: WeekTaskCompletionCardProps) {
   const theme = useTheme();
-  const colors = theme === "dark" ? Colors.dark : Colors.light;
+  const colors = Colors.light; // Always use light theme
 
   return (
     <View style={[styles.card, { backgroundColor: colors.background }]}>

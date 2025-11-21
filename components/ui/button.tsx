@@ -1,6 +1,7 @@
 import { Icon } from "@/components/ui/icon";
 import { ButtonSpinner, SpinnerVariant } from "@/components/ui/spinner";
 import { Text } from "@/components/ui/text";
+import { usePallet } from "@/hooks/use-pallet";
 import { useColor } from "@/hooks/useColor";
 import { CORNERS, FONT_SIZE, HEIGHT } from "@/theme/globals";
 import * as Haptics from "expo-haptics";
@@ -74,6 +75,7 @@ export const Button = forwardRef<View, ButtonProps>(
     const destructiveForegroundColor = useColor({}, "destructiveForeground");
     const greenColor = useColor({}, "green");
     const borderColor = useColor({}, "border");
+    const pallet = usePallet();
 
     // Animation values for liquid glass effect
     const scale = useSharedValue(1);
@@ -131,7 +133,7 @@ export const Button = forwardRef<View, ButtonProps>(
             paddingHorizontal: 0,
           };
         default:
-          return { ...baseStyle, backgroundColor: primaryColor };
+          return { ...baseStyle, backgroundColor: pallet.shade1 };
       }
     };
 
@@ -159,7 +161,7 @@ export const Button = forwardRef<View, ButtonProps>(
             textDecorationLine: "underline",
           };
         default:
-          return { ...baseTextStyle, color: primaryForegroundColor };
+          return { ...baseTextStyle, color: "#FFFFFF" };
       }
     };
 
@@ -178,7 +180,7 @@ export const Button = forwardRef<View, ButtonProps>(
         case "link":
           return primaryColor;
         default:
-          return primaryForegroundColor;
+          return "#FFFFFF";
       }
     };
 

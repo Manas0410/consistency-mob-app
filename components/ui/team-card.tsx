@@ -4,6 +4,7 @@ import { Icon } from "@/components/ui/icon";
 import { View } from "@/components/ui/view";
 import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { useRouter } from "expo-router";
 import { ClipboardList, MoveRight, Package, Users } from "lucide-react-native";
 import React from "react";
@@ -12,6 +13,7 @@ import { Text } from "./text";
 export function TeamCard({ teamData }: any) {
   const pallet = usePallet();
   const router = useRouter();
+  const textColor = useColor({}, "text");
 
   const { setCurrentTeamData } = useCurrentTeamData();
   return (
@@ -28,7 +30,7 @@ export function TeamCard({ teamData }: any) {
               width: 30,
               height: 30,
               borderRadius: 15,
-              backgroundColor: "#3b82f6",
+              backgroundColor: pallet.shade1,
               alignItems: "center",
               justifyContent: "center",
             }}
@@ -36,7 +38,9 @@ export function TeamCard({ teamData }: any) {
             <Icon name={Package} color="white" size={20} />
           </View>
           <View style={{ flex: 1 }}>
-            <CardTitle style={{ fontSize: 18, fontWeight: "600" }}>
+            <CardTitle
+              style={{ fontSize: 18, fontWeight: "600", color: textColor }}
+            >
               {teamData?.teamName}
             </CardTitle>
             {/* <CardDescription>2 minutes ago</CardDescription> */}
@@ -54,11 +58,15 @@ export function TeamCard({ teamData }: any) {
       >
         <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
           <Icon name={Users} color={pallet.shade2} size={18} />
-          <Text>{teamData?.members?.length ?? 0} Members</Text>
+          <Text style={{ color: textColor }}>
+            {teamData?.members?.length ?? 0} Members
+          </Text>
         </View>
         <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
           <Icon name={ClipboardList} color={pallet.shade2} size={18} />
-          <Text>{teamData?.tasks?.length ?? 0} Tasks</Text>
+          <Text style={{ color: textColor }}>
+            {teamData?.tasks?.length ?? 0} Tasks
+          </Text>
         </View>
       </CardContent>
       <Button

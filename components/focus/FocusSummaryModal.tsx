@@ -1,6 +1,7 @@
 import { Text } from "@/components/ui/text";
 import { useFocus } from "@/contexts/focus-context";
 import { usePallet } from "@/hooks/use-pallet";
+import { Colors } from "@/theme/colors";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useRef } from "react";
 import {
@@ -41,6 +42,7 @@ const FocusSummaryModal: React.FC<FocusSummaryModalProps> = ({
 }) => {
   const { stats, resetSession } = useFocus();
   const pallet = usePallet();
+  const colors = Colors.light; // Always use light theme
   const confettiRef = useRef<ConfettiCannon>(null);
 
   // Animation values
@@ -155,30 +157,46 @@ const FocusSummaryModal: React.FC<FocusSummaryModalProps> = ({
             origin={{ x: screenWidth / 2, y: screenHeight / 3 }}
             fadeOut
             fallSpeed={3000}
-            colors={["#34C759", "#007AFF", "#FF9500", "#5856D6", "#FF3B30"]}
+            colors={[
+              colors.green,
+              pallet.shade1,
+              colors.orange,
+              colors.purple,
+              colors.red,
+            ]}
           />
         )}
 
-        <Animated.View style={[styles.modalContainer, modalAnimatedStyle]}>
+        <Animated.View
+          style={[
+            styles.modalContainer,
+            { backgroundColor: colors.background },
+            modalAnimatedStyle,
+          ]}
+        >
           {/* Header */}
           <View style={styles.header}>
             <Animated.View
               style={[styles.iconContainer, celebrationAnimatedStyle]}
             >
               {sessionData.wasCompleted ? (
-                <Ionicons name="checkmark-circle" size={64} color="#34C759" />
+                <Ionicons
+                  name="checkmark-circle"
+                  size={64}
+                  color={colors.green}
+                />
               ) : (
-                <Ionicons name="time" size={64} color="#FF9500" />
+                <Ionicons name="time" size={64} color={colors.orange} />
               )}
             </Animated.View>
 
-            <Text style={styles.title}>
+            <Text style={[styles.title, { color: colors.text }]}>
               {sessionData.wasCompleted
                 ? "Focus Session Complete! 🎉"
                 : "Session Ended"}
             </Text>
 
-            <Text style={styles.subtitle}>
+            <Text style={[styles.subtitle, { color: colors.icon }]}>
               {sessionData.wasCompleted
                 ? "Great work! You stayed focused for the entire session."
                 : "You made progress on your focus journey."}
@@ -187,29 +205,42 @@ const FocusSummaryModal: React.FC<FocusSummaryModalProps> = ({
 
           {/* Session Summary */}
           <View style={styles.summaryContainer}>
-            <View style={styles.summaryCard}>
+            <View
+              style={[styles.summaryCard, { backgroundColor: colors.card }]}
+            >
               <View style={styles.mainStat}>
-                <Text style={styles.mainStatNumber}>
+                <Text style={[styles.mainStatNumber, { color: colors.green }]}>
                   {formatTime(sessionData.completedTime)}
                 </Text>
-                <Text style={styles.mainStatLabel}>
+                <Text style={[styles.mainStatLabel, { color: colors.icon }]}>
                   {sessionData.wasCompleted ? "Completed" : "Focus Time"}
                 </Text>
               </View>
 
               <View style={styles.statsRow}>
                 <View style={styles.statItem}>
-                  <Text style={styles.statNumber}>{completionPercentage}%</Text>
-                  <Text style={styles.statLabel}>Completed</Text>
+                  <Text style={[styles.statNumber, { color: colors.text }]}>
+                    {completionPercentage}%
+                  </Text>
+                  <Text style={[styles.statLabel, { color: colors.icon }]}>
+                    Completed
+                  </Text>
                 </View>
 
-                <View style={styles.statDivider} />
+                <View
+                  style={[
+                    styles.statDivider,
+                    { backgroundColor: colors.icon + "40" },
+                  ]}
+                />
 
                 <View style={styles.statItem}>
-                  <Text style={styles.statNumber}>
+                  <Text style={[styles.statNumber, { color: colors.text }]}>
                     {formatTime(sessionData.duration)}
                   </Text>
-                  <Text style={styles.statLabel}>Target</Text>
+                  <Text style={[styles.statLabel, { color: colors.icon }]}>
+                    Target
+                  </Text>
                 </View>
               </View>
             </View>
@@ -217,35 +248,89 @@ const FocusSummaryModal: React.FC<FocusSummaryModalProps> = ({
 
           {/* Overall Stats */}
           <Animated.View style={[styles.overallStats, statsAnimatedStyle]}>
-            <Text style={styles.overallStatsTitle}>Your Focus Journey</Text>
+            <Text style={[styles.overallStatsTitle, { color: colors.text }]}>
+              Your Focus Journey
+            </Text>
 
             <View style={styles.overallStatsGrid}>
-              <View style={styles.overallStatItem}>
-                <Text style={styles.overallStatNumber}>
+              <View
+                style={[
+                  styles.overallStatItem,
+                  {
+                    backgroundColor: pallet.shade1 + "0D",
+                  },
+                ]}
+              >
+                <Text
+                  style={[styles.overallStatNumber, { color: pallet.shade1 }]}
+                >
                   {stats.totalSessions}
                 </Text>
-                <Text style={styles.overallStatLabel}>Total Sessions</Text>
+                <Text
+                  style={[styles.overallStatLabel, { color: pallet.shade2 }]}
+                >
+                  Total Sessions
+                </Text>
               </View>
 
-              <View style={styles.overallStatItem}>
-                <Text style={styles.overallStatNumber}>
+              <View
+                style={[
+                  styles.overallStatItem,
+                  {
+                    backgroundColor: pallet.shade1 + "0D",
+                  },
+                ]}
+              >
+                <Text
+                  style={[styles.overallStatNumber, { color: pallet.shade1 }]}
+                >
                   {Math.round((stats.totalFocusTime / 60) * 10) / 10}h
                 </Text>
-                <Text style={styles.overallStatLabel}>Focus Time</Text>
+                <Text
+                  style={[styles.overallStatLabel, { color: pallet.shade2 }]}
+                >
+                  Focus Time
+                </Text>
               </View>
 
-              <View style={styles.overallStatItem}>
-                <Text style={styles.overallStatNumber}>
+              <View
+                style={[
+                  styles.overallStatItem,
+                  {
+                    backgroundColor: pallet.shade1 + "0D",
+                  },
+                ]}
+              >
+                <Text
+                  style={[styles.overallStatNumber, { color: pallet.shade1 }]}
+                >
                   {stats.currentStreak}
                 </Text>
-                <Text style={styles.overallStatLabel}>Current Streak</Text>
+                <Text
+                  style={[styles.overallStatLabel, { color: pallet.shade2 }]}
+                >
+                  Current Streak
+                </Text>
               </View>
 
-              <View style={styles.overallStatItem}>
-                <Text style={styles.overallStatNumber}>
+              <View
+                style={[
+                  styles.overallStatItem,
+                  {
+                    backgroundColor: pallet.shade1 + "0D",
+                  },
+                ]}
+              >
+                <Text
+                  style={[styles.overallStatNumber, { color: pallet.shade1 }]}
+                >
                   {stats.sessionsToday}
                 </Text>
-                <Text style={styles.overallStatLabel}>Today</Text>
+                <Text
+                  style={[styles.overallStatLabel, { color: pallet.shade2 }]}
+                >
+                  Today
+                </Text>
               </View>
             </View>
           </Animated.View>
@@ -288,7 +373,10 @@ const FocusSummaryModal: React.FC<FocusSummaryModalProps> = ({
               <View
                 style={[
                   styles.achievementBadge,
-                  { borderColor: pallet.shade2 },
+                  {
+                    borderColor: pallet.shade2,
+                    backgroundColor: pallet.shade1 + "0D",
+                  },
                 ]}
               >
                 <Ionicons name="medal" size={24} color={pallet.shade2} />
@@ -314,7 +402,6 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   modalContainer: {
-    backgroundColor: "white",
     borderRadius: 24,
     padding: 24,
     width: "100%",
@@ -331,13 +418,11 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#1C1C1E",
     textAlign: "center",
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: "#6D6D70",
     textAlign: "center",
     lineHeight: 22,
   },
@@ -346,7 +431,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   summaryCard: {
-    backgroundColor: "#F2F2F7",
     borderRadius: 16,
     padding: 20,
     alignItems: "center",
@@ -358,11 +442,9 @@ const styles = StyleSheet.create({
   mainStatNumber: {
     fontSize: 36,
     fontWeight: "bold",
-    color: "#34C759",
   },
   mainStatLabel: {
     fontSize: 16,
-    color: "#6D6D70",
     marginTop: 4,
   },
   statsRow: {
@@ -377,17 +459,14 @@ const styles = StyleSheet.create({
   statNumber: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#1C1C1E",
   },
   statLabel: {
     fontSize: 14,
-    color: "#8E8E93",
     marginTop: 2,
   },
   statDivider: {
     width: 1,
     height: 40,
-    backgroundColor: "#C7C7CC",
     marginHorizontal: 16,
   },
   overallStats: {
@@ -397,7 +476,6 @@ const styles = StyleSheet.create({
   overallStatsTitle: {
     fontSize: 18,
     fontWeight: "600",
-    color: "#1C1C1E",
     textAlign: "center",
     marginBottom: 16,
   },
@@ -408,7 +486,6 @@ const styles = StyleSheet.create({
   },
   overallStatItem: {
     width: "48%",
-    backgroundColor: "rgba(23, 122, 213, 0.05)", // pallet.shade1 with low opacity
     borderRadius: 12,
     padding: 16,
     alignItems: "center",
@@ -417,11 +494,9 @@ const styles = StyleSheet.create({
   overallStatNumber: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "#177AD5", // pallet.shade1
   },
   overallStatLabel: {
     fontSize: 12,
-    color: "#0eafff", // pallet.shade2
     marginTop: 4,
     textAlign: "center",
   },
@@ -460,14 +535,13 @@ const styles = StyleSheet.create({
   achievementBadge: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "rgba(23, 122, 213, 0.05)", // pallet.shade1 with low opacity
     borderRadius: 20,
     paddingHorizontal: 16,
     paddingVertical: 8,
     marginTop: 16,
     gap: 8,
     borderWidth: 2,
-    // borderColor set dynamically
+    // borderColor and backgroundColor set dynamically
   },
   achievementText: {
     fontSize: 14,

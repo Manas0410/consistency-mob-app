@@ -33,10 +33,12 @@ import { Button } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Spinner } from "@/components/ui/spinner";
 import apicall from "@/constants/axios-config";
+import { Colors } from "@/constants/theme";
 import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { DatePicker } from "./ui/date-picker"; // replace with your actual DatePicker
-import { Input } from "./ui/input"; // your Input component
+import { DurationPicker } from "./ui/duration-picker";
 import { Picker } from "./ui/picker"; // replace with your actual Picker (multi-select)
 import { useToast } from "./ui/toast";
 
@@ -106,7 +108,7 @@ const safeParseDate = (iso: string) => {
 const fmtDate = (iso: string) => format(safeParseDate(iso), "EEE, d MMM yyyy");
 const fmtTime = (iso: string) => format(safeParseDate(iso), "h:mm a");
 
-const PRIORITY = {
+const PRIORITY: Record<number, { label: string; color: string }> = {
   0: { label: "Low", color: "#10B981" },
   1: { label: "Medium", color: "#F59E0B" },
   2: { label: "High", color: "#EF4444" },
@@ -135,14 +137,24 @@ const TaskDetails: React.FC<Props> = ({
 }) => {
   const router = useRouter();
   const pallet = usePallet();
+  const colors = Colors.light;
+  const backgroundColor = useColor({}, "background");
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
+  const iconColor = useColor({}, "icon");
+  const cardBackgroundColor = useColor({}, "card");
+  const borderColor = useColor({}, "border");
+
   // early guard: if no task, show friendly fallback
   if (!task) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#fff" }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor }}>
         <BackHeader title="Task description"></BackHeader>
-        <View style={styles.notFoundWrap}>
-          <Text style={styles.notFoundTitle}>Task not found</Text>
-          <Text style={styles.notFoundSubtitle}>
+        <View style={[styles.notFoundWrap, { backgroundColor }]}>
+          <Text style={[styles.notFoundTitle, { color: textColor }]}>
+            Task not found
+          </Text>
+          <Text style={[styles.notFoundSubtitle, { color: textMutedColor }]}>
             The task you are looking for doesn't exist or has been removed.
           </Text>
           <Button
@@ -239,18 +251,16 @@ const TaskDetails: React.FC<Props> = ({
     setLocalDuration(newDur.hours, newDur.minutes);
   };
 
-  const handleDurationHoursChange = (text: string) => {
-    const h = toNum(text);
-    setLocalDurHours(h);
-    const mins = h * 60 + toNum(localDurMins);
+  const handleDurationHoursChange = (hours: number) => {
+    setLocalDurHours(hours);
+    const mins = hours * 60 + toNum(localDurMins);
     const newEnd = addMinutes(new Date(startISO), mins);
     setEndISO(newEnd.toISOString());
   };
 
-  const handleDurationMinsChange = (text: string) => {
-    const m = toNum(text);
-    setLocalDurMins(m);
-    const mins = toNum(localDurHours) * 60 + m;
+  const handleDurationMinsChange = (minutes: number) => {
+    setLocalDurMins(minutes);
+    const mins = toNum(localDurHours) * 60 + minutes;
     const newEnd = addMinutes(new Date(startISO), mins);
     setEndISO(newEnd.toISOString());
   };
@@ -336,12 +346,14 @@ const TaskDetails: React.FC<Props> = ({
       Alert.alert("Validation", "Task name cannot be empty");
       return;
     }
-    if (payload?.endTime) delete payload.endTime;
-    if (payload?.isGap) delete payload.isGap;
-    if (payload?.createdAt) delete payload.createdAt;
-    if (payload?.updatedAt) delete payload.updatedAt;
+    // Create a clean payload without unwanted properties
+    const { endTime, createdAt, updatedAt, ...cleanPayload } = payload as any;
+    // Remove isGap if it exists (it's not in the type but might be in the data)
+    if ("isGap" in cleanPayload) {
+      delete (cleanPayload as any).isGap;
+    }
     // Call parent handler
-    onEdit(payload);
+    onEdit(cleanPayload as TaskUnion);
   };
 
   const [isAdmin, setisAdmin] = useState(false);
@@ -387,7 +399,7 @@ const TaskDetails: React.FC<Props> = ({
 
   // UI
   return (
-    <View style={{ flex: 1, backgroundColor: "#fff" }}>
+    <View style={{ flex: 1, backgroundColor }}>
       <SafeAreaView>
         <BackHeader title="Task description">
           {deleteInProgress ? (
@@ -414,28 +426,42 @@ const TaskDetails: React.FC<Props> = ({
             </>
           )}
         </BackHeader>
-        <View style={{ backgroundColor: "#F7F8FA" }}>
+        <View style={{ backgroundColor }}>
           {loading ? (
             <View style={styles.centerFill}>
-              <Spinner variant="bars" size="default" />
+              <Spinner variant="bars" size="default" color={pallet.shade1} />
             </View>
           ) : (
             <ScrollView contentContainerStyle={styles.container}>
               {/* Header */}
-              <View style={styles.header}>
-                <Text style={styles.title} numberOfLines={2}>
+              <View
+                style={[
+                  styles.header,
+                  { backgroundColor: cardBackgroundColor },
+                ]}
+              >
+                <Text
+                  style={[styles.title, { color: textColor }]}
+                  numberOfLines={2}
+                >
                   {name || "Untitled Task"}
                 </Text>
-                <View style={styles.badge}>
-                  <Text style={styles.badgeText}>
+                <View
+                  style={[styles.badge, { backgroundColor: pallet.shade4 }]}
+                >
+                  <Text style={[styles.badgeText, { color: pallet.shade1 }]}>
                     {team ? "Team Task" : "My Task"}
                   </Text>
                 </View>
               </View>
 
               {/* Priority */}
-              <View style={styles.card}>
-                <Text style={styles.label}>Priority</Text>
+              <View
+                style={[styles.card, { backgroundColor: cardBackgroundColor }]}
+              >
+                <Text style={[styles.label, { color: textMutedColor }]}>
+                  Priority
+                </Text>
                 <View style={styles.segment}>
                   {[0, 1, 2].map((p) => (
                     <Pressable
@@ -443,19 +469,31 @@ const TaskDetails: React.FC<Props> = ({
                       onPress={() => setPriority(p)}
                       style={[
                         styles.segmentItem,
-                        priority === p && styles.segmentActive,
+                        {
+                          borderColor: borderColor,
+                          backgroundColor: cardBackgroundColor,
+                        },
+                        priority === p && {
+                          backgroundColor: pallet.shade1,
+                          borderColor: pallet.shade1,
+                        },
                       ]}
                     >
                       <Icon
                         name={Flag}
                         size={16}
-                        color={priority === p ? "#fff" : PRIORITY[p].color}
+                        color={
+                          priority === p ? pallet.ButtonText : PRIORITY[p].color
+                        }
                       />
                       <Text
                         style={[
                           styles.segmentText,
                           {
-                            color: priority === p ? "#fff" : PRIORITY[p].color,
+                            color:
+                              priority === p
+                                ? pallet.ButtonText
+                                : PRIORITY[p].color,
                           },
                         ]}
                       >
@@ -467,8 +505,15 @@ const TaskDetails: React.FC<Props> = ({
               </View>
 
               {/* Status */}
-              <View style={styles.cardRow}>
-                <Text style={styles.label}>Status</Text>
+              <View
+                style={[
+                  styles.cardRow,
+                  { backgroundColor: cardBackgroundColor },
+                ]}
+              >
+                <Text style={[styles.label, { color: textMutedColor }]}>
+                  Status
+                </Text>
                 <View
                   style={{
                     flexDirection: "row",
@@ -479,9 +524,9 @@ const TaskDetails: React.FC<Props> = ({
                   <Icon
                     name={CheckCircle}
                     size={18}
-                    color={isDone ? "#16A34A" : "#94A3B8"}
+                    color={isDone ? "#16A34A" : iconColor}
                   />
-                  <Text style={{ color: "#0F172A", fontWeight: "600" }}>
+                  <Text style={{ color: textColor, fontWeight: "600" }}>
                     {isDone ? "Completed" : "Pending"}
                   </Text>
                   <Switch value={isDone} onValueChange={setIsDone} />
@@ -489,22 +534,26 @@ const TaskDetails: React.FC<Props> = ({
               </View>
 
               {/* When & Duration */}
-              <View style={styles.card}>
-                <Text style={styles.label}>When</Text>
+              <View
+                style={[styles.card, { backgroundColor: cardBackgroundColor }]}
+              >
+                <Text style={[styles.label, { color: textMutedColor }]}>
+                  When
+                </Text>
 
                 <View style={styles.row}>
-                  <Icon name={Calendar} size={18} color="#64748B" />
-                  <Text style={styles.subtle}>
+                  <Icon name={Calendar} size={18} color={iconColor} />
+                  <Text style={[styles.subtle, { color: textMutedColor }]}>
                     {fmtDate(startISO)} • {fmtTime(startISO)} –{" "}
                     {fmtTime(endISO)}
                   </Text>
                 </View>
 
                 <View style={[styles.row, { marginTop: 6 }]}>
-                  <Icon name={Clock} size={18} color="#64748B" />
-                  <Text style={styles.subtle}>
+                  <Icon name={Clock} size={18} color={iconColor} />
+                  <Text style={[styles.subtle, { color: textMutedColor }]}>
                     Duration:{" "}
-                    <Text style={{ color: "#0F172A", fontWeight: "700" }}>
+                    <Text style={{ color: textColor, fontWeight: "700" }}>
                       {derivedDuration.hours
                         ? `${derivedDuration.hours}h `
                         : ""}
@@ -516,22 +565,12 @@ const TaskDetails: React.FC<Props> = ({
                 </View>
 
                 {/* Duration inputs */}
-                <View style={{ marginTop: 12, flexDirection: "row", gap: 12 }}>
-                  <Input
-                    containerStyle={{ flex: 1 }}
-                    label="Hours"
-                    labelWidth={70}
-                    keyboardType="numeric"
-                    value={String(localDurHours)}
-                    onChangeText={handleDurationHoursChange}
-                  />
-                  <Input
-                    containerStyle={{ flex: 1 }}
-                    label="Minutes"
-                    labelWidth={70}
-                    keyboardType="numeric"
-                    value={String(localDurMins)}
-                    onChangeText={handleDurationMinsChange}
+                <View style={{ marginTop: 12 }}>
+                  <DurationPicker
+                    hours={localDurHours}
+                    minutes={localDurMins}
+                    onHoursChange={handleDurationHoursChange}
+                    onMinutesChange={handleDurationMinsChange}
                   />
                 </View>
 
@@ -541,30 +580,49 @@ const TaskDetails: React.FC<Props> = ({
                     label="Start"
                     mode="datetime"
                     value={new Date(startISO)}
-                    onChange={(d: Date) => handleStartChange(d)}
+                    onChange={(d: Date | undefined) => {
+                      if (d) handleStartChange(d);
+                    }}
                   />
                 </View>
               </View>
 
               {/* Assignees (team only) */}
               {team && (
-                <View style={styles.card}>
-                  <Text style={styles.label}>Assignees</Text>
+                <View
+                  style={[
+                    styles.card,
+                    { backgroundColor: cardBackgroundColor },
+                  ]}
+                >
+                  <Text style={[styles.label, { color: textMutedColor }]}>
+                    Assignees
+                  </Text>
                   {(task as TeamTask).assignees?.length ? (
                     <View
                       style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
                     >
                       {(task as TeamTask).assignees.map((a) => (
-                        <View key={a.userId} style={styles.pill}>
-                          <Icon name={Users} size={14} color="#2563EB" />
-                          <Text style={[styles.pillText, { color: "#2563EB" }]}>
+                        <View
+                          key={a.userId}
+                          style={[
+                            styles.pill,
+                            { backgroundColor: pallet.shade4 },
+                          ]}
+                        >
+                          <Icon name={Users} size={14} color={pallet.shade1} />
+                          <Text
+                            style={[styles.pillText, { color: pallet.shade1 }]}
+                          >
                             {a.userName}
                           </Text>
                         </View>
                       ))}
                     </View>
                   ) : (
-                    <Text style={styles.subtle}>No assignees</Text>
+                    <Text style={[styles.subtle, { color: textMutedColor }]}>
+                      No assignees
+                    </Text>
                   )}
 
                   <Picker
@@ -582,33 +640,72 @@ const TaskDetails: React.FC<Props> = ({
               )}
 
               {/* Basic fields */}
-              <View style={styles.card}>
-                <Text style={styles.inputLabel}>Task name</Text>
+              <View
+                style={[styles.card, { backgroundColor: cardBackgroundColor }]}
+              >
+                <Text style={[styles.inputLabel, { color: textMutedColor }]}>
+                  Task name
+                </Text>
                 <TextInput
                   placeholder="Enter task name"
+                  placeholderTextColor={textMutedColor}
                   value={name}
                   onChangeText={setName}
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    {
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor,
+                      color: textColor,
+                    },
+                  ]}
                 />
 
-                <Text style={[styles.inputLabel, { marginTop: 10 }]}>
+                <Text
+                  style={[
+                    styles.inputLabel,
+                    { marginTop: 10, color: textMutedColor },
+                  ]}
+                >
                   Category
                 </Text>
                 <TextInput
                   placeholder="e.g., Work, Personal"
+                  placeholderTextColor={textMutedColor}
                   value={category}
                   onChangeText={setCategory}
-                  style={styles.input}
+                  style={[
+                    styles.input,
+                    {
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor,
+                      color: textColor,
+                    },
+                  ]}
                 />
 
-                <Text style={[styles.inputLabel, { marginTop: 10 }]}>
+                <Text
+                  style={[
+                    styles.inputLabel,
+                    { marginTop: 10, color: textMutedColor },
+                  ]}
+                >
                   Description
                 </Text>
                 <TextInput
                   placeholder="Add a short description"
+                  placeholderTextColor={textMutedColor}
                   value={desc}
                   onChangeText={setDesc}
-                  style={[styles.input, { height: 90 }]}
+                  style={[
+                    styles.input,
+                    {
+                      height: 90,
+                      backgroundColor: backgroundColor,
+                      borderColor: borderColor,
+                      color: textColor,
+                    },
+                  ]}
                   multiline
                 />
               </View>
@@ -618,8 +715,8 @@ const TaskDetails: React.FC<Props> = ({
                 {onCancel ? (
                   <Button
                     variant="default"
-                    style={[styles.btn, { backgroundColor: "#E5E7EB" }]}
-                    textStyle={{ color: "#111827", fontWeight: "700" }}
+                    style={[styles.btn, { backgroundColor: borderColor }]}
+                    textStyle={{ color: textColor, fontWeight: "700" }}
                     onPress={onCancel}
                   >
                     Cancel
@@ -629,9 +726,9 @@ const TaskDetails: React.FC<Props> = ({
                   variant="default"
                   style={[
                     styles.btn,
-                    { backgroundColor: "#2563EB", marginBottom: 420 },
+                    { backgroundColor: pallet.shade1, marginBottom: 420 },
                   ]}
-                  textStyle={{ color: "#fff", fontWeight: "700" }}
+                  textStyle={{ color: pallet.ButtonText, fontWeight: "700" }}
                   onPress={save}
                 >
                   Save Changes
@@ -664,21 +761,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 24,
-    backgroundColor: "#fff",
   },
   notFoundTitle: {
     fontSize: 18,
     fontWeight: "700",
     marginBottom: 8,
-    color: "#0F172A",
   },
   notFoundSubtitle: {
-    color: "#64748B",
     textAlign: "center",
     marginBottom: 20,
   },
   header: {
-    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 16,
     gap: 10,
@@ -690,22 +783,18 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: "800",
-    color: "#0F172A",
   },
   badge: {
     alignSelf: "flex-start",
-    backgroundColor: "#EEF2FF",
     paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 999,
   },
   badgeText: {
-    color: "#4F46E5",
     fontWeight: "700",
     fontSize: 12,
   },
   card: {
-    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 16,
     gap: 10,
@@ -715,7 +804,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
   },
   cardRow: {
-    backgroundColor: "#FFFFFF",
     borderRadius: 16,
     padding: 16,
     shadowColor: "#000",
@@ -728,7 +816,6 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 13,
-    color: "#64748B",
     fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0.5,
@@ -739,7 +826,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   subtle: {
-    color: "#475569",
+    // Color will be set inline
   },
   segment: {
     flexDirection: "row",
@@ -753,19 +840,15 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     borderRadius: 999,
     borderWidth: 1,
-    borderColor: "#E5E7EB",
-    backgroundColor: "#fff",
   },
   segmentActive: {
-    backgroundColor: "#2563EB",
-    borderColor: "#2563EB",
+    // Will be set inline
   },
   segmentText: {
     fontWeight: "700",
     fontSize: 12,
   },
   pill: {
-    backgroundColor: "#EFF6FF",
     borderRadius: 999,
     paddingHorizontal: 10,
     paddingVertical: 6,
@@ -779,19 +862,15 @@ const styles = StyleSheet.create({
   },
   inputLabel: {
     fontSize: 13,
-    color: "#64748B",
     fontWeight: "700",
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
   input: {
-    backgroundColor: "#F8FAFC",
     borderRadius: 12,
     paddingHorizontal: 12,
     paddingVertical: 12,
     borderWidth: 1,
-    borderColor: "#E2E8F0",
-    color: "#0F172A",
   },
   footer: {
     flexDirection: "row",

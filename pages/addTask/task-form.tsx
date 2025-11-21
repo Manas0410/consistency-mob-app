@@ -11,6 +11,7 @@ import { useToast } from "@/components/ui/toast";
 import { TaskData } from "@/constants/types";
 import { useAddTaskSheet } from "@/contexts/add-task-context";
 import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { addMinutes } from "date-fns";
 import {
   ChevronLeft,
@@ -20,7 +21,13 @@ import {
   SquarePen,
 } from "lucide-react-native";
 import React, { useEffect, useState } from "react";
-import { StyleSheet, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  StyleSheet,
+  Switch,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { addTask } from "./API/addTask";
 import AddPriority from "./components/add-priority";
 
@@ -39,6 +46,8 @@ const options = [
 export default function TaskForm() {
   const { close, isVisible, initialData, rerender } = useAddTaskSheet();
   const pallet = usePallet();
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
 
   const [task, setTask] = useState<TaskData>({
     taskName: "",
@@ -48,6 +57,7 @@ export default function TaskForm() {
     priority: 0,
     frequency: [0],
     category: "",
+    sync: false,
   });
 
   // Update task when initialData changes
@@ -102,6 +112,7 @@ export default function TaskForm() {
           priority: 0,
           frequency: [0],
           category: "",
+          sync: false,
         });
         setStep(1);
       } else {
@@ -261,6 +272,31 @@ export default function TaskForm() {
                   )
                 }
               />
+
+              {/* Calendar Sync Toggle */}
+              <View style={styles.toggleRow}>
+                <View style={styles.toggleLeft}>
+                  <Image
+                    source={require("@/assets/images/gcal.png")}
+                    style={{ width: 20, height: 20 }}
+                    resizeMode="contain"
+                  />
+
+                  <Text
+                    variant="caption"
+                    style={[styles.toggleLabel, { color: textColor }]}
+                  >
+                    Sync with Calendar
+                  </Text>
+                </View>
+                <Switch
+                  value={task.sync || false}
+                  onValueChange={(value) => handleChange("sync", value)}
+                  trackColor={{ false: "#E5E7EB", true: pallet.shade4 }}
+                  thumbColor={task.sync ? pallet.shade1 : "#F3F4F6"}
+                />
+              </View>
+
               <Button
                 icon={Plus}
                 loading={loading}
@@ -298,5 +334,20 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
   },
-  // ... (rest of your style object remains unchanged)
+  toggleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingVertical: 12,
+    paddingHorizontal: 4,
+  },
+  toggleLeft: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  toggleLabel: {
+    fontSize: 14,
+    fontWeight: "500",
+  },
 });

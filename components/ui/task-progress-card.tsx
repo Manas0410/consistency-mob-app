@@ -1,6 +1,5 @@
 import { Colors } from "@/constants/theme";
 import { usePallet } from "@/hooks/use-pallet";
-import { useTheme } from "@/hooks/use-theme";
 import React from "react";
 import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { PieChart } from "react-native-gifted-charts";
@@ -23,8 +22,7 @@ export default function TaskProgressCard({
   onTaskToggle,
   onSeeDetail,
 }: TaskProgressCardProps) {
-  const theme = useTheme();
-  const colors = theme === "dark" ? Colors.dark : Colors.light;
+  const colors = Colors.light; // Always use light theme
   const chartData = {
     labels: ["progress"],
     data: [percentage / 100],

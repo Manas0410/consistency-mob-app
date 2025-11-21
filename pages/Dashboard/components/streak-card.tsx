@@ -1,5 +1,8 @@
 import Heatmap from "@/components/charts/heat-map";
 import { View } from "@/components/ui/view";
+import { Colors } from "@/constants/theme";
+import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 import { Text } from "react-native";
@@ -7,6 +10,9 @@ import { getStreakData } from "../APi/get-streak";
 
 const StreakCard = () => {
   const [streakData, setStreakData] = useState({});
+  const colors = Colors.light; // Always use light theme
+  const pallet = usePallet();
+  const textColor = useColor({}, "text");
 
   const getStreak = async () => {
     try {
@@ -26,7 +32,7 @@ const StreakCard = () => {
   return (
     <View
       style={{
-        backgroundColor: "rgba(255,255,255,0.15)",
+        backgroundColor: pallet.shade4,
         borderRadius: 24,
         padding: 24,
         flexDirection: "row",
@@ -39,7 +45,7 @@ const StreakCard = () => {
           style={{
             fontSize: 22,
             fontWeight: "bold",
-            color: "#ffffff",
+            color: pallet.shade1,
             marginLeft: 2,
           }}
         >
@@ -79,7 +85,7 @@ const StreakCard = () => {
                 fontSize: 32,
                 fontWeight: "bold",
                 color: "#fff",
-                textShadowColor: "#d17b2c",
+                textShadowColor: pallet.shade1,
                 textShadowOffset: { width: 0, height: 2 },
                 textShadowRadius: 6,
               }}
@@ -88,9 +94,7 @@ const StreakCard = () => {
             </Text>
           </View>
         </View>
-        <Text style={{ fontSize: 12, color: "rgba(255,255,255,0.8)" }}>
-          Productivity
-        </Text>
+        <Text style={{ fontSize: 12, color: pallet.shade2 }}>Productivity</Text>
       </View>
     </View>
   );

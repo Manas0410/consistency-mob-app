@@ -1,8 +1,10 @@
 // OnboardingFlow.tsx
 import { Onboarding, OnboardingStep } from "@/components/ui/onboarding";
 import { Text } from "@/components/ui/text";
+import { Colors } from "@/constants/theme";
 import { useOnboardingContext } from "@/contexts/onboarding-context";
 import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { Ionicons } from "@expo/vector-icons";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -49,6 +51,10 @@ const TimelinePreview: React.FC = () => {
   ];
 
   const pallet = usePallet();
+  const colors = Colors.light; // Always use light theme
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
+  const iconColor = useColor({}, "icon");
 
   return (
     <ScrollView
@@ -69,11 +75,24 @@ const TimelinePreview: React.FC = () => {
                 color={pallet.ButtonText}
               />
             </View>
-            {index < tasks.length - 1 && <View style={styles.connector} />}
+            {index < tasks.length - 1 && (
+              <View
+                style={[
+                  styles.connector,
+                  { backgroundColor: iconColor + "40" },
+                ]}
+              />
+            )}
           </View>
           <View style={styles.timelineContent}>
-            <Text style={styles.timeText}>{task.time}</Text>
-            <Text style={styles.taskTitle}>{task.title}</Text>
+            <Text
+              style={[styles.timeText, { color: textMutedColor || iconColor }]}
+            >
+              {task.time}
+            </Text>
+            <Text style={[styles.taskTitle, { color: textColor }]}>
+              {task.title}
+            </Text>
             {task.subtasks && (
               <View style={styles.subtaskBadge}>
                 <Ionicons
@@ -81,7 +100,16 @@ const TimelinePreview: React.FC = () => {
                   size={16}
                   color={pallet.ButtonText}
                 />
-                <Text style={styles.subtaskText as any}>{task.subtasks}</Text>
+                <Text
+                  style={
+                    [
+                      styles.subtaskText,
+                      { color: textMutedColor || iconColor },
+                    ] as any
+                  }
+                >
+                  {task.subtasks}
+                </Text>
               </View>
             )}
           </View>
@@ -257,15 +285,21 @@ export function OnboardingFlow() {
   const { completeOnboarding, skipOnboarding } = useOnboardingContext();
   const [wakeUpTime, setWakeUpTime] = useState("08:00");
   const [sleepTime, setSleepTime] = useState("22:00");
+  const colors = Colors.light; // Always use light theme
+  const textColor = useColor({}, "text");
+  const textMutedColor = useColor({}, "textMuted");
+  const backgroundCardColor = useColor({}, "background");
 
   // loading & error state for final API call
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
+  const textMuted = useColor({}, "textMuted") || useColor({}, "icon");
+
   const WakeUpTimeScreen = () => (
     <View style={styles.timeScreenContainer}>
       <TimePicker value={wakeUpTime} onChange={setWakeUpTime} />
-      <Text style={styles.timeScreenFooter as any}>
+      <Text style={[styles.timeScreenFooter, { color: textMuted }] as any}>
         You can always update this later
       </Text>
     </View>
@@ -274,7 +308,7 @@ export function OnboardingFlow() {
   const SleepTimeScreen = () => (
     <View style={styles.timeScreenContainer}>
       <TimePicker value={sleepTime} onChange={setSleepTime} />
-      <Text style={styles.timeScreenFooter as any}>
+      <Text style={[styles.timeScreenFooter, { color: textMuted }] as any}>
         You can always update this later
       </Text>
     </View>
@@ -283,22 +317,46 @@ export function OnboardingFlow() {
   // Small summary component to show final selections before submitting
   const FinalSummary = () => (
     <View style={styles.summaryContainer}>
-      <Text style={styles.summaryTitle as any}>
+      <Text style={[styles.summaryTitle, { color: textColor }] as any}>
         Almost there — confirm your times
       </Text>
       <View style={styles.timeSummaryRow}>
-        <View style={styles.timeSummaryCard}>
-          <Text style={styles.summaryLabel as any}>Wake up</Text>
-          <Text style={styles.summaryValue as any}>{wakeUpTime}</Text>
+        <View
+          style={[
+            styles.timeSummaryCard,
+            { backgroundColor: backgroundCardColor },
+          ]}
+        >
+          <Text style={[styles.summaryLabel, { color: textMutedColor }] as any}>
+            Wake up
+          </Text>
+          <Text style={[styles.summaryValue, { color: textColor }] as any}>
+            {wakeUpTime}
+          </Text>
         </View>
-        <View style={styles.timeSummaryCard}>
-          <Text style={styles.summaryLabel as any}>Sleep</Text>
-          <Text style={styles.summaryValue as any}>{sleepTime}</Text>
+        <View
+          style={[
+            styles.timeSummaryCard,
+            { backgroundColor: backgroundCardColor },
+          ]}
+        >
+          <Text style={[styles.summaryLabel, { color: textMutedColor }] as any}>
+            Sleep
+          </Text>
+          <Text style={[styles.summaryValue, { color: textColor }] as any}>
+            {sleepTime}
+          </Text>
         </View>
       </View>
 
       {submitError ? (
-        <Text style={{ color: "#C0392B", textAlign: "center", marginTop: 8 }}>
+        <Text
+          style={{
+            color: colors.red || "#C0392B",
+            textAlign: "center",
+            marginTop: 8,
+          }}
+        >
           {submitError}
         </Text>
       ) : null}
@@ -417,12 +475,17 @@ export function OnboardingFlow() {
     await completeOnboarding();
   };
 
+  const pallet = usePallet();
+
   const steps: OnboardingStep[] = [
     {
       id: "1",
       title: (
         <>
-          A <Text style={styles.highlightText as any}>Timeline</Text>
+          A{" "}
+          <Text style={[styles.highlightText, { color: pallet.shade1 }] as any}>
+            Timeline
+          </Text>
           {"\n"}Of Your Day
         </>
       ) as any,
@@ -434,7 +497,9 @@ export function OnboardingFlow() {
       title: (
         <>
           25Hours{"\n"}is a{" "}
-          <Text style={styles.highlightText as any}>AI Day Planner</Text>
+          <Text style={[styles.highlightText, { color: pallet.shade1 }] as any}>
+            AI Day Planner
+          </Text>
         </>
       ) as any,
       description: "Bring more productivity into your everyday life",
@@ -445,7 +510,10 @@ export function OnboardingFlow() {
       title: (
         <>
           When Do You{"\n"}Usually{" "}
-          <Text style={styles.highlightText as any}>Wake Up</Text>?
+          <Text style={[styles.highlightText, { color: pallet.shade1 }] as any}>
+            Wake Up
+          </Text>
+          ?
         </>
       ) as any,
       description: "Scroll to adjust the time",
@@ -456,7 +524,10 @@ export function OnboardingFlow() {
       title: (
         <>
           When Do You{"\n"}Usually{" "}
-          <Text style={styles.highlightText as any}>Sleep</Text>?
+          <Text style={[styles.highlightText, { color: pallet.shade1 }] as any}>
+            Sleep
+          </Text>
+          ?
         </>
       ) as any,
       description: "Scroll to adjust the time",
@@ -517,7 +588,6 @@ const styles = StyleSheet.create({
   connector: {
     width: 2,
     flex: 1,
-    backgroundColor: "#E0E0E0",
     marginTop: 10,
     minHeight: 40,
   },
@@ -527,13 +597,11 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontSize: 14,
-    color: "#999",
     marginBottom: 4,
   },
   taskTitle: {
     fontSize: 20,
     fontWeight: "600",
-    color: "#000",
     marginBottom: 4,
   },
   subtaskBadge: {
@@ -543,7 +611,6 @@ const styles = StyleSheet.create({
   },
   subtaskText: {
     fontSize: 14,
-    color: "#666",
   },
   checkCircle: {
     width: 30,
@@ -647,7 +714,6 @@ const styles = StyleSheet.create({
   },
   timeScreenFooter: {
     fontSize: 14,
-    color: "#999",
     marginTop: 30,
     textAlign: "center",
   },
@@ -670,18 +736,15 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   timeSummaryCard: {
-    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 14,
     minWidth: 120,
     alignItems: "center",
     borderWidth: 1,
-    borderColor: "#EEE",
     elevation: 1,
   },
   summaryLabel: {
     fontSize: 12,
-    color: "#888",
     marginBottom: 6,
   },
   summaryValue: {
@@ -691,7 +754,7 @@ const styles = StyleSheet.create({
 
   // Highlight text
   highlightText: {
-    color: "#3B82F6",
+    // Color will be set dynamically using palette
   },
 
   // tiny helpers

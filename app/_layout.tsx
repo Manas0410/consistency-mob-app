@@ -5,7 +5,7 @@ import "react-native-reanimated";
 import { ToastProvider } from "@/components/ui/toast";
 import GlobalContextProvider from "@/contexts/global-context-provider";
 import { OnboardingProvider } from "@/contexts/onboarding-context";
-import { useTheme } from "@/hooks/use-theme";
+import { PaletteProvider } from "@/contexts/palette-context";
 import TaskForm from "@/pages/addTask/task-form";
 import TeamTaskForm from "@/pages/Team/team-task-form";
 import { ThemeProvider } from "@/theme/theme-provider";
@@ -67,30 +67,36 @@ async function initPushForUser(userId: string) {
 }
 
 export default function RootLayout() {
-  const theme = useTheme();
-
   return (
     <ClerkProvider tokenCache={tokenCache}>
-      <ThemeProvider>
-        <OnboardingProvider>
-          <ToastProvider>
-            <GlobalContextProvider>
-              <Stack>
-                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-                <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-                <Stack.Screen
-                  name="modal"
-                  options={{ presentation: "modal", title: "Modal" }}
-                />
-              </Stack>
+      <PaletteProvider>
+        <ThemeProvider>
+          <OnboardingProvider>
+            <ToastProvider>
+              <GlobalContextProvider>
+                <Stack>
+                  <Stack.Screen
+                    name="(tabs)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="(auth)"
+                    options={{ headerShown: false }}
+                  />
+                  <Stack.Screen
+                    name="modal"
+                    options={{ presentation: "modal", title: "Modal" }}
+                  />
+                </Stack>
 
-              <TaskForm />
-              <TeamTaskForm />
-              <StatusBar style="auto" />
-            </GlobalContextProvider>
-          </ToastProvider>
-        </OnboardingProvider>
-      </ThemeProvider>
+                <TaskForm />
+                <TeamTaskForm />
+                <StatusBar style="light" />
+              </GlobalContextProvider>
+            </ToastProvider>
+          </OnboardingProvider>
+        </ThemeProvider>
+      </PaletteProvider>
     </ClerkProvider>
   );
 }

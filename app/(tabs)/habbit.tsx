@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Picker } from "@/components/ui/picker";
 import { Text } from "@/components/ui/text";
 import { useToast } from "@/components/ui/toast";
+import { Colors } from "@/constants/theme";
 import { TaskData } from "@/constants/types";
 import { defaultHabbits } from "@/dummy/defaultHabbits";
 import { usePallet } from "@/hooks/use-pallet";
@@ -47,6 +48,7 @@ const options = [
 const Habbit = () => {
   const [selectedTab, setSelectedTab] = useState<string>("Health");
   const pallet = usePallet();
+  const colors = Colors.light; // Always use light theme
   const [GenerateAIenabled, setGenerateAIEnabled] = useState<boolean>(false);
   const [AIGeneratedHabbits, setAIGeneratedHabbits] = useState<any[]>([]);
   const [AIloading, setAILoading] = useState(false);
