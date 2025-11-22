@@ -129,12 +129,7 @@ const toNum = (v: string | number) => {
 
 // ---------------- Component ------------------------------------------------
 
-const TaskDetails: React.FC<Props> = ({
-  task,
-  loading = false,
-  onEdit,
-  onCancel,
-}) => {
+const TaskDetails: React.FC<Props> = ({ task, onEdit, onCancel }) => {
   const router = useRouter();
   const pallet = usePallet();
   const colors = Colors.light;
@@ -184,6 +179,7 @@ const TaskDetails: React.FC<Props> = ({
   const [priority, setPriority] = useState<number>(
     [0, 1, 2, 3].includes((task as any).priority) ? (task as any).priority : 0
   );
+  const [loading, setLoading] = useState(false);
 
   // local editable duration fields (so user can type hours/mins)
   const [localDurHours, setLocalDurHours] = useState<number>(
@@ -341,19 +337,26 @@ const TaskDetails: React.FC<Props> = ({
   };
 
   const save = () => {
-    const payload = getPayload();
-    if (!payload.taskName || String(payload.taskName).trim().length === 0) {
-      Alert.alert("Validation", "Task name cannot be empty");
-      return;
+    try {
+      setLoading(true);
+      const payload = getPayload();
+      if (!payload.taskName || String(payload.taskName).trim().length === 0) {
+        Alert.alert("Validation", "Task name cannot be empty");
+        return;
+      }
+      // Create a clean payload without unwanted properties
+      const { endTime, createdAt, updatedAt, ...cleanPayload } = payload as any;
+      // Remove isGap if it exists (it's not in the type but might be in the data)
+      if ("isGap" in cleanPayload) {
+        delete (cleanPayload as any).isGap;
+      }
+      // Call parent handler
+      onEdit(cleanPayload as TaskUnion);
+    } catch (err) {
+      console.error("Error saving task:", err);
+    } finally {
+      setLoading(false);
     }
-    // Create a clean payload without unwanted properties
-    const { endTime, createdAt, updatedAt, ...cleanPayload } = payload as any;
-    // Remove isGap if it exists (it's not in the type but might be in the data)
-    if ("isGap" in cleanPayload) {
-      delete (cleanPayload as any).isGap;
-    }
-    // Call parent handler
-    onEdit(cleanPayload as TaskUnion);
   };
 
   const [isAdmin, setisAdmin] = useState(false);
@@ -723,6 +726,7 @@ const TaskDetails: React.FC<Props> = ({
                   </Button>
                 ) : null}
                 <Button
+                  loading={loading}
                   variant="default"
                   style={[
                     styles.btn,
