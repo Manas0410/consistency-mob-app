@@ -10,6 +10,7 @@ import { Text } from "@/components/ui/text";
 import { useToast } from "@/components/ui/toast";
 import { TaskData } from "@/constants/types";
 import { useAddTaskSheet } from "@/contexts/add-task-context";
+import { useLocalUser } from "@/contexts/local-user-info";
 import { usePallet } from "@/hooks/use-pallet";
 import { useColor } from "@/hooks/useColor";
 import { addMinutes } from "date-fns";
@@ -48,6 +49,7 @@ export default function TaskForm() {
   const pallet = usePallet();
   const textColor = useColor({}, "text");
   const textMutedColor = useColor({}, "textMuted");
+  const { userData } = useLocalUser();
 
   const [task, setTask] = useState<TaskData>({
     taskName: "",
@@ -278,7 +280,7 @@ export default function TaskForm() {
                 <View style={styles.toggleLeft}>
                   <Image
                     source={require("@/assets/images/gcal.png")}
-                    style={{ width: 20, height: 20 }}
+                    style={{ width: 30, height: 30 }}
                     resizeMode="contain"
                   />
 
@@ -298,9 +300,17 @@ export default function TaskForm() {
                   thumbColor={
                     task.syncWithGoogleCalendar ? pallet.shade1 : "#F3F4F6"
                   }
-                  disabled={true}
+                  disabled={!userData?.googleCalendarSynced}
                 />
               </View>
+              {!userData?.googleCalendarSynced && (
+                <Text
+                  variant="caption"
+                  style={{ color: textMutedColor, fontSize: 12 }}
+                >
+                  (configure credentials in settings)
+                </Text>
+              )}
 
               <Button
                 icon={Plus}
