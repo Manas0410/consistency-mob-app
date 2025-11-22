@@ -1,4 +1,7 @@
 // ConnectGoogleCalendarButton.tsx
+import { useLocalUser } from "@/contexts/local-user-info";
+import { Linking } from "react-native";
+
 import { LinearGradient } from "expo-linear-gradient";
 import React from "react";
 import {
@@ -17,7 +20,7 @@ import {
  * Props
  * - onPress: callback when user taps the button
  * - loading: show spinner
- * - connected: show connected state (checkmark)
+ * - userData?.googleCalendarSynced: show userData?.googleCalendarSynced state (checkmark)
  * - style / textStyle: optional overrides
  * - logo: optional custom logo (defaults to local gcal.png)
  */
@@ -33,14 +36,15 @@ export default function ConnectGoogleCalendarButton({
   logo,
 }: ConnectGCalButtonProps) {
   const [loading, setLoading] = React.useState(false);
-  const [connected, setConnected] = React.useState(false);
+  const { userData } = useLocalUser();
+
   // default logo asset - update path if your alias differs
   const logoSource = logo ?? require("@/assets/images/gcal.png");
 
   const handlePress = async () => {
-    if (loading || connected) return;
+    if (loading || userData?.googleCalendarSynced) return;
     try {
-      //   await onPress?.();
+      await Linking.openURL("https://www.25hours.site/googlecalendar");
     } catch (err) {
       // swallow - parent handles errors
       console.warn("Connect GCal onPress error:", err);
@@ -52,25 +56,37 @@ export default function ConnectGoogleCalendarButton({
       onPress={handlePress}
       style={({ pressed }) => [
         styles.wrapper,
-        pressed && !connected && { opacity: 0.92 },
+        pressed && !userData?.googleCalendarSynced && { opacity: 0.92 },
         style,
       ]}
       accessibilityRole="button"
       accessibilityLabel={
-        connected ? "Google Calendar connected" : "Connect Google Calendar"
+        userData?.googleCalendarSynced
+          ? "Google Calendar userData?.googleCalendarSynced"
+          : "Connect Google Calendar"
       }
     >
       {/* Gradient background for modern look */}
       <LinearGradient
-        colors={connected ? ["#10B981", "#059669"] : ["#FFFFFF", "#FFFFFF"]}
+        colors={
+          userData?.googleCalendarSynced
+            ? ["#10B981", "#059669"]
+            : ["#FFFFFF", "#FFFFFF"]
+        }
         start={[0, 0]}
         end={[1, 1]}
-        style={[styles.gradient, connected ? styles.connectedGradient : null]}
+        style={[
+          styles.gradient,
+          userData?.googleCalendarSynced ? styles.connectedGradient : null,
+        ]}
       >
         <View style={styles.content}>
           <View style={styles.left}>
             <View
-              style={[styles.logoWrap, connected && styles.logoWrapConnected]}
+              style={[
+                styles.logoWrap,
+                userData?.googleCalendarSynced && styles.logoWrapConnected,
+              ]}
             >
               <Image
                 source={logoSource}
@@ -80,12 +96,12 @@ export default function ConnectGoogleCalendarButton({
             </View>
             <View style={styles.textWrap}>
               <Text style={[styles.title, textStyle]}>
-                {connected
-                  ? "Google Calendar connected"
+                {userData?.googleCalendarSynced
+                  ? "Google Calendar Synced"
                   : "Connect Google Calendar"}
               </Text>
               <Text style={styles.subtitle}>
-                {connected
+                {userData?.googleCalendarSynced
                   ? "Sync enabled"
                   : "Sync events, reminders & schedule"}
               </Text>
@@ -96,9 +112,9 @@ export default function ConnectGoogleCalendarButton({
             {loading ? (
               <ActivityIndicator
                 size="small"
-                color={connected ? "#fff" : "#2563EB"}
+                color={userData?.googleCalendarSynced ? "#fff" : "#2563EB"}
               />
-            ) : connected ? (
+            ) : userData?.googleCalendarSynced ? (
               <View style={styles.pillConnected}>
                 <Text style={styles.pillText}>✓</Text>
               </View>
@@ -131,7 +147,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
   },
   connectedGradient: {
-    // darker gradient when connected
+    // darker gradient when userData?.googleCalendarSynced
   },
   content: {
     flexDirection: "row",
