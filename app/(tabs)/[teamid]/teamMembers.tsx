@@ -3,6 +3,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useAddTeamMemberBottomSheet } from "@/contexts/add-team-member-context";
 import { useCurrentTeamData } from "@/contexts/team-data-context";
 import { usePallet } from "@/hooks/use-pallet";
+import { useColor } from "@/hooks/useColor";
 import { getTeamMembers } from "@/pages/Team/API/api-calls";
 import { AddTeamMember } from "@/pages/Team/components/add-member";
 import { JoinRequests } from "@/pages/Team/components/join-requests";
@@ -24,26 +25,30 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 export default function TeamManagement() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
+  const pallet = usePallet();
+  const textMutedColor = useColor({}, "textMuted");
+  const backgroundColor = useColor({}, "background");
+  const cardBackgroundColor = useColor({}, "card");
 
-  const getRoleIcon = (role) => {
+  const getRoleIcon = (role: string) => {
     switch (role) {
       case "admin":
-        return <Crown size={16} color="#f59e0b" />;
+        return <Crown size={16} color={pallet.shade1} />;
       case "member":
-        return <User size={16} color="#6b7280" />;
+        return <User size={16} color={textMutedColor} />;
       default:
-        return <User size={16} color="#6b7280" />;
+        return <User size={16} color={textMutedColor} />;
     }
   };
 
-  const getRoleColor = (role) => {
+  const getRoleColor = (role: string) => {
     switch (role) {
       case "admin":
-        return "#f59e0b";
+        return pallet.shade1;
       case "member":
-        return "#6b7280";
+        return textMutedColor;
       default:
-        return "#6b7280";
+        return textMutedColor;
     }
   };
 
@@ -62,7 +67,8 @@ export default function TeamManagement() {
   const fetchMembers = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await getTeamMembers(teamid);
+      const teamIdString = Array.isArray(teamid) ? teamid[0] : teamid;
+      const res = await getTeamMembers(teamIdString);
       if (res?.success) {
         // expecting res.data to be an array of members (or object with members)
         // if API returns { members: [...] } adjust accordingly
@@ -120,7 +126,6 @@ export default function TeamManagement() {
     }
   }, [fetchMembers]);
 
-  const pallet = usePallet();
   const { open } = useAddTeamMemberBottomSheet();
 
   if (loading && !refreshing) {
@@ -129,7 +134,7 @@ export default function TeamManagement() {
       <View
         style={{
           flex: 1,
-          backgroundColor: "#fff",
+          backgroundColor: backgroundColor,
           width: "100%",
           justifyContent: "center",
           alignItems: "center",
@@ -144,7 +149,7 @@ export default function TeamManagement() {
     <View
       style={{
         flex: 1,
-        backgroundColor: "#f8fafc",
+        backgroundColor: cardBackgroundColor,
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
@@ -191,7 +196,7 @@ export default function TeamManagement() {
               open();
             }}
             style={{
-              backgroundColor: "#3b82f6",
+              backgroundColor: pallet.shade1,
               borderRadius: 12,
               padding: 16,
               flexDirection: "row",

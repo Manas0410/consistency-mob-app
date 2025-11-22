@@ -18,12 +18,40 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const paletteColors = ["#2196F3", "#4CAF50", "#E5734A", "#7B3FF2"];
-const paletteNames: ("blue" | "green" | "orange" | "purple")[] = [
+const paletteColors = [
+  "#2196F3", // blue
+  "#4CAF50", // green
+  "#E5734A", // orange
+  "#7B3FF2", // purple
+  "#E91E63", // pink
+  "#009688", // teal
+  "#3F51B5", // indigo
+  "#F44336", // red
+  "#FF9800", // amber
+  "#00BCD4", // cyan
+];
+const paletteNames: (
+  | "blue"
+  | "green"
+  | "orange"
+  | "purple"
+  | "pink"
+  | "teal"
+  | "indigo"
+  | "red"
+  | "amber"
+  | "cyan"
+)[] = [
   "blue",
   "green",
   "orange",
   "purple",
+  "pink",
+  "teal",
+  "indigo",
+  "red",
+  "amber",
+  "cyan",
 ];
 
 export default function SettingsScreen() {
@@ -148,7 +176,11 @@ export default function SettingsScreen() {
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
               Color Palette
             </Text>
-            <View style={styles.paletteRow}>
+            <ScrollView
+              horizontal
+              showsHorizontalScrollIndicator={false}
+              contentContainerStyle={styles.paletteRow}
+            >
               {paletteColors.map((color, idx) => (
                 <TouchableOpacity
                   key={color}
@@ -167,7 +199,7 @@ export default function SettingsScreen() {
                   }}
                 />
               ))}
-            </View>
+            </ScrollView>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>
               Reminders
             </Text>
@@ -333,8 +365,8 @@ const styles = StyleSheet.create({
   paletteRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
-    marginTop: 8,
+    paddingVertical: 8,
+    paddingRight: 18,
   },
   paletteCircle: {
     width: 38,

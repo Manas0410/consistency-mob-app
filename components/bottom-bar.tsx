@@ -100,16 +100,16 @@ const BottomBar = () => {
           {isTeamsButtonExpanded ? (
             <View style={styles.buttonCnt}>
               <TouchableOpacity
-                style={styles.BtnCntCross}
+                style={[styles.BtnCntCross, { backgroundColor: "#c6c4c4ff" }]}
                 onPress={() => {
                   setIsTeamsButtonExpanded(false);
                 }}
               >
-                <X size={24} />
+                <X size={24} color="#000" />
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={styles.BtnCntBtn}
+                style={[styles.BtnCntBtn, { backgroundColor: pallet.shade1 }]}
                 onPress={() => {
                   JoinTeamOpen();
                 }}
@@ -117,7 +117,7 @@ const BottomBar = () => {
                 <UserPlus color="white" size={34} />
               </TouchableOpacity>
               <TouchableOpacity
-                style={styles.BtnCntBtn}
+                style={[styles.BtnCntBtn, { backgroundColor: pallet.shade1 }]}
                 onPress={() => {
                   AddTeamOpen();
                 }}
@@ -127,10 +127,10 @@ const BottomBar = () => {
             </View>
           ) : (
             <View
-              style={styles.addButton}
+              style={[styles.addButton, { backgroundColor: pallet.shade1 }]}
               onTouchEnd={() => setIsTeamsButtonExpanded(true)}
             >
-              <ChevronUp />
+              <ChevronUp color="#000" />
             </View>
           )}
         </>
@@ -138,7 +138,7 @@ const BottomBar = () => {
       {(pathname.endsWith("/TeamDetails") ||
         pathname.endsWith("/teamTaskPage")) && (
         <TouchableOpacity
-          style={styles.addButton}
+          style={[styles.addButton, { backgroundColor: pallet.shade1 }]}
           onPress={() => {
             AddTeamTaskOpen();
           }}
@@ -148,7 +148,7 @@ const BottomBar = () => {
       )}
       {pathname.endsWith("/teamMembers") && (
         <TouchableOpacity
-          style={styles.addButton}
+          style={[styles.addButton, { backgroundColor: pallet.shade1 }]}
           onPress={() => {
             AddTeamMemberTaskOpen();
           }}

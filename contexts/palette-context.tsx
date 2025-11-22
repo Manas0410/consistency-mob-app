@@ -11,7 +11,17 @@ import React, {
 
 const STORAGE_KEY = "@app:palette_preference";
 
-export type PaletteName = "blue" | "green" | "orange" | "purple";
+export type PaletteName =
+  | "blue"
+  | "green"
+  | "orange"
+  | "purple"
+  | "pink"
+  | "teal"
+  | "indigo"
+  | "red"
+  | "amber"
+  | "cyan";
 
 type PaletteContextType = {
   paletteName: PaletteName;
@@ -26,8 +36,8 @@ export const PaletteProvider = ({ children }: { children: ReactNode }) => {
   const [paletteName, setPaletteName] = useState<PaletteName>("blue");
   const [hydrated, setHydrated] = useState(false);
 
-  // Get the palette object based on name
-  const palette = Pallets[paletteName];
+  // Get the palette object based on name, fallback to blue if not found
+  const palette = Pallets[paletteName] || Pallets.blue;
 
   // Hydrate from storage on mount
   useEffect(() => {
@@ -40,7 +50,13 @@ export const PaletteProvider = ({ children }: { children: ReactNode }) => {
           stored === "blue" ||
           stored === "green" ||
           stored === "orange" ||
-          stored === "purple"
+          stored === "purple" ||
+          stored === "pink" ||
+          stored === "teal" ||
+          stored === "indigo" ||
+          stored === "red" ||
+          stored === "amber" ||
+          stored === "cyan"
         ) {
           setPaletteName(stored);
         } else {
