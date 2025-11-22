@@ -57,7 +57,7 @@ export default function TaskForm() {
     priority: 0,
     frequency: [0],
     category: "",
-    sync: false,
+    syncWithGoogleCalendar: false,
   });
 
   // Update task when initialData changes
@@ -112,7 +112,7 @@ export default function TaskForm() {
           priority: 0,
           frequency: [0],
           category: "",
-          sync: false,
+          syncWithGoogleCalendar: false,
         });
         setStep(1);
       } else {
@@ -290,10 +290,15 @@ export default function TaskForm() {
                   </Text>
                 </View>
                 <Switch
-                  value={task.sync || false}
-                  onValueChange={(value) => handleChange("sync", value)}
+                  value={task.syncWithGoogleCalendar || false}
+                  onValueChange={(value) =>
+                    handleChange("syncWithGoogleCalendar", value)
+                  }
                   trackColor={{ false: "#E5E7EB", true: pallet.shade4 }}
-                  thumbColor={task.sync ? pallet.shade1 : "#F3F4F6"}
+                  thumbColor={
+                    task.syncWithGoogleCalendar ? pallet.shade1 : "#F3F4F6"
+                  }
+                  disabled={true}
                 />
               </View>
 
