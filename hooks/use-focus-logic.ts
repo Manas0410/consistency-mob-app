@@ -46,7 +46,7 @@ export function useFocusLogic({
       selectedModeTask?.mode &&
       selectedModeTask.mode !== "focus"
     ) {
-      router.replace(`/calendar/mode/${selectedModeTask.mode}`);
+      router.push(`/calendar/mode/${selectedModeTask.mode}`);
     }
   }, [hydrated, isModeTaskInProgress, selectedModeTask, router]);
 

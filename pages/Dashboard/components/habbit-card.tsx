@@ -84,7 +84,7 @@ const HabbitCard = () => {
           color={pallet.shade1}
           style={{ marginLeft: "auto" }}
           onPress={() => {
-            router.replace("/habbit");
+            router.push("/habbit");
           }}
         />
       </View>

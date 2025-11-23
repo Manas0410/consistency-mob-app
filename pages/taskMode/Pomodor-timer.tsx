@@ -80,7 +80,7 @@ export default function PomodoroModeScreen({
       selectedModeTask.mode !== "pomodoro"
     ) {
       // user somehow landed on pomodoro screen but another mode is running -> redirect
-      router.replace(`/calendar/mode/${selectedModeTask.mode}`);
+      router.push(`/calendar/mode/${selectedModeTask.mode}` as any);
     }
   }, [hydrated, isModeTaskInProgress, selectedModeTask, router]);
 
@@ -95,7 +95,7 @@ export default function PomodoroModeScreen({
   const [completedWorkSessions, setCompletedWorkSessions] = useState(0);
   const [elapsedTotalSec, setElapsedTotalSec] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(workMinutes * 60);
-  const intervalRef = useRef<NodeJS.Timer | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // compute elapsed from persisted start time when hydrating
   useEffect(() => {
@@ -276,7 +276,11 @@ export default function PomodoroModeScreen({
           onPress: () => {
             stopMode();
             // navigate back to calendar or mode selector
-            router.replace("/calendar");
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.push("/calendar");
+            }
           },
         },
       ],

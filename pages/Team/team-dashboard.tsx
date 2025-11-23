@@ -71,7 +71,13 @@ function TeamDashboard() {
     try {
       setDeleteLoading(true);
       const del = await DeleteTeam(teamid);
-      if (del?.success) router.replace("/team");
+      if (del?.success) {
+        if (router.canGoBack()) {
+          router.back();
+        } else {
+          router.push("/team");
+        }
+      }
     } catch (err) {
       console.log(err);
     } finally {
@@ -197,7 +203,7 @@ function TeamDashboard() {
               style={{ borderRadius: 12, backgroundColor: pallet.buttonBg }}
               textStyle={{ color: pallet.ButtonText }}
               icon={Calendar}
-              onPress={() => router.replace(`/${teamid}/teamTaskPage`)}
+              onPress={() => router.push(`/${teamid}/teamTaskPage`)}
               disabled={deleteLoading}
             >
               View Tasks
@@ -208,7 +214,7 @@ function TeamDashboard() {
               style={{ borderRadius: 12, backgroundColor: pallet.buttonBg }}
               textStyle={{ color: pallet.ButtonText }}
               icon={Users}
-              onPress={() => router.replace(`/${teamid}/teamMembers`)}
+              onPress={() => router.push(`/${teamid}/teamMembers`)}
               disabled={deleteLoading}
             >
               Manage Members

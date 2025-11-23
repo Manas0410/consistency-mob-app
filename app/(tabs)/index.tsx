@@ -118,7 +118,7 @@ function HomeScreen() {
               >
                 <Bell size={20} color="#ffffff" />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => router.replace("/settings")}>
+              <TouchableOpacity onPress={() => router.push("/settings")}>
                 <Avatar>
                   <AvatarImage
                     source={{

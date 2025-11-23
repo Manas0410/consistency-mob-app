@@ -259,7 +259,7 @@ const TeamTaskList = ({ selectedDate }: { selectedDate: Date }) => {
                   setViewTask(item);
                   setTaskSelectedForDate(selectedDate);
 
-                  router.replace(`/${teamid}/taskDescriptionTeam`);
+                  router.push(`/${teamid}/taskDescriptionTeam`);
                 }}
                 style={styles.detailsCol}
               >

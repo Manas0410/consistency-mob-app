@@ -373,8 +373,12 @@ const TaskDetails: React.FC<Props> = ({ task, onEdit, onCancel }) => {
       setDeleteInProgress(true);
       const res = await apicall.post("/task/deleteTask", { taskId: task?._id });
       if (res.status === 200) {
-        router.replace("/calendar");
         success("Task deleted successfully");
+        if (router.canGoBack()) {
+          router.back();
+        } else {
+          router.push("/calendar");
+        }
       }
     } catch (e) {
       setDeleteInProgress(false);
@@ -392,8 +396,12 @@ const TaskDetails: React.FC<Props> = ({ task, onEdit, onCancel }) => {
         teamId: currentTeamData?._id,
       });
       if (res.status === 200) {
-        router.replace("/calendar");
         success("Team Task deleted successfully");
+        if (router.canGoBack()) {
+          router.back();
+        } else {
+          router.push("/calendar");
+        }
       }
     } catch (e) {
       setDeleteInProgress(false);

@@ -184,7 +184,7 @@ const TaskList = ({ selectedDate }: { selectedDate: Date }) => {
                 onPress={() => {
                   setViewTask(item);
                   setTaskSelectedForDate(selectedDate);
-                  router.replace("/(tabs)/calendar/taskDescription");
+                  router.push("/(tabs)/calendar/taskDescription");
                 }}
               >
                 <Text style={styles.timeText}>

@@ -51,7 +51,11 @@ const TaskDescription = () => {
       );
       if (res.success) {
         success("task updated successfully");
-        router.replace("/calendar");
+        if (router.canGoBack()) {
+          router.back();
+        } else {
+          router.push("/calendar");
+        }
       } else {
         console.error("Error updating status:", res.data.message);
       }

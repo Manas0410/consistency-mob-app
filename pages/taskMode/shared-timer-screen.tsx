@@ -110,7 +110,11 @@ export default function SharedTimerScreen({
           style: "destructive",
           onPress: () => {
             timerActions.cancel();
-            router.replace("/calendar");
+            if (router.canGoBack()) {
+              router.back();
+            } else {
+              router.push("/calendar");
+            }
           },
         },
       ],

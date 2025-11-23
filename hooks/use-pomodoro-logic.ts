@@ -56,7 +56,7 @@ export function usePomodoroLogic({
       selectedModeTask?.mode &&
       selectedModeTask.mode !== "pomodoro"
     ) {
-      router.replace(`/calendar/mode/${selectedModeTask.mode}`);
+      router.push(`/calendar/mode/${selectedModeTask.mode}`);
     }
   }, [hydrated, isModeTaskInProgress, selectedModeTask, router]);
 

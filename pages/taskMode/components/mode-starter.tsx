@@ -117,7 +117,7 @@ const ModeStarter = ({ mode }: ModeStarterProps) => {
     if (isModeTaskInProgress) {
       // Redirect to the ongoing mode route
       const dest = selectedWorkMode ?? "pomodoro";
-      router.replace(`/calendar/mode/${dest}`);
+      router.push(`/calendar/mode/${dest}`);
     }
   }, [hydrated, isModeTaskInProgress, selectedWorkMode, router]);
 
@@ -157,7 +157,7 @@ const ModeStarter = ({ mode }: ModeStarterProps) => {
     if (isModeTaskInProgress) {
       if (selectedWorkMode === mode) {
         // same mode ongoing — navigate to it
-        router.replace(`/calendar/mode/${mode}`);
+        router.push(`/calendar/mode/${mode}`);
         return;
       }
       // different mode ongoing — ask user
@@ -167,7 +167,7 @@ const ModeStarter = ({ mode }: ModeStarterProps) => {
         [
           {
             text: "Go to running mode",
-            onPress: () => router.replace(`/calendar/mode/${selectedWorkMode}`),
+            onPress: () => router.push(`/calendar/mode/${selectedWorkMode}`),
           },
           { text: "Cancel", style: "cancel" },
         ],
@@ -217,7 +217,7 @@ const ModeStarter = ({ mode }: ModeStarterProps) => {
     });
 
     // navigate to the mode screen
-    router.replace(`/calendar/mode/${mode}`);
+    router.push(`/calendar/mode/${mode}`);
   };
 
   return (
