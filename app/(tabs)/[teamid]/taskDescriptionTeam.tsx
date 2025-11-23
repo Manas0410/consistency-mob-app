@@ -42,10 +42,15 @@ const TaskDescription = () => {
 
   const { success, error } = useToast();
 
-  const handleChange = async (updatedData) => {
+  const handleChange = async (updatedData: any) => {
     try {
       // Simulate an API call
-      const res = await editTeamTask(teamid, updatedData?._id, updatedData);
+      const teamIdString = Array.isArray(teamid) ? teamid[0] : teamid;
+      const res = await editTeamTask(
+        teamIdString,
+        updatedData?._id,
+        updatedData
+      );
       if (res.success) {
         success("task updated successfully");
       } else {
@@ -57,14 +62,7 @@ const TaskDescription = () => {
     }
   };
 
-  return (
-    <TaskDetails
-      task={viewTask}
-      onEdit={(updated) => {
-        handleChange(updated);
-      }}
-    />
-  );
+  return <TaskDetails task={viewTask} onEdit={handleChange} />;
 };
 
 export default TaskDescription;

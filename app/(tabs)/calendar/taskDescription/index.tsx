@@ -42,7 +42,7 @@ const TaskDescription = () => {
 
   const { TaskSelectedForDate } = useGetViewTask();
 
-  const handleChange = async (updatedData) => {
+  const handleChange = async (updatedData: any) => {
     try {
       const res = await editTasks(
         updatedData?._id,
@@ -60,14 +60,7 @@ const TaskDescription = () => {
     } finally {
     }
   };
-  return (
-    <TaskDetails
-      task={viewTask}
-      onEdit={(updated) => {
-        handleChange(updated);
-      }}
-    />
-  );
+  return <TaskDetails task={viewTask} onEdit={handleChange} />;
 };
 
 export default TaskDescription;

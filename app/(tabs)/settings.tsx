@@ -128,7 +128,16 @@ export default function SettingsScreen() {
         >
           <View style={[styles.container]}>
             <View style={styles.headerRow}>
-              <TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  if (router.canGoBack()) {
+                    router.back();
+                  } else {
+                    router.replace("/");
+                  }
+                }}
+                activeOpacity={0.7}
+              >
                 <Ionicons name="arrow-back" size={28} color={colors.text} />
               </TouchableOpacity>
               <Text style={[styles.headerTitle, { color: colors.text }]}>

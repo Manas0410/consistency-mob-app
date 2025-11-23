@@ -87,7 +87,7 @@ type TaskUnion = PersonalTask | TeamTask;
 type Props = {
   task?: TaskUnion;
   loading?: boolean;
-  onEdit: (updated: TaskUnion) => void;
+  onEdit: (updated: TaskUnion) => void | Promise<void>;
   onCancel?: () => void;
 };
 
@@ -336,12 +336,13 @@ const TaskDetails: React.FC<Props> = ({ task, onEdit, onCancel }) => {
     }
   };
 
-  const save = () => {
+  const save = async () => {
     try {
       setLoading(true);
       const payload = getPayload();
       if (!payload.taskName || String(payload.taskName).trim().length === 0) {
         Alert.alert("Validation", "Task name cannot be empty");
+        setLoading(false);
         return;
       }
       // Create a clean payload without unwanted properties
@@ -350,8 +351,11 @@ const TaskDetails: React.FC<Props> = ({ task, onEdit, onCancel }) => {
       if ("isGap" in cleanPayload) {
         delete (cleanPayload as any).isGap;
       }
-      // Call parent handler
-      onEdit(cleanPayload as TaskUnion);
+      // Call parent handler and await if it returns a promise
+      const result = onEdit(cleanPayload as TaskUnion);
+      if (result instanceof Promise) {
+        await result;
+      }
     } catch (err) {
       console.error("Error saving task:", err);
     } finally {
@@ -430,316 +434,296 @@ const TaskDetails: React.FC<Props> = ({ task, onEdit, onCancel }) => {
           )}
         </BackHeader>
         <View style={{ backgroundColor }}>
-          {loading ? (
-            <View style={styles.centerFill}>
-              <Spinner variant="bars" size="default" color={pallet.shade1} />
-            </View>
-          ) : (
-            <ScrollView contentContainerStyle={styles.container}>
-              {/* Header */}
-              <View
-                style={[
-                  styles.header,
-                  { backgroundColor: cardBackgroundColor },
-                ]}
+          <ScrollView contentContainerStyle={styles.container}>
+            {/* Header */}
+            <View
+              style={[styles.header, { backgroundColor: cardBackgroundColor }]}
+            >
+              <Text
+                style={[styles.title, { color: textColor }]}
+                numberOfLines={2}
               >
-                <Text
-                  style={[styles.title, { color: textColor }]}
-                  numberOfLines={2}
-                >
-                  {name || "Untitled Task"}
+                {name || "Untitled Task"}
+              </Text>
+              <View style={[styles.badge, { backgroundColor: pallet.shade4 }]}>
+                <Text style={[styles.badgeText, { color: pallet.shade1 }]}>
+                  {team ? "Team Task" : "My Task"}
                 </Text>
-                <View
-                  style={[styles.badge, { backgroundColor: pallet.shade4 }]}
-                >
-                  <Text style={[styles.badgeText, { color: pallet.shade1 }]}>
-                    {team ? "Team Task" : "My Task"}
-                  </Text>
-                </View>
               </View>
+            </View>
 
-              {/* Priority */}
-              <View
-                style={[styles.card, { backgroundColor: cardBackgroundColor }]}
-              >
-                <Text style={[styles.label, { color: textMutedColor }]}>
-                  Priority
-                </Text>
-                <View style={styles.segment}>
-                  {[0, 1, 2].map((p) => (
-                    <Pressable
-                      key={p}
-                      onPress={() => setPriority(p)}
+            {/* Priority */}
+            <View
+              style={[styles.card, { backgroundColor: cardBackgroundColor }]}
+            >
+              <Text style={[styles.label, { color: textMutedColor }]}>
+                Priority
+              </Text>
+              <View style={styles.segment}>
+                {[0, 1, 2].map((p) => (
+                  <Pressable
+                    key={p}
+                    onPress={() => setPriority(p)}
+                    style={[
+                      styles.segmentItem,
+                      {
+                        borderColor: borderColor,
+                        backgroundColor: cardBackgroundColor,
+                      },
+                      priority === p && {
+                        backgroundColor: pallet.shade1,
+                        borderColor: pallet.shade1,
+                      },
+                    ]}
+                  >
+                    <Icon
+                      name={Flag}
+                      size={16}
+                      color={
+                        priority === p ? pallet.ButtonText : PRIORITY[p].color
+                      }
+                    />
+                    <Text
                       style={[
-                        styles.segmentItem,
+                        styles.segmentText,
                         {
-                          borderColor: borderColor,
-                          backgroundColor: cardBackgroundColor,
-                        },
-                        priority === p && {
-                          backgroundColor: pallet.shade1,
-                          borderColor: pallet.shade1,
+                          color:
+                            priority === p
+                              ? pallet.ButtonText
+                              : PRIORITY[p].color,
                         },
                       ]}
                     >
-                      <Icon
-                        name={Flag}
-                        size={16}
-                        color={
-                          priority === p ? pallet.ButtonText : PRIORITY[p].color
-                        }
-                      />
-                      <Text
+                      {PRIORITY[p].label}
+                    </Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+
+            {/* Status */}
+            <View
+              style={[styles.cardRow, { backgroundColor: cardBackgroundColor }]}
+            >
+              <Text style={[styles.label, { color: textMutedColor }]}>
+                Status
+              </Text>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  gap: 10,
+                }}
+              >
+                <Icon
+                  name={CheckCircle}
+                  size={18}
+                  color={isDone ? "#16A34A" : iconColor}
+                />
+                <Text style={{ color: textColor, fontWeight: "600" }}>
+                  {isDone ? "Completed" : "Pending"}
+                </Text>
+                <Switch value={isDone} onValueChange={setIsDone} />
+              </View>
+            </View>
+
+            {/* When & Duration */}
+            <View
+              style={[styles.card, { backgroundColor: cardBackgroundColor }]}
+            >
+              <Text style={[styles.label, { color: textMutedColor }]}>
+                When
+              </Text>
+
+              <View style={styles.row}>
+                <Icon name={Calendar} size={18} color={iconColor} />
+                <Text style={[styles.subtle, { color: textMutedColor }]}>
+                  {fmtDate(startISO)} • {fmtTime(startISO)} – {fmtTime(endISO)}
+                </Text>
+              </View>
+
+              <View style={[styles.row, { marginTop: 6 }]}>
+                <Icon name={Clock} size={18} color={iconColor} />
+                <Text style={[styles.subtle, { color: textMutedColor }]}>
+                  Duration:{" "}
+                  <Text style={{ color: textColor, fontWeight: "700" }}>
+                    {derivedDuration.hours ? `${derivedDuration.hours}h ` : ""}
+                    {derivedDuration.minutes
+                      ? `${derivedDuration.minutes}m`
+                      : "0m"}
+                  </Text>
+                </Text>
+              </View>
+
+              {/* Duration inputs */}
+              <View style={{ marginTop: 12 }}>
+                <DurationPicker
+                  hours={localDurHours}
+                  minutes={localDurMins}
+                  onHoursChange={handleDurationHoursChange}
+                  onMinutesChange={handleDurationMinsChange}
+                />
+              </View>
+
+              {/* Date pickers */}
+              <View style={{ marginTop: 12, gap: 8 }}>
+                <DatePicker
+                  label="Start"
+                  mode="datetime"
+                  value={new Date(startISO)}
+                  onChange={(d: Date | undefined) => {
+                    if (d) handleStartChange(d);
+                  }}
+                />
+              </View>
+            </View>
+
+            {/* Assignees (team only) */}
+            {team && (
+              <View
+                style={[styles.card, { backgroundColor: cardBackgroundColor }]}
+              >
+                <Text style={[styles.label, { color: textMutedColor }]}>
+                  Assignees
+                </Text>
+                {(task as TeamTask).assignees?.length ? (
+                  <View
+                    style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
+                  >
+                    {(task as TeamTask).assignees.map((a) => (
+                      <View
+                        key={a.userId}
                         style={[
-                          styles.segmentText,
-                          {
-                            color:
-                              priority === p
-                                ? pallet.ButtonText
-                                : PRIORITY[p].color,
-                          },
+                          styles.pill,
+                          { backgroundColor: pallet.shade4 },
                         ]}
                       >
-                        {PRIORITY[p].label}
-                      </Text>
-                    </Pressable>
-                  ))}
-                </View>
-              </View>
+                        <Icon name={Users} size={14} color={pallet.shade1} />
+                        <Text
+                          style={[styles.pillText, { color: pallet.shade1 }]}
+                        >
+                          {a.userName}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                ) : (
+                  <Text style={[styles.subtle, { color: textMutedColor }]}>
+                    No assignees
+                  </Text>
+                )}
 
-              {/* Status */}
-              <View
+                <Picker
+                  label="Edit"
+                  icon={Edit}
+                  options={assigneesOptions}
+                  values={assigneeValues}
+                  onValuesChange={handleAssigneesChange}
+                  placeholder="Select assignees"
+                  searchable
+                  multiple
+                  style={styles.input}
+                />
+              </View>
+            )}
+
+            {/* Basic fields */}
+            <View
+              style={[styles.card, { backgroundColor: cardBackgroundColor }]}
+            >
+              <Text style={[styles.inputLabel, { color: textMutedColor }]}>
+                Task name
+              </Text>
+              <TextInput
+                placeholder="Enter task name"
+                placeholderTextColor={textMutedColor}
+                value={name}
+                onChangeText={setName}
                 style={[
-                  styles.cardRow,
-                  { backgroundColor: cardBackgroundColor },
+                  styles.input,
+                  {
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    color: textColor,
+                  },
+                ]}
+              />
+
+              <Text
+                style={[
+                  styles.inputLabel,
+                  { marginTop: 10, color: textMutedColor },
                 ]}
               >
-                <Text style={[styles.label, { color: textMutedColor }]}>
-                  Status
-                </Text>
-                <View
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    gap: 10,
-                  }}
-                >
-                  <Icon
-                    name={CheckCircle}
-                    size={18}
-                    color={isDone ? "#16A34A" : iconColor}
-                  />
-                  <Text style={{ color: textColor, fontWeight: "600" }}>
-                    {isDone ? "Completed" : "Pending"}
-                  </Text>
-                  <Switch value={isDone} onValueChange={setIsDone} />
-                </View>
-              </View>
+                Category
+              </Text>
+              <TextInput
+                placeholder="e.g., Work, Personal"
+                placeholderTextColor={textMutedColor}
+                value={category}
+                onChangeText={setCategory}
+                style={[
+                  styles.input,
+                  {
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    color: textColor,
+                  },
+                ]}
+              />
 
-              {/* When & Duration */}
-              <View
-                style={[styles.card, { backgroundColor: cardBackgroundColor }]}
+              <Text
+                style={[
+                  styles.inputLabel,
+                  { marginTop: 10, color: textMutedColor },
+                ]}
               >
-                <Text style={[styles.label, { color: textMutedColor }]}>
-                  When
-                </Text>
+                Description
+              </Text>
+              <TextInput
+                placeholder="Add a short description"
+                placeholderTextColor={textMutedColor}
+                value={desc}
+                onChangeText={setDesc}
+                style={[
+                  styles.input,
+                  {
+                    height: 90,
+                    backgroundColor: backgroundColor,
+                    borderColor: borderColor,
+                    color: textColor,
+                  },
+                ]}
+                multiline
+              />
+            </View>
 
-                <View style={styles.row}>
-                  <Icon name={Calendar} size={18} color={iconColor} />
-                  <Text style={[styles.subtle, { color: textMutedColor }]}>
-                    {fmtDate(startISO)} • {fmtTime(startISO)} –{" "}
-                    {fmtTime(endISO)}
-                  </Text>
-                </View>
-
-                <View style={[styles.row, { marginTop: 6 }]}>
-                  <Icon name={Clock} size={18} color={iconColor} />
-                  <Text style={[styles.subtle, { color: textMutedColor }]}>
-                    Duration:{" "}
-                    <Text style={{ color: textColor, fontWeight: "700" }}>
-                      {derivedDuration.hours
-                        ? `${derivedDuration.hours}h `
-                        : ""}
-                      {derivedDuration.minutes
-                        ? `${derivedDuration.minutes}m`
-                        : "0m"}
-                    </Text>
-                  </Text>
-                </View>
-
-                {/* Duration inputs */}
-                <View style={{ marginTop: 12 }}>
-                  <DurationPicker
-                    hours={localDurHours}
-                    minutes={localDurMins}
-                    onHoursChange={handleDurationHoursChange}
-                    onMinutesChange={handleDurationMinsChange}
-                  />
-                </View>
-
-                {/* Date pickers */}
-                <View style={{ marginTop: 12, gap: 8 }}>
-                  <DatePicker
-                    label="Start"
-                    mode="datetime"
-                    value={new Date(startISO)}
-                    onChange={(d: Date | undefined) => {
-                      if (d) handleStartChange(d);
-                    }}
-                  />
-                </View>
-              </View>
-
-              {/* Assignees (team only) */}
-              {team && (
-                <View
-                  style={[
-                    styles.card,
-                    { backgroundColor: cardBackgroundColor },
-                  ]}
-                >
-                  <Text style={[styles.label, { color: textMutedColor }]}>
-                    Assignees
-                  </Text>
-                  {(task as TeamTask).assignees?.length ? (
-                    <View
-                      style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}
-                    >
-                      {(task as TeamTask).assignees.map((a) => (
-                        <View
-                          key={a.userId}
-                          style={[
-                            styles.pill,
-                            { backgroundColor: pallet.shade4 },
-                          ]}
-                        >
-                          <Icon name={Users} size={14} color={pallet.shade1} />
-                          <Text
-                            style={[styles.pillText, { color: pallet.shade1 }]}
-                          >
-                            {a.userName}
-                          </Text>
-                        </View>
-                      ))}
-                    </View>
-                  ) : (
-                    <Text style={[styles.subtle, { color: textMutedColor }]}>
-                      No assignees
-                    </Text>
-                  )}
-
-                  <Picker
-                    label="Edit"
-                    icon={Edit}
-                    options={assigneesOptions}
-                    values={assigneeValues}
-                    onValuesChange={handleAssigneesChange}
-                    placeholder="Select assignees"
-                    searchable
-                    multiple
-                    style={styles.input}
-                  />
-                </View>
-              )}
-
-              {/* Basic fields */}
-              <View
-                style={[styles.card, { backgroundColor: cardBackgroundColor }]}
-              >
-                <Text style={[styles.inputLabel, { color: textMutedColor }]}>
-                  Task name
-                </Text>
-                <TextInput
-                  placeholder="Enter task name"
-                  placeholderTextColor={textMutedColor}
-                  value={name}
-                  onChangeText={setName}
-                  style={[
-                    styles.input,
-                    {
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      color: textColor,
-                    },
-                  ]}
-                />
-
-                <Text
-                  style={[
-                    styles.inputLabel,
-                    { marginTop: 10, color: textMutedColor },
-                  ]}
-                >
-                  Category
-                </Text>
-                <TextInput
-                  placeholder="e.g., Work, Personal"
-                  placeholderTextColor={textMutedColor}
-                  value={category}
-                  onChangeText={setCategory}
-                  style={[
-                    styles.input,
-                    {
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      color: textColor,
-                    },
-                  ]}
-                />
-
-                <Text
-                  style={[
-                    styles.inputLabel,
-                    { marginTop: 10, color: textMutedColor },
-                  ]}
-                >
-                  Description
-                </Text>
-                <TextInput
-                  placeholder="Add a short description"
-                  placeholderTextColor={textMutedColor}
-                  value={desc}
-                  onChangeText={setDesc}
-                  style={[
-                    styles.input,
-                    {
-                      height: 90,
-                      backgroundColor: backgroundColor,
-                      borderColor: borderColor,
-                      color: textColor,
-                    },
-                  ]}
-                  multiline
-                />
-              </View>
-
-              {/* Footer */}
-              <View style={styles.footer}>
-                {onCancel ? (
-                  <Button
-                    variant="default"
-                    style={[styles.btn, { backgroundColor: borderColor }]}
-                    textStyle={{ color: textColor, fontWeight: "700" }}
-                    onPress={onCancel}
-                  >
-                    Cancel
-                  </Button>
-                ) : null}
+            {/* Footer */}
+            <View style={styles.footer}>
+              {onCancel ? (
                 <Button
-                  loading={loading}
                   variant="default"
-                  style={[
-                    styles.btn,
-                    { backgroundColor: pallet.shade1, marginBottom: 420 },
-                  ]}
-                  textStyle={{ color: pallet.ButtonText, fontWeight: "700" }}
-                  onPress={save}
+                  style={[styles.btn, { backgroundColor: borderColor }]}
+                  textStyle={{ color: textColor, fontWeight: "700" }}
+                  onPress={onCancel}
                 >
-                  Save Changes
+                  Cancel
                 </Button>
-              </View>
-            </ScrollView>
-          )}
+              ) : null}
+              <Button
+                loading={loading}
+                variant="default"
+                style={[
+                  styles.btn,
+                  { backgroundColor: pallet.shade1, marginBottom: 420 },
+                ]}
+                textStyle={{ color: pallet.ButtonText, fontWeight: "700" }}
+                onPress={save}
+              >
+                Save Changes
+              </Button>
+            </View>
+          </ScrollView>
         </View>
       </SafeAreaView>
     </View>

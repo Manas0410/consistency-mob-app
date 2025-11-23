@@ -67,8 +67,14 @@ const BottomBar = () => {
           <TouchableOpacity
             key={option.name}
             style={styles.iconButton}
-            // @ts-ignore
-            onPress={() => router.push(option.url)}
+            onPress={() => {
+              // Don't navigate if already on this route
+              if (pathname === option.url) {
+                return;
+              }
+              // @ts-ignore
+              router.push(option.url);
+            }}
             activeOpacity={0.7}
           >
             <option.icon
