@@ -54,3 +54,4 @@ chart : https://github.com/indiespirit/react-native-chart-kit?tab=readme-ov-file
 # consistency-mob-app
 
 ClipboardList
+eas build --platform android --profile development
