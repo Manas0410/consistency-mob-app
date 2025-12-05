@@ -7,4 +7,5 @@ export type TaskData = {
   frequency: number[];
   category: string;
   syncWithGoogleCalendar?: boolean;
+  reminders: any[];
 };

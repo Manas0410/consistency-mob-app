@@ -1,6 +1,5 @@
-// RemindersEditor.tsx
 import { Trash2 } from "lucide-react-native";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Alert,
   FlatList,
@@ -16,43 +15,47 @@ import { Icon } from "./ui/icon";
 
 export type ReminderPayload = {
   id: string; // local id for UI
-  offset: number; // minutes before start (number)
+  offset: number; // minutes before start
+  label?: string;
+};
+
+// If you want to pass backend reminders directly, support this shape:
+type InitialReminderLike = {
+  offset?: number;
+  offsetMinutes?: number;
   label?: string;
 };
 
 type Props = {
-  initialReminders?: ReminderPayload[]; // optional initial data
+  initialReminders?: InitialReminderLike[]; // optional initial data
   onChange?: (reminders: Omit<ReminderPayload, "id">[]) => void;
   maxReminders?: number; // default 5
   collapsedByDefault?: boolean; // default true
+  label?: string; // default ""
 };
 
 export default function RemindersEditor({
   initialReminders = [],
   onChange,
+  label = "",
   maxReminders = 5,
   collapsedByDefault = true,
 }: Props) {
   const [open, setOpen] = useState(!collapsedByDefault);
-  const [reminders, setReminders] = useState<ReminderPayload[]>(
-    () =>
-      (initialReminders || []).map((r) => ({
-        id: generateId(),
-        offset: typeof (r as any).offset === "number" ? r.offset : 10,
-        label: r.label ?? "",
-      })) || []
+  const [reminders, setReminders] = useState<ReminderPayload[]>(() =>
+    (initialReminders || []).map((r) => ({
+      id: generateId(),
+      offset:
+        typeof (r as any).offset === "number"
+          ? (r as any).offset
+          : typeof (r as any).offsetMinutes === "number"
+          ? (r as any).offsetMinutes
+          : 10,
+      label: r.label ?? label,
+    }))
   );
-  const presetOptions = useMemo(() => [5, 10, 15, 30, 60], []);
 
-  useEffect(() => {
-    // Emit changes (strip local id before sending)
-    onChange?.(
-      reminders.map((r) => ({
-        offset: r.offset,
-        label: r.label,
-      }))
-    );
-  }, [reminders, onChange]);
+  const presetOptions = useMemo(() => [5, 10, 15, 30, 60], []);
 
   function generateId() {
     return `${Date.now().toString(36)}-${Math.random()
@@ -60,29 +63,52 @@ export default function RemindersEditor({
       .slice(2, 8)}`;
   }
 
+  // 🔹 Central place to notify parent when reminders actually change
+  const emitChange = (next: ReminderPayload[]) => {
+    onChange?.(
+      next.map((r) => ({
+        offset: r.offset,
+        label: label,
+      }))
+    );
+  };
+
   const addEmptyReminder = (offsetValue?: number) => {
     if (reminders.length >= maxReminders) {
-      // optional: show toast / alert
       Alert.alert(
         "Limit reached",
         `You can add up to ${maxReminders} reminders only.`
       );
       return;
     }
+
     const newR: ReminderPayload = {
       id: generateId(),
       offset: typeof offsetValue === "number" ? offsetValue : 10,
       label: "",
     };
-    setReminders((p) => [...p, newR]);
+
+    setReminders((prev) => {
+      const next = [...prev, newR];
+      emitChange(next);
+      return next;
+    });
   };
 
   const removeReminder = (id: string) => {
-    setReminders((p) => p.filter((r) => r.id !== id));
+    setReminders((prev) => {
+      const next = prev.filter((r) => r.id !== id);
+      emitChange(next);
+      return next;
+    });
   };
 
   const updateReminder = (id: string, patch: Partial<ReminderPayload>) => {
-    setReminders((p) => p.map((r) => (r.id === id ? { ...r, ...patch } : r)));
+    setReminders((prev) => {
+      const next = prev.map((r) => (r.id === id ? { ...r, ...patch } : r));
+      emitChange(next);
+      return next;
+    });
   };
 
   const renderReminder = ({ item }: { item: ReminderPayload }) => {
@@ -100,7 +126,6 @@ export default function RemindersEditor({
               keyboardType="numeric"
               value={String(item.offset)}
               onChangeText={(t) => {
-                // allow only digits
                 const parsed = parseInt(t.replace(/[^\d]/g, ""), 10);
                 updateReminder(item.id, {
                   offset: Number.isNaN(parsed) ? 0 : parsed,
@@ -113,18 +138,6 @@ export default function RemindersEditor({
             <Text style={styles.offsetUnit}>min</Text>
           </View>
         </View>
-
-        {/* <View style={styles.rightCol}>
-          <Text style={styles.smallLabel}>Label (optional)</Text>
-          <TextInput
-            style={styles.labelInput}
-            placeholder="e.g. 'Wake reminder'"
-            value={item.label}
-            onChangeText={(t) => updateReminder(item.id, { label: t })}
-            maxLength={60}
-            returnKeyType="done"
-          />
-        </View> */}
 
         <Pressable
           onPress={() => removeReminder(item.id)}
@@ -206,22 +219,6 @@ export default function RemindersEditor({
                     : "Add custom reminder"}
                 </Text>
               </Pressable>
-
-              {/* {reminders.length > 0 && (
-                <Pressable
-                  onPress={() =>
-                    setReminders((prev) =>
-                      prev.map((r) => ({ ...r, offset: Math.max(0, r.offset) }))
-                    )
-                  }
-                  style={({ pressed }) => [
-                    styles.clearBtn,
-                    pressed && { opacity: 0.9 },
-                  ]}
-                >
-                  <Text style={styles.clearBtnText}>Normalize offsets</Text>
-                </Pressable>
-              )} */}
             </View>
 
             {/* List of reminders */}
@@ -259,7 +256,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    // subtle shadow
     shadowColor: "#000",
     shadowOpacity: 0.03,
     shadowRadius: 8,
@@ -336,16 +332,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "700",
   },
-  clearBtn: {
-    marginLeft: 12,
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-    borderRadius: 10,
-  },
-  clearBtnText: {
-    color: "#2563EB",
-    fontWeight: "700",
-  },
   reminderRow: {
     backgroundColor: "#fff",
     borderRadius: 12,
@@ -359,9 +345,6 @@ const styles = StyleSheet.create({
   leftCol: {
     width: 120,
     marginRight: 10,
-  },
-  rightCol: {
-    flex: 1,
   },
   smallLabel: {
     color: "#94A3B8",
@@ -378,7 +361,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     paddingVertical: 8,
     paddingHorizontal: 10,
-    // minWidth: 78,
     width: 150,
     textAlign: "center",
     fontWeight: "700",
@@ -390,22 +372,10 @@ const styles = StyleSheet.create({
     color: "#64748B",
     fontWeight: "700",
   },
-  labelInput: {
-    backgroundColor: "#FBFBFD",
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: "#F1F5F9",
-  },
   deleteBtn: {
     marginLeft: "auto",
     paddingHorizontal: 8,
     marginTop: 28,
-  },
-  deleteTxt: {
-    color: "#EF4444",
-    fontWeight: "700",
   },
   emptyText: {
     color: "#94A3B8",
