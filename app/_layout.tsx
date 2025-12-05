@@ -5,6 +5,7 @@ import { Platform } from "react-native";
 import "react-native-reanimated";
 
 import { ToastProvider } from "@/components/ui/toast";
+import apicall from "@/constants/axios-config";
 import GlobalContextProvider from "@/contexts/global-context-provider";
 import { OnboardingProvider } from "@/contexts/onboarding-context";
 import { PaletteProvider } from "@/contexts/palette-context";
@@ -15,20 +16,18 @@ import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
 import * as Notifications from "expo-notifications";
 
-// 👇 expo-router setting (unchanged)
 export const unstable_settings = {
   anchor: "(tabs)",
 };
 
-// 👇 1) Global notification handler – how notifications behave when received
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true, // show popup
-    shouldPlaySound: true, // play sound
+    shouldShowAlert: true,
+    shouldPlaySound: true,
     shouldSetBadge: false,
   }),
 });
-// 👇 2) Ask for permissions + get Expo push token
+
 async function registerForPushNotificationsAsync() {
   try {
     const { status: existingStatus } =
@@ -45,11 +44,9 @@ async function registerForPushNotificationsAsync() {
       return { granted: false as const, token: null as string | null };
     }
 
-    // Get the token that identifies this device (for PUSH notifications)
     const tokenData = await Notifications.getExpoPushTokenAsync();
     const token = tokenData.data;
 
-    // On Android, register a channel (required for proper behavior)
     if (Platform.OS === "android") {
       await Notifications.setNotificationChannelAsync("default", {
         name: "default",
@@ -66,39 +63,82 @@ async function registerForPushNotificationsAsync() {
   }
 }
 
-// 👇 3) Optional: send Expo push token to your backend for later use
-async function initPushForUser(userId: string) {
-  const { granted, token } = await registerForPushNotificationsAsync();
-  if (!granted || !token) return;
-
-  // TODO: replace URL with your real backend endpoint
+async function syncPushTokenWithServer(token: string) {
   try {
-    await fetch("https://yourserver.com/api/users/add-expo-token", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "user-id": userId,
-      },
-      body: JSON.stringify({ token, platform: "expo" }),
+    await apicall.post("/user/add-expo-token", {
+      token,
+      platform: "expo",
     });
   } catch (e) {
     console.warn("Failed to send Expo push token to server", e);
   }
 }
 
+async function scheduleTodayReminders() {
+  try {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+  } catch (e) {
+    console.warn("Failed to cancel scheduled notifications", e);
+  }
+
+  try {
+    const todayStr = new Date().toISOString().slice(0, 10);
+    const res = await apicall.get(`/task/getReminders?date=${todayStr}`);
+
+    if (!res.data || res.status !== 200) {
+      console.log("Failed to fetch reminders for day");
+      return;
+    }
+
+    const data = res.data;
+    const reminders = Array.isArray(data.reminders) ? data.reminders : [];
+    const now = new Date();
+
+    for (const rem of reminders) {
+      const notifyAt = new Date(rem.notifyAt);
+      if (isNaN(notifyAt.getTime()) || notifyAt <= now) continue;
+
+      try {
+        await Notifications.scheduleNotificationAsync({
+          content: {
+            title: rem.taskName || "Reminder",
+            body: rem.label || rem.taskDescription || "",
+            sound: true,
+            data: {
+              taskId: rem.taskId,
+              reminderId: rem.reminderId,
+            },
+          },
+          trigger: notifyAt,
+        });
+      } catch (e) {
+        console.warn("Failed to schedule notification", e);
+      }
+    }
+  } catch (e) {
+    console.warn("scheduleTodayReminders error", e);
+  }
+}
+
 export default function RootLayout() {
-  // 4) Run once when app loads – for now just register & log token.
-  // Later you can call initPushForUser(userId) when you have the logged-in user.
   useEffect(() => {
+    let isMounted = true;
+
     (async () => {
       const { granted, token } = await registerForPushNotificationsAsync();
+      if (!isMounted) return;
+
       if (granted && token) {
         console.log("Expo push token:", token);
-        // 🔥 Later:
-        // const userId = ... from Clerk
-        // await initPushForUser(userId);
+        await syncPushTokenWithServer(token);
       }
+
+      await scheduleTodayReminders();
     })();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
@@ -123,7 +163,6 @@ export default function RootLayout() {
                   />
                 </Stack>
 
-                {/* These look like global portals/forms you want mounted */}
                 <TaskForm />
                 <TeamTaskForm />
                 <StatusBar style="light" />
