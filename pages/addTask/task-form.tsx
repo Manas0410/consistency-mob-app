@@ -1,3 +1,4 @@
+import RemindersEditor from "@/components/reminder-field";
 import { Badge } from "@/components/ui/badge";
 import { BottomSheet } from "@/components/ui/bottom-sheet";
 import { Button } from "@/components/ui/button";
@@ -60,6 +61,7 @@ export default function TaskForm() {
     frequency: [0],
     category: "",
     syncWithGoogleCalendar: false,
+    reminders: [],
   });
 
   // Update task when initialData changes
@@ -235,7 +237,6 @@ export default function TaskForm() {
                   </Text>
                 </TouchableOpacity>
               </View>
-
               <Text variant="caption" style={{ marginBottom: 8 }}>
                 Duration
               </Text>
@@ -274,7 +275,6 @@ export default function TaskForm() {
                   )
                 }
               />
-
               {/* Calendar Sync Toggle */}
               <View style={styles.toggleRow}>
                 <View style={styles.toggleLeft}>
@@ -311,7 +311,13 @@ export default function TaskForm() {
                   (configure credentials in settings)
                 </Text>
               )}
-
+              <RemindersEditor
+                label={task.taskName}
+                initialReminders={task.reminders}
+                onChange={(reminders) => {
+                  handleChange("reminders", reminders);
+                }}
+              />
               <Button
                 icon={Plus}
                 loading={loading}
