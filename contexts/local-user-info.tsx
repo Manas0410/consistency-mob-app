@@ -45,6 +45,7 @@ export const LocalUserProvider = ({ children }: { children: ReactNode }) => {
   };
 
   useEffect(() => {
+    if (!user?.id) return;
     getUser();
   }, [user?.id]);
 

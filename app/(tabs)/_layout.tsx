@@ -7,41 +7,39 @@ import { Redirect, Stack, usePathname } from "expo-router";
 import { useEffect } from "react";
 import { Platform } from "react-native";
 
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: false,
+  }),
+});
+
 export default function TabLayout() {
   const user = useUser();
-  setUserId(user.user?.id || "");
-
   const { isSignedIn, isLoaded } = useAuth();
   const pathname = usePathname();
   const { hasCompletedOnboarding } = useOnboardingContext();
 
-  Notifications.setNotificationHandler({
-    handleNotification: async () => ({
-      shouldShowAlert: true,
-      shouldPlaySound: true,
-      shouldSetBadge: false,
-    }),
-  });
+  useEffect(() => {
+    const id = user.user?.id || "";
+    setUserId(id);
+  }, [user.user?.id]);
 
   async function registerForPushNotificationsAsync() {
     try {
-      const { status: existingStatus } =
-        await Notifications.getPermissionsAsync();
-      let finalStatus = existingStatus;
-
-      if (existingStatus !== "granted") {
-        const { status } = await Notifications.requestPermissionsAsync();
-        finalStatus = status;
+      const perms = await Notifications.getPermissionsAsync();
+      let finalStatus = perms.status;
+      if (finalStatus !== "granted") {
+        const req = await Notifications.requestPermissionsAsync();
+        finalStatus = req.status;
       }
-
       if (finalStatus !== "granted") {
         console.log("Notification permission not granted");
         return { granted: false as const, token: null as string | null };
       }
-
       const tokenData = await Notifications.getExpoPushTokenAsync();
       const token = tokenData.data;
-
       if (Platform.OS === "android") {
         await Notifications.setNotificationChannelAsync("default", {
           name: "default",
@@ -50,7 +48,6 @@ export default function TabLayout() {
           lightColor: "#FF231F7C",
         });
       }
-
       return { granted: true as const, token };
     } catch (err) {
       console.warn("registerForPushNotificationsAsync error", err);
@@ -60,10 +57,7 @@ export default function TabLayout() {
 
   async function syncPushTokenWithServer(token: string) {
     try {
-      await apicall.post("/user/add-expo-token", {
-        token,
-        platform: "expo",
-      });
+      await apicall.post("/user/add-expo-token", { token, platform: "expo" });
     } catch (e) {
       console.warn("Failed to send Expo push token to server", e);
     }
@@ -78,37 +72,42 @@ export default function TabLayout() {
 
     try {
       const todayStr = new Date().toISOString().slice(0, 10);
-      const res = await apicall.post(`/task/getReminders?date=${todayStr}`);
+      const res = await apicall.get(`/task/getReminders?date=${todayStr}`);
 
-      if (!res.data || res.status !== 200) {
-        console.log("Failed to fetch reminders for day");
+      if (!res || res.status !== 200 || !res.data) {
+        console.log("Failed to fetch reminders for day or unexpected response");
         return;
       }
 
-      const data = res.data;
-      const reminders = Array.isArray(data.reminders) ? data.reminders : [];
-      const now = new Date();
+      const reminders = Array.isArray(res.data.reminders)
+        ? res.data.reminders
+        : [];
+      const now = Date.now();
 
-      for (const rem of reminders) {
-        const notifyAt = new Date(rem.notifyAt);
-        if (isNaN(notifyAt.getTime()) || notifyAt <= now) continue;
-
-        try {
-          await Notifications.scheduleNotificationAsync({
-            content: {
-              title: rem.taskName || "Reminder",
-              body: rem.label || rem.taskDescription || "",
-              sound: true,
-              data: {
-                taskId: rem.taskId,
-                reminderId: rem.reminderId,
+      const jobs = reminders
+        .map((rem) => {
+          try {
+            const notifyAt = new Date(rem.notifyAt);
+            if (isNaN(notifyAt.getTime()) || notifyAt.getTime() <= now)
+              return null;
+            return Notifications.scheduleNotificationAsync({
+              content: {
+                title: rem.taskName || "Reminder",
+                body: rem.label || rem.taskDescription || "",
+                sound: true,
+                data: { taskId: rem.taskId, reminderId: rem.reminderId },
               },
-            },
-            trigger: notifyAt,
-          });
-        } catch (e) {
-          console.warn("Failed to schedule notification", e);
-        }
+              trigger: notifyAt,
+            });
+          } catch (err) {
+            console.warn("Invalid reminder entry, skipping", err, rem);
+            return null;
+          }
+        })
+        .filter(Boolean) as Promise<string>[];
+
+      if (jobs.length > 0) {
+        await Promise.allSettled(jobs);
       }
     } catch (e) {
       console.warn("scheduleTodayReminders error", e);
@@ -117,33 +116,29 @@ export default function TabLayout() {
 
   useEffect(() => {
     if (!isSignedIn || !isLoaded) return;
-
-    let isMounted = true;
+    let mounted = true;
 
     (async () => {
-      const { granted, token } = await registerForPushNotificationsAsync();
-      if (!isMounted) return;
-
-      if (granted && token) {
-        console.log("Expo push token:", token);
-        await syncPushTokenWithServer(token);
+      try {
+        const { granted, token } = await registerForPushNotificationsAsync();
+        if (!mounted) return;
+        if (granted && token) {
+          await syncPushTokenWithServer(token);
+        }
+        await scheduleTodayReminders();
+      } catch (err) {
+        console.warn("startup init error", err);
       }
-
-      await scheduleTodayReminders();
     })();
 
     return () => {
-      isMounted = false;
+      mounted = false;
     };
   }, [isSignedIn, isLoaded]);
 
-  if (!isLoaded) {
-    return null; // or loading spinner
-  }
+  if (!isLoaded) return null;
 
-  if (!isSignedIn) {
-    return <Redirect href="/sign-in" />; // Redirect to sign-in screen
-  }
+  if (!isSignedIn) return <Redirect href="/sign-in" />;
 
   return (
     <>
