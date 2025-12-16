@@ -3,11 +3,14 @@
     "name": "25Hour",
     "slug": "25hours",
     "version": "1.0.2",
-    "orientation": "portrait",
+    "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "consistent",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
+
+    "newArchEnabled": false,
+    "jsEngine": "jsc",
+
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.manas25hours.app",
@@ -15,6 +18,7 @@
         "ITSAppUsesNonExemptEncryption": false
       }
     },
+
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -26,10 +30,12 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.manas.app"
     },
+
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
+
     "plugins": [
       "expo-router",
       [
@@ -46,16 +52,18 @@
       ],
       "expo-font"
     ],
+
     "experiments": {
-      "typedRoutes": true,
-      "reactCompiler": true
+      "typedRoutes": true
     },
+
     "extra": {
       "router": {},
       "eas": {
         "projectId": "9c346955-103f-4460-b27a-8f24243e48e9"
       }
     },
+
     "owner": "manas0410"
   }
 }
