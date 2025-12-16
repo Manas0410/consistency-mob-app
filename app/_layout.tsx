@@ -12,6 +12,7 @@ import TeamTaskForm from "@/pages/Team/team-task-form";
 import { ThemeProvider } from "@/theme/theme-provider";
 import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export const unstable_settings = {
   anchor: "(tabs)",
@@ -19,35 +20,37 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   return (
-    <ClerkProvider tokenCache={tokenCache}>
-      <PaletteProvider>
-        <ThemeProvider>
-          <OnboardingProvider>
-            <ToastProvider>
-              <GlobalContextProvider>
-                <Stack>
-                  <Stack.Screen
-                    name="(tabs)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="(auth)"
-                    options={{ headerShown: false }}
-                  />
-                  <Stack.Screen
-                    name="modal"
-                    options={{ presentation: "modal", title: "Modal" }}
-                  />
-                </Stack>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ClerkProvider tokenCache={tokenCache}>
+        <PaletteProvider>
+          <ThemeProvider>
+            <OnboardingProvider>
+              <ToastProvider>
+                <GlobalContextProvider>
+                  <Stack>
+                    <Stack.Screen
+                      name="(tabs)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="(auth)"
+                      options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                      name="modal"
+                      options={{ presentation: "modal", title: "Modal" }}
+                    />
+                  </Stack>
 
-                <TaskForm />
-                <TeamTaskForm />
-                <StatusBar style="light" />
-              </GlobalContextProvider>
-            </ToastProvider>
-          </OnboardingProvider>
-        </ThemeProvider>
-      </PaletteProvider>
-    </ClerkProvider>
+                  <TaskForm />
+                  <TeamTaskForm />
+                  <StatusBar style="light" />
+                </GlobalContextProvider>
+              </ToastProvider>
+            </OnboardingProvider>
+          </ThemeProvider>
+        </PaletteProvider>
+      </ClerkProvider>
+    </GestureHandlerRootView>
   );
 }
