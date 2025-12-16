@@ -2,13 +2,13 @@
   "expo": {
     "name": "25Hour",
     "slug": "25hours",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "consistent",
     "userInterfaceStyle": "automatic",
 
-    "newArchEnabled": false,
+    "newArchEnabled": true,
     "jsEngine": "jsc",
 
     "ios": {
