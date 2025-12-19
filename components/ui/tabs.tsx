@@ -202,7 +202,7 @@ function CarouselTabContent({
 
   // Only render the carousel container for the active tab
   if (activeTab !== value) {
-    return null;
+    return <View style={{ flex: 1, backgroundColor: "#000" }} />;
   }
 
   return (
@@ -491,7 +491,7 @@ export function TabsContent({ children, value, style }: TabsContentProps) {
 
   // Regular mode - only render active content
   if (!isActive) {
-    return null;
+    return <View style={{ flex: 1, backgroundColor: "#000" }} />;
   }
 
   return (

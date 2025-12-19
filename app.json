@@ -7,10 +7,8 @@
     "icon": "./assets/images/icon.png",
     "scheme": "consistent",
     "userInterfaceStyle": "automatic",
-
     "newArchEnabled": true,
     "jsEngine": "jsc",
-
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.manas25hours.app",
@@ -18,7 +16,6 @@
         "ITSAppUsesNonExemptEncryption": false
       }
     },
-
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
@@ -30,12 +27,10 @@
       "predictiveBackGestureEnabled": false,
       "package": "com.manas.app"
     },
-
     "web": {
       "output": "static",
       "favicon": "./assets/images/favicon.png"
     },
-
     "plugins": [
       "expo-router",
       [
@@ -50,20 +45,25 @@
           }
         }
       ],
-      "expo-font"
+      "expo-font",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "newArchEnabled": true
+          }
+        }
+      ]
     ],
-
     "experiments": {
       "typedRoutes": true
     },
-
     "extra": {
       "router": {},
       "eas": {
         "projectId": "9c346955-103f-4460-b27a-8f24243e48e9"
       }
     },
-
     "owner": "manas0410"
   }
 }

@@ -1,13 +1,13 @@
-import { Text } from '@/components/ui/text';
-import { useColor } from '@/hooks/useColor';
-import { useEffect, useState } from 'react';
-import { LayoutChangeEvent, View, ViewStyle } from 'react-native';
+import { Text } from "@/components/ui/text";
+import { useColor } from "@/hooks/useColor";
+import { useEffect, useState } from "react";
+import { LayoutChangeEvent, View, ViewStyle } from "react-native";
 import Animated, {
   useAnimatedProps,
   useSharedValue,
   withTiming,
-} from 'react-native-reanimated';
-import Svg, { G, Path, Text as SvgText } from 'react-native-svg';
+} from "react-native-reanimated";
+import Svg, { G, Path, Text as SvgText } from "react-native-svg";
 
 // Animated SVG Components
 const AnimatedPath = Animated.createAnimatedComponent(Path);
@@ -46,7 +46,7 @@ export const DoughnutChart = ({ data, config = {}, style }: Props) => {
 
   const chartWidth = containerWidth || config.width || 300;
 
-  const primaryColor = useColor('primary');
+  const primaryColor = useColor("primary");
 
   const animationProgress = useSharedValue(0);
 
@@ -65,7 +65,9 @@ export const DoughnutChart = ({ data, config = {}, style }: Props) => {
     }
   }, [data, animated, duration]);
 
-  if (!data.length) return null;
+  if (!data.length) {
+    return <View style={{ flex: 1, backgroundColor: "#000" }} />;
+  }
 
   const total = data.reduce((sum, item) => sum + item.value, 0);
   const outerRadius = Math.min(chartWidth, height) / 2 - 20;
@@ -77,15 +79,15 @@ export const DoughnutChart = ({ data, config = {}, style }: Props) => {
 
   const colors = [
     primaryColor,
-    useColor('blue'),
-    useColor('green'),
-    useColor('orange'),
-    useColor('purple'),
-    useColor('pink'),
+    useColor("blue"),
+    useColor("green"),
+    useColor("orange"),
+    useColor("purple"),
+    useColor("pink"),
   ];
 
   return (
-    <View style={[{ width: '100%' }, style]} onLayout={handleLayout}>
+    <View style={[{ width: "100%" }, style]} onLayout={handleLayout}>
       <Svg width={chartWidth} height={height}>
         {data.map((item, index) => {
           const sliceAngle = (item.value / total) * 2 * Math.PI;
@@ -111,8 +113,8 @@ export const DoughnutChart = ({ data, config = {}, style }: Props) => {
             `A ${outerRadius} ${outerRadius} 0 ${largeArcFlag} 1 ${x2} ${y2}`,
             `L ${x3} ${y3}`,
             `A ${innerRadiusValue} ${innerRadiusValue} 0 ${largeArcFlag} 0 ${x4} ${y4}`,
-            'Z',
-          ].join(' ');
+            "Z",
+          ].join(" ");
 
           // Label position
           const labelAngle = startAngle + sliceAngle / 2;
@@ -138,10 +140,10 @@ export const DoughnutChart = ({ data, config = {}, style }: Props) => {
                 <SvgText
                   x={labelX}
                   y={labelY}
-                  textAnchor='middle'
+                  textAnchor="middle"
                   fontSize={12}
-                  fill='#FFFFFF'
-                  fontWeight='600'
+                  fill="#FFFFFF"
+                  fontWeight="600"
                 >
                   {Math.round((item.value / total) * 100)}%
                 </SvgText>
@@ -157,8 +159,8 @@ export const DoughnutChart = ({ data, config = {}, style }: Props) => {
           <View
             key={`legend-${index}`}
             style={{
-              flexDirection: 'row',
-              alignItems: 'center',
+              flexDirection: "row",
+              alignItems: "center",
               marginBottom: 5,
             }}
           >
@@ -171,7 +173,7 @@ export const DoughnutChart = ({ data, config = {}, style }: Props) => {
                 marginRight: 8,
               }}
             />
-            <Text variant='caption'>
+            <Text variant="caption">
               {item.label}: {item.value}
             </Text>
           </View>

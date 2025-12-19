@@ -142,7 +142,8 @@ export function Onboarding({
   }));
 
   const renderProgressDots = () => {
-    if (!showProgress) return null;
+    if (!showProgress)
+      return <View style={{ flex: 1, backgroundColor: "#000" }} />;
 
     return (
       <View style={styles.progressContainer}>

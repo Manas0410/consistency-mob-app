@@ -311,7 +311,7 @@ export default function OnboardingHook() {
   const { hasCompletedOnboarding, hydrated } = useOnboardingContext();
   // optional: show a loading state until hydration finishes
   if (!hydrated) {
-    return null; // or a spinner while AsyncStorage value loads
+    return <View style={{ flex: 1, backgroundColor: "#000" }} />;
   }
 
   return hasCompletedOnboarding ? <HomeScreen /> : <OnboardingFlow />;

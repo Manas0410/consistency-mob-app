@@ -1,4 +1,5 @@
 import BottomBar from "@/components/bottom-bar";
+import { View } from "@/components/ui/view";
 import apicall, { setUserId } from "@/constants/axios-config";
 import { useOnboardingContext } from "@/contexts/onboarding-context";
 import { useAuth, useUser } from "@clerk/clerk-expo";
@@ -136,7 +137,9 @@ export default function TabLayout() {
     };
   }, [isSignedIn, isLoaded]);
 
-  if (!isLoaded) return null;
+  if (!isLoaded) {
+    return <View style={{ flex: 1, backgroundColor: "#000" }} />;
+  }
 
   if (!isSignedIn) return <Redirect href="/sign-in" />;
 

@@ -139,8 +139,9 @@ const FocusSummaryModal: React.FC<FocusSummaryModalProps> = ({
     ? Math.round((sessionData.completedTime / sessionData.duration) * 100)
     : 0;
 
-  if (!sessionData) return null;
-
+  if (!sessionData) {
+    return <View style={{ flex: 1, backgroundColor: "#000" }} />;
+  }
   return (
     <Modal
       visible={visible}

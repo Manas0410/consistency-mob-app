@@ -27,7 +27,8 @@ export function TeamMembersList({
     {}
   );
 
-  if (!users?.length) return null;
+  if (!users?.length)
+    return <View style={{ flex: 1, backgroundColor: "#000" }} />;
 
   const confirmAndPerform = (
     action: "make-admin" | "remove-user",

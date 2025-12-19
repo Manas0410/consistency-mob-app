@@ -89,7 +89,9 @@ const FocusOverlay: React.FC<FocusOverlayProps> = ({
       .padStart(2, "0")}`;
   };
 
-  if (!visible) return null;
+  if (!visible) {
+    return <View style={{ flex: 1, backgroundColor: "#000" }} />;
+  }
 
   return (
     <Animated.View style={[styles.overlay, animatedOverlayStyle]}>
