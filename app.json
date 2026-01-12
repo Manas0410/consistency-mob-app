@@ -2,7 +2,7 @@
   "expo": {
     "name": "25Hour",
     "slug": "25hours",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "orientation": "default",
     "icon": "./assets/images/icon.png",
     "scheme": "consistent",

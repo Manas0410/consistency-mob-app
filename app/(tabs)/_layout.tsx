@@ -8,14 +8,6 @@ import { Redirect, Stack, usePathname } from "expo-router";
 import { useEffect } from "react";
 import { Platform } from "react-native";
 
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-  }),
-});
-
 export default function TabLayout() {
   const user = useUser();
   const { isSignedIn, isLoaded } = useAuth();
@@ -23,9 +15,9 @@ export default function TabLayout() {
   const { hasCompletedOnboarding } = useOnboardingContext();
 
   useEffect(() => {
-    const id = user.user?.id || "";
-    setUserId(id);
-  }, [user.user?.id]);
+    if (!isLoaded || !user.user?.id) return;
+    setUserId(user.user.id);
+  }, [isLoaded, user.user?.id]);
 
   async function registerForPushNotificationsAsync() {
     try {
@@ -116,24 +108,39 @@ export default function TabLayout() {
   }
 
   useEffect(() => {
+    Notifications.setNotificationHandler({
+      handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: true,
+        shouldSetBadge: false,
+      }),
+    });
+  }, []);
+
+  useEffect(() => {
     if (!isSignedIn || !isLoaded) return;
     let mounted = true;
 
-    (async () => {
-      try {
-        const { granted, token } = await registerForPushNotificationsAsync();
-        if (!mounted) return;
-        if (granted && token) {
-          await syncPushTokenWithServer(token);
+    const timeout = setTimeout(() => {
+      (async () => {
+        try {
+          const { granted, token } = await registerForPushNotificationsAsync();
+          if (!mounted) return;
+
+          if (granted && token) {
+            await syncPushTokenWithServer(token);
+          }
+
+          await scheduleTodayReminders();
+        } catch (err) {
+          console.warn("startup init error", err);
         }
-        await scheduleTodayReminders();
-      } catch (err) {
-        console.warn("startup init error", err);
-      }
-    })();
+      })();
+    }, 0); // <-- critical
 
     return () => {
       mounted = false;
+      clearTimeout(timeout);
     };
   }, [isSignedIn, isLoaded]);
 
@@ -141,7 +148,17 @@ export default function TabLayout() {
     return <View style={{ flex: 1, backgroundColor: "#000" }} />;
   }
 
-  if (!isSignedIn) return <Redirect href="/sign-in" />;
+  if (!isLoaded) {
+    return <View style={{ flex: 1, backgroundColor: "#000" }} />;
+  }
+
+  if (!isSignedIn) {
+    return (
+      <View style={{ flex: 1 }}>
+        <Redirect href="/sign-in" />
+      </View>
+    );
+  }
 
   return (
     <>

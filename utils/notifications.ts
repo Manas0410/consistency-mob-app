@@ -1,64 +1,93 @@
-import * as Notifications from "expo-notifications";
+// notifications.ts (SAFE FOR APP STORE + NEW ARCH)
+
+import { Platform } from "react-native";
+
+/**
+ * Lazy-load expo-notifications to prevent
+ * iOS abort() on cold start / App Store review devices
+ */
+async function getNotifications() {
+  const Notifications = await import("expo-notifications");
+  return Notifications;
+}
+
+// -----------------------------
+// SYSTEM / LOCAL NOTIFICATIONS
+// -----------------------------
 
 // Schedule a one-time reminder at a specific date/time
 export async function scheduleTaskReminderNotification({
   taskName,
   taskDescription,
-  notifyAt, // JS Date
+  notifyAt,
 }: {
   taskName: string;
   taskDescription?: string;
   notifyAt: Date;
 }): Promise<string | null> {
-  if (!(notifyAt instanceof Date) || isNaN(notifyAt.getTime())) {
-    console.log("Invalid notifyAt", notifyAt);
+  try {
+    if (!(notifyAt instanceof Date) || isNaN(notifyAt.getTime())) {
+      console.log("Invalid notifyAt", notifyAt);
+      return null;
+    }
+
+    if (notifyAt.getTime() <= Date.now()) {
+      console.log("notifyAt is in the past, skipping");
+      return null;
+    }
+
+    const Notifications = await getNotifications();
+
+    if (Platform.OS === "ios") {
+      const perms = await Notifications.getPermissionsAsync();
+      if (perms.status !== "granted") {
+        console.log("Notification permission not granted");
+        return null;
+      }
+    }
+
+    const id = await Notifications.scheduleNotificationAsync({
+      content: {
+        title: taskName || "Reminder",
+        body: taskDescription || "You have something scheduled.",
+        sound: true,
+        data: { type: "TASK_REMINDER" },
+      },
+      trigger: notifyAt,
+    });
+
+    return id;
+  } catch (e) {
+    console.warn("scheduleTaskReminderNotification error", e);
     return null;
   }
-  if (notifyAt.getTime() <= Date.now()) {
-    console.log("notifyAt is in the past, skipping");
-    return null;
-  }
-
-  const id = await Notifications.scheduleNotificationAsync({
-    content: {
-      title: taskName || "Reminder",
-      body: taskDescription || "You have something scheduled.",
-      sound: true,
-      data: { type: "TASK_REMINDER" },
-    },
-    trigger: notifyAt, // exact Date trigger
-  });
-
-  return id; // localNotificationId
 }
 
 export async function cancelTaskReminderNotification(
   localNotificationId?: string | null
 ) {
   if (!localNotificationId) return;
+
   try {
+    const Notifications = await getNotifications();
     await Notifications.cancelScheduledNotificationAsync(localNotificationId);
   } catch (e) {
     console.log("Failed to cancel local notification", e);
   }
 }
 
-// In-app notification manager (no expo-notifications dependency)
+// -----------------------------
+// IN-APP NOTIFICATION SYSTEM
+// -----------------------------
+
 let inAppNotificationManager: any = null;
 
-/**
- * Set the in-app notification manager
- */
 export const setInAppNotificationManager = (manager: any) => {
   inAppNotificationManager = manager;
   console.log("📱 In-app notification system ready");
 };
 
-/**
- * Suppress all local notifications during focus sessions
- */
 export const suppressNotifications = async (): Promise<boolean> => {
-  // Show in-app notification about focus mode
   const motivationalMessages = [
     "Deep work in progress - your future self will thank you! 💪",
     "Focused mind, extraordinary results. Stay in the zone! 🎯",
@@ -85,25 +114,16 @@ export const suppressNotifications = async (): Promise<boolean> => {
   return true;
 };
 
-/**
- * Restore normal notification behavior after focus session
- */
 export const restoreNotifications = async (): Promise<boolean> => {
   console.log("🔔 Notifications restored");
   return true;
 };
 
-/**
- * Request notification permissions - always succeeds with in-app notifications
- */
 export const requestNotificationPermissions = async (): Promise<boolean> => {
   console.log("📱 In-app notification permissions granted");
   return true;
 };
 
-/**
- * Show meaningful focus session completion notification
- */
 export const showSessionCompleteNotification = async (
   duration: number,
   completedMinutes: number
@@ -113,7 +133,6 @@ export const showSessionCompleteNotification = async (
   let body = "";
   let emoji = "🎉";
 
-  // Personalized messages based on completion rate
   if (completionRate >= 100) {
     emoji = "🏆";
     title = `${emoji} Perfect Focus Session!`;
@@ -148,24 +167,18 @@ export const showSessionCompleteNotification = async (
     body = `You started and that matters! ${completedMinutes} minutes of focus is better than zero. Tomorrow will be even better! 🌅`;
   }
 
-  // Show in-app completion notification
   if (inAppNotificationManager) {
     inAppNotificationManager.showNotification({
       title,
       body,
       emoji,
-      duration: 5000, // Show longer for completion
-      onPress: () => {
-        console.log("🎉 User tapped completion notification");
-      },
+      duration: 5000,
     });
   }
+
   console.log(`${emoji} SESSION COMPLETE: ${title}`);
 };
 
-/**
- * Show contextual motivational notification during focus session
- */
 export const showMotivationalNotification = async (
   message: string,
   remainingMinutes: number,
@@ -174,7 +187,6 @@ export const showMotivationalNotification = async (
   let title = "💪 Stay Focused";
   let enhancedMessage = message;
 
-  // Contextual notifications based on session progress
   if (sessionProgress >= 75) {
     title = "🔥 Final Sprint!";
     enhancedMessage = `You're in the home stretch! ${remainingMinutes} minutes to victory! 🏁`;
@@ -193,7 +205,7 @@ export const showMotivationalNotification = async (
     inAppNotificationManager.showNotification({
       title,
       body: enhancedMessage,
-      emoji: title.split(" ")[0], // Extract emoji
+      emoji: title.split(" ")[0],
       duration: 3000,
     });
   }
@@ -201,9 +213,6 @@ export const showMotivationalNotification = async (
   console.log(`${title.split(" ")[0]} Motivational: ${enhancedMessage}`);
 };
 
-/**
- * Show milestone celebration notification
- */
 export const showMilestoneNotification = async (
   milestone: string,
   achievement: string
@@ -234,24 +243,18 @@ export const showMilestoneNotification = async (
     body: achievement,
   };
 
-  // Show in-app milestone notification
   if (inAppNotificationManager) {
     inAppNotificationManager.showNotification({
       title: notification.title,
       body: notification.body,
-      emoji: notification.title.split(" ")[0], // Extract emoji from title
-      duration: 6000, // Show longer for milestones
-      onPress: () => {
-        console.log(`🎉 User tapped milestone: ${milestone}`);
-      },
+      emoji: notification.title.split(" ")[0],
+      duration: 6000,
     });
   }
+
   console.log(`🏆 MILESTONE: ${notification.title} - ${achievement}`);
 };
 
-/**
- * Show smart reminder notification
- */
 export const showSmartReminder = async (
   reminderType: "daily_goal" | "comeback" | "streak_risk",
   customMessage?: string
@@ -296,50 +299,25 @@ export const showSmartReminder = async (
   console.log(`💡 Smart reminder: ${reminderType}`);
 };
 
-/**
- * Handle notification response (when user taps notification)
- */
-export const handleNotificationResponse = (
-  response: any,
-  onFocusReturn?: () => void,
-  onSessionComplete?: () => void,
-  onMilestone?: (milestone: string) => void
-): void => {
+export const handleNotificationResponse = () => {
   console.log("📱 In-app notification tapped");
-  // For in-app notifications, we handle taps through the onPress callbacks
 };
 
-/**
- * Set up comprehensive notification response listener
- */
-export const setupNotificationListener = (
-  onFocusReturn?: () => void,
-  onSessionComplete?: () => void,
-  onMilestone?: (milestone: string) => void
-): (() => void) => {
+export const setupNotificationListener = () => {
   console.log("📱 In-app notification listener ready");
   return () => console.log("📱 Notification listener cleanup");
 };
 
-/**
- * Schedule progress-based notifications during a session
- */
 export const scheduleSessionProgressNotifications = async (
   sessionDurationMinutes: number
 ): Promise<void> => {
-  // For in-app notifications, we'll show progress notifications via the timer system
-  console.log(
-    `📊 Progress notifications scheduled for ${sessionDurationMinutes}-minute session`
-  );
-
-  // Schedule progress messages to show at 25%, 50%, 75%
   const progressTimes = [
     Math.floor(sessionDurationMinutes * 0.25),
     Math.floor(sessionDurationMinutes * 0.5),
     Math.floor(sessionDurationMinutes * 0.75),
   ];
 
-  const progressMessages = [
+  (globalThis as any).focusProgressNotifications = [
     {
       time: progressTimes[0],
       title: "🎯 Quarter Way There!",
@@ -356,14 +334,8 @@ export const scheduleSessionProgressNotifications = async (
       body: "Almost there! Push through this final stretch. Victory is within reach! 🏁",
     },
   ];
-
-  // Store progress notifications for the timer to use
-  (globalThis as any).focusProgressNotifications = progressMessages;
 };
 
-/**
- * Show progress notification at the right time
- */
 export const showProgressNotification = async (
   elapsedMinutes: number
 ): Promise<void> => {
@@ -375,7 +347,7 @@ export const showProgressNotification = async (
       Math.abs(elapsedMinutes - notification.time) < 0.5 &&
       !notification.shown
     ) {
-      notification.shown = true; // Mark as shown
+      notification.shown = true;
 
       if (inAppNotificationManager) {
         inAppNotificationManager.showNotification({
@@ -385,18 +357,12 @@ export const showProgressNotification = async (
           duration: 4000,
         });
       }
-
-      console.log(`📊 Progress notification: ${notification.title}`);
       break;
     }
   }
 };
 
-/**
- * Cancel all scheduled session notifications
- */
 export const cancelScheduledNotifications = async (): Promise<void> => {
-  // Clear stored progress notifications
   (globalThis as any).focusProgressNotifications = [];
   console.log("🚫 Progress notifications cleared");
 };
