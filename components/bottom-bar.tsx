@@ -7,6 +7,8 @@ import { useJoinTeamBottomSheet } from "@/contexts/join-team-contex";
 import { useSelectMode } from "@/contexts/select-mode-context";
 import { usePallet } from "@/hooks/use-pallet";
 import { useColor } from "@/hooks/useColor";
+import TaskForm from "@/pages/addTask/task-form";
+import TeamTaskForm from "@/pages/Team/team-task-form";
 import { useNavigation } from "@react-navigation/native";
 import { usePathname, useRouter } from "expo-router";
 import {
@@ -165,6 +167,8 @@ const BottomBar = () => {
 
       {["/calendar"].includes(pathname) && (
         <>
+          <TaskForm />
+          <TeamTaskForm />
           {isTeamsButtonExpanded ? (
             <View style={styles.buttonCnt}>
               <TouchableOpacity

@@ -7,8 +7,6 @@ import { ToastProvider } from "@/components/ui/toast";
 import GlobalContextProvider from "@/contexts/global-context-provider";
 import { OnboardingProvider } from "@/contexts/onboarding-context";
 import { PaletteProvider } from "@/contexts/palette-context";
-import TaskForm from "@/pages/addTask/task-form";
-import TeamTaskForm from "@/pages/Team/team-task-form";
 import { ThemeProvider } from "@/theme/theme-provider";
 import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
@@ -42,8 +40,6 @@ export default function RootLayout() {
                     />
                   </Stack>
 
-                  <TaskForm />
-                  <TeamTaskForm />
                   <StatusBar style="light" />
                 </GlobalContextProvider>
               </ToastProvider>
